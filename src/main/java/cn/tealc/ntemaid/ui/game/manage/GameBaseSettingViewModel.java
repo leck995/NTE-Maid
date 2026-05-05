@@ -1,0 +1,241 @@
+package cn.tealc.ntemaid.ui.game.manage;
+
+import cn.tealc.ntemaid.base.Config;
+import cn.tealc.ntemaid.util.GameClientType;
+import de.saxsys.mvvmfx.SceneLifecycle;
+import de.saxsys.mvvmfx.ViewModel;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.ObservableList;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.nio.charset.Charset;
+
+/**
+ * @description:
+ * @author: Leck
+ * @create: 2025-03-08 23:11
+ */
+public class GameBaseSettingViewModel implements ViewModel, SceneLifecycle {
+    private SimpleObjectProperty<GameClientType> gameClientType = new SimpleObjectProperty<>();
+    private SimpleStringProperty gameDir=new SimpleStringProperty();
+    private SimpleStringProperty gameAppStartPath=new SimpleStringProperty();
+    private SimpleBooleanProperty gameAppStartCustom=new SimpleBooleanProperty();
+    private SimpleBooleanProperty sourceTypeDisabled01=new SimpleBooleanProperty(true);
+    private SimpleBooleanProperty sourceTypeDisabled02=new SimpleBooleanProperty(true);
+    private SimpleBooleanProperty sourceTypeDisabled03=new SimpleBooleanProperty(true);
+    private final ObservableList<String> startUpParams;
+
+
+    public GameBaseSettingViewModel() {
+        startUpParams = Config.setting.getStartUpParams();
+    }
+
+
+    public void init() {
+        gameClientType.bindBidirectional(Config.setting.gameRootDirSourceProperty());
+        gameDir.bindBidirectional(Config.setting.gameRootDirProperty());
+        gameAppStartPath.bindBidirectional(Config.setting.gameStarAppPathProperty());
+        gameAppStartCustom.bindBidirectional(Config.setting.gameStartAppCustomProperty());
+
+        if (gameDir.get() == null){
+            String gameInstallPath = getGameInstallPath();
+            if (gameInstallPath != null){
+                gameDir.set(gameInstallPath);
+            }
+        }
+    }
+
+
+
+
+
+    public String getGameInstallPath() {
+        // 将命令拆分为数组，ProcessBuilder 会自动处理参数中的空格和转义
+        String[] command = {
+                "reg", "query",
+                "HKEY_LOCAL_MACHINE\\SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\YH",
+                "/v", "InstallLocation"
+        };
+
+        ProcessBuilder pb = new ProcessBuilder(command);
+        pb.redirectErrorStream(true);
+        try {
+            Process process = pb.start();
+            try (BufferedReader reader = new BufferedReader(
+                    new InputStreamReader(process.getInputStream(), Charset.forName("GBK")))) {
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    if (line.contains("REG_SZ")) {
+                        String[] parts = line.split("REG_SZ");
+                        if (parts.length > 1) {
+                            String path = parts[1].trim();
+                            System.out.println(path);
+                            if (path.endsWith("\\"))
+                                return path.substring(0, path.length()-1);
+                            else
+                                return path;
+                        }
+                    }
+                }
+            }
+            process.waitFor();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    /**
+     * 删除指定启动参数
+     * @param index
+     */
+    public void deleteParam(int index) {
+        startUpParams.remove(index);
+    }
+
+    /**
+     * 添加启动参数
+     * @param param
+     */
+    public void addParam(String param) {
+        startUpParams.add(param);
+    }
+
+    public boolean isDx11(){
+        return startUpParams.contains("-dx11");
+    }
+    public boolean isDx12(){
+        return startUpParams.contains("-dx12");
+    }
+
+    /**
+     * 启动参数中添加dx11
+     */
+    public void addDx11(){
+        int index = startUpParams.indexOf("-dx12");
+        if (index != -1){
+            startUpParams.set(index,"-dx11");
+        }else {
+            startUpParams.add("-dx11");
+        }
+    }
+
+    /**
+     * 启动参数中添加dx12
+     */
+    public void addDx12(){
+        int index = startUpParams.indexOf("-dx11");
+        if (index != -1){
+            startUpParams.set(index,"-dx12");
+        }else {
+            startUpParams.add("-dx12");
+        }
+    }
+
+    public void replaceParam(String param1, String param2) {
+
+    }
+
+
+    @Override
+    public void onViewAdded() {
+
+    }
+
+    @Override
+    public void onViewRemoved() {
+        checkGameLogOpen();
+        Config.save();
+    }
+    /**
+     * description: 检测游戏日志是否被关闭
+     */
+    private void checkGameLogOpen() {
+//        CheckGameConfigTask task = new CheckGameConfigTask();
+//        task.setOnSucceeded(workerStateEvent -> {
+//            Boolean value = task.getValue();
+//            if (!value) { //游戏日志可能被关闭了
+//                Platform.runLater(() -> {
+//                    NotificationManager.message(MessageInfo.success(LanguageManager.getString("ui.main.sync.message.log.close")));
+//                });
+//            }
+//        });
+//        Thread.startVirtualThread(task);
+    }
+
+    public boolean changeServer(GameClientType sourceType) {
+        return false;
+    }
+
+
+    public GameClientType getGameClientType() {
+        return gameClientType.get();
+    }
+
+    public SimpleObjectProperty<GameClientType> gameClientTypeProperty() {
+        return gameClientType;
+    }
+
+    public void setGameClientType(GameClientType gameClientType) {
+        this.gameClientType.set(gameClientType);
+    }
+
+    public String getGameDir() {
+        return gameDir.get();
+    }
+
+    public SimpleStringProperty gameDirProperty() {
+        return gameDir;
+    }
+
+    public boolean isSourceTypeDisabled01() {
+        return sourceTypeDisabled01.get();
+    }
+
+    public SimpleBooleanProperty sourceTypeDisabled01Property() {
+        return sourceTypeDisabled01;
+    }
+
+    public boolean isSourceTypeDisabled02() {
+        return sourceTypeDisabled02.get();
+    }
+
+    public SimpleBooleanProperty sourceTypeDisabled02Property() {
+        return sourceTypeDisabled02;
+    }
+
+    public boolean isSourceTypeDisabled03() {
+        return sourceTypeDisabled03.get();
+    }
+
+    public SimpleBooleanProperty sourceTypeDisabled03Property() {
+        return sourceTypeDisabled03;
+    }
+
+    public String getGameAppStartPath() {
+        return gameAppStartPath.get();
+    }
+
+    public SimpleStringProperty gameAppStartPathProperty() {
+        return gameAppStartPath;
+    }
+
+    public boolean isGameAppStartCustom() {
+        return gameAppStartCustom.get();
+    }
+
+    public SimpleBooleanProperty gameAppStartCustomProperty() {
+        return gameAppStartCustom;
+    }
+
+    public ObservableList<String> getStartUpParams() {
+        return startUpParams;
+    }
+
+
+
+
+}

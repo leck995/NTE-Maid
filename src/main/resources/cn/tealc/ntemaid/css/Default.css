@@ -1,0 +1,124 @@
+
+.text{
+    -fx-font-smoothing-type: gray;
+}
+
+
+.combo-box-base{
+    -fx-background-radius: 20;
+    -fx-padding: 0 5 0 5;
+    -fx-background-color: -color-bg-default-60;
+}
+.combo-box-base:showing{
+    -fx-background-radius: 20 20 0 0;
+
+}
+.combo-box > .list-cell {
+    -fx-background: transparent;
+}
+
+.combo-box-popup > .list-view {
+    -fx-background-color: -color-bg-default-60;
+    -fx-background-insets: null;
+    -fx-border-color: transparent;
+
+}
+.combo-box-popup > .list-view > .virtual-flow > .clipped-container > .sheet > .list-cell {
+    -fx-background-color: -color-bg-default-40;
+    -fx-border-color: transparent;
+}
+.combo-box-popup > .list-view > .virtual-flow > .clipped-container > .sheet > .list-cell:hover {
+    -fx-opacity: 0.8;
+}
+
+
+.jfx-dialog > StackPane{
+    -fx-background-color: transparent;
+}
+
+.jfx-dialog-layout {
+    -fx-text-fill: rgba(0, 0, 0, 0.87);
+    -fx-background-radius: 10;
+    -fx-padding: 10;
+    -fx-background-color: -color-bg-default;
+}
+
+
+/*
+.jfx-dialog-layout > .jfx-layout-body .label {
+    -fx-text-fill: -color-bg-inset;
+    -fx-font-size: 16.0;
+    -fx-wrap-text: true;
+}
+*/
+
+
+
+
+.tea-dialog{
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 10;
+    -fx-padding: 20;
+}
+
+
+.headbar {
+    -fx-pref-height: 3.8em;
+    -fx-min-height: 3.3em;
+}
+
+.headbar .leading{
+    -fx-alignment: center-left;
+}
+
+.headbar .leading .title{
+    -fx-font-size: 1.4em;
+    -fx-text-fill: -color-fg-default;
+    -fx-font-weight: bold;
+}
+
+
+.headbar .trailing{
+    -fx-spacing: 8;
+    -fx-alignment: CENTER_RIGHT;
+    -fx-padding: 0 10 0 0;
+}
+
+.headbar .trailing .button,
+.headbar .trailing .toggle-button{
+    -fx-content-display: graphic-only;
+    -fx-graphic-text-gap: 0;
+    -fx-background-color: transparent;
+    -fx-border-width: 0;
+    -fx-background-insets: 0;
+}
+
+.headbar .trailing .button:hover,
+.headbar .trailing .toggle-button:hover{
+    -fx-background-color: -color-accent-subtle;
+    -fx-opacity: 0.9;
+}
+
+.headbar .trailing > .func,
+.headbar .trailing > .system-func{
+    -fx-spacing: 8;
+    -fx-alignment: CENTER_RIGHT;
+}
+
+
+
+.headbar .trailing > .system-func > .close-btn:hover{
+    -fx-background-color: -color-danger-5;
+}
+
+.headbar .trailing > .system-func > .max-btn > .ikonli-font-icon{
+    -fx-icon-code:mdral-fullscreen;
+}
+
+.headbar .trailing > .system-func > .max-btn.full-exit > .ikonli-font-icon{
+    -fx-icon-code: mdral-fullscreen_exit;
+}
+
+
+
+
