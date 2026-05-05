@@ -15,7 +15,7 @@ import java.util.ResourceBundle;
  * @create: 2024-07-03 00:37
  */
 public class Config {
-    public static final String version = "1.0.0";
+    public static final String version = "0.9.0";
     public static final String appAuthor = "Leck";
 
     public static final String URL_SUPPORT_LIST = "https://www.yuque.com/chashuisuipian/sm05lg/ag7ct2or8ecz98cp";

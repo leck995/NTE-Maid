@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.chart.CategoryAxis?>
+<?import javafx.scene.chart.LineChart?>
+<?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ProgressBar?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.VBox?>
+
+<AnchorPane prefHeight="700.0" prefWidth="1000.0" styleClass="gametime" stylesheets="@../../../css/game/GameTime.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cn.tealc.ntemaid.ui.game.record.GameTimeView">
+   <children>
+      <Label styleClass="title-2" text="%ui.game_time.title" visible="false" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0" />
+      <VBox alignment="TOP_CENTER" layoutX="18.0" layoutY="88.0" spacing="30.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="70.0">
+         <children>
+            <HBox alignment="TOP_CENTER" spacing="50.0">
+               <children>
+                  <AnchorPane prefHeight="150.0" prefWidth="300.0" styleClass="item">
+                     <children>
+                        <Label styleClass="header" text="%ui.game_time.account.current" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                        <Label fx:id="currentUserName" styleClass="header" text="%ui.game_time.account.unknown" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                        <HBox spacing="10.0" styleClass="content" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="40.0">
+                           <children>
+                              <ImageView fx:id="headImageView" fitHeight="80.0" fitWidth="80.0" pickOnBounds="true" preserveRatio="true" />
+                              <VBox alignment="CENTER_LEFT" spacing="10.0">
+                                 <children>
+                                    <HBox>
+                                       <children>
+                                          <Label fx:id="currentDayLabel" text="%ui.game_time.account.days" />
+                                          <Pane HBox.hgrow="ALWAYS" />
+                                       </children>
+                                    </HBox>
+                                    <Label fx:id="currentTimeLabel" text="%ui.game_time.account.duration" />
+                                    <ProgressBar fx:id="currentProgress" prefWidth="200.0" progress="0.68" />
+                                 </children>
+                              </VBox>
+                           </children>
+                        </HBox>
+                     </children>
+                     <padding>
+                        <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
+                     </padding>
+                  </AnchorPane>
+                  <AnchorPane prefHeight="150.0" prefWidth="300.0" styleClass="item">
+                     <children>
+                        <Label styleClass="header" text="%ui.game_time.total" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                        <Label styleClass="header" text="%ui.game_time.tip" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                        <VBox alignment="CENTER_LEFT" layoutX="10.0" layoutY="50.0" spacing="10.0" styleClass="content" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="40.0">
+                           <children>
+                              <HBox>
+                                 <children>
+                                    <Label prefWidth="90.0" text="%ui.game_time.total.current" />
+                                    <Label fx:id="currentTotalTimeLabel" layoutX="10.0" layoutY="10.0" text="32.5" />
+                                    <Label layoutX="150.0" layoutY="10.0" text="小时" />
+                                 </children>
+                              </HBox>
+                              <HBox layoutX="10.0" layoutY="33.0">
+                                 <children>
+                                    <Label prefWidth="90.0" text="%ui.game_time.total.all" />
+                                    <Label fx:id="allTotalTimeLabel" layoutX="10.0" layoutY="10.0" text="42.5" />
+                                    <Label layoutX="150.0" layoutY="10.0" text="小时" />
+                                 </children>
+                              </HBox>
+                              <ProgressBar fx:id="totalProgress" prefWidth="260.0" progress="0.57" />
+                           </children>
+                        </VBox>
+                     </children>
+                     <padding>
+                        <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
+                     </padding>
+                  </AnchorPane>
+               </children>
+            </HBox>
+            <LineChart fx:id="lineChart" legendSide="TOP" maxWidth="650.0" prefWidth="650.0" title="%ui.game_time.total.charts.title">
+              <xAxis>
+                <CategoryAxis side="BOTTOM" />
+              </xAxis>
+              <yAxis>
+                <NumberAxis label="%ui.game_time.total.charts.y" side="LEFT" />
+              </yAxis>
+            </LineChart>
+         </children>
+      </VBox>
+   </children>
+</AnchorPane>

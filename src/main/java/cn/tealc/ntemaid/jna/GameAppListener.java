@@ -126,6 +126,12 @@ public class GameAppListener implements WinUser.WinEventProc {
                 dao.addTime(gameTime);
                 LOG.info("检测到异环已经结束，保存时间{}", gameTime);
             }
+
+
+            if (Config.setting.isExitWhenGameOver()){
+                LOG.info("游戏结束，自动退出程序");
+                NotificationManager.publish(NotificationKey.APP_EXIT);
+            }
         }
     }
 

@@ -19,7 +19,9 @@ public class NotificationManager {
     public static void subscribe(String key, NotificationObserver observer) {
         MvvmFX.getNotificationCenter().subscribe(key, observer);
     }
-
+    public static void unsubscribe(String key, NotificationObserver observer) {
+        MvvmFX.getNotificationCenter().unsubscribe(key, observer);
+    }
     public static void message(MessageInfo messageInfo) {
         MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE, messageInfo);
     }

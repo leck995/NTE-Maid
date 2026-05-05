@@ -22,7 +22,6 @@ public class GameTimeDao {
     private RowProcessor getRowProcessor(){
         Map<String,String> map=new HashMap<>();
         map.put("id","id");
-        map.put("role_id","roleId");
         map.put("game_date","gameDate");
         map.put("start_time","startTime");
         map.put("end_time","endTime");
@@ -49,6 +48,17 @@ public class GameTimeDao {
             return qr.insert(con,sql,rsh,gameTime.getGameDate(),gameTime.getStartTime(),gameTime.getEndTime(),gameTime.getDuration());
         } catch (SQLException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    public List<GameTime> getAllTime(){
+        QueryRunner qr=new QueryRunner();
+        String sql="SELECT * FROM game_time";
+        try {
+            return qr.query(con,sql,new BeanListHandler<>(GameTime.class,getRowProcessor()));
+        } catch (SQLException e) {
+            LOG.error(e.getMessage(),e);
+            return null;
         }
     }
 }

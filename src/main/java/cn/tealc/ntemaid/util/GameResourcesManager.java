@@ -4,6 +4,10 @@ import cn.tealc.ntemaid.base.Config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Optional;
 
 /**
  * @description: 负责获取部分游戏文件
@@ -13,15 +17,15 @@ import java.io.File;
 public class GameResourcesManager {
     private static final Logger LOG = LoggerFactory.getLogger(GameResourcesManager.class);
 
-    public static File getGameDir() {
+    public static Optional<File> getGameDir() {
         if (Config.setting.getGameRootDir() != null) {
             File dir = new File(Config.setting.getGameRootDir());
             if (!dir.exists()) {
-                return null;
+                return Optional.empty();
             }
-            return dir;
+            return Optional.of(dir);
         }
-        return null;
+        return Optional.empty();
     }
 
 
@@ -49,17 +53,37 @@ public class GameResourcesManager {
         return exe;
     }
 
-
-    public static File getGameScreenShoot() {
+    public static Optional<File> getGameScreenShoot() {
         String dir = Config.setting.getGameRootDir();
-        File exe = null;
         if (dir != null) {
-            exe = new File(Config.setting.getGameRootDir() + File.separator + "Client/Saved/ScreenShot");
-            if (!exe.exists()) {
-                return null;
+            Path path = Paths.get(dir, "Client", "WindowsNoEditor", "Selfie");
+            if (Files.exists(path)) {
+                try {
+                    File[] files = path.toFile().listFiles(File::isDirectory);
+
+                    if (files != null && files.length == 1 && files[0].isDirectory()) {
+                        // 如果只有一个子目录，返回该子目录
+                        File file = new File(files[0],"ScreenShots");
+                        return Optional.of(file);
+                    } else {
+                        // 否则返回原路径
+                        return Optional.of(path.toFile());
+                    }
+                } catch (SecurityException e) {
+                    // 处理权限异常
+                    return Optional.empty();
+                }
             }
         }
-        return exe;
+        return Optional.empty();
+    }
+    public static Optional<File> getGameScreenShoot2() {
+        String localAppData = System.getenv("LOCALAPPDATA");
+        Path logPath = Paths.get(localAppData, "HT", "Saved", "Screenshots", "Windows");
+        if (Files.exists(logPath)){
+            return Optional.of(logPath.toFile());
+        }
+        return Optional.empty();
     }
 
     /**

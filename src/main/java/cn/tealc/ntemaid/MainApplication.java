@@ -2,6 +2,8 @@ package cn.tealc.ntemaid;
 
 import ch.qos.logback.classic.Level;
 import cn.tealc.ntemaid.base.Config;
+import cn.tealc.ntemaid.base.notification.NotificationKey;
+import cn.tealc.ntemaid.base.notification.NotificationManager;
 import cn.tealc.ntemaid.dao.JdbcUtils;
 import cn.tealc.ntemaid.jna.GameAppListener;
 import cn.tealc.ntemaid.jna.GlobalKeyListener;
@@ -82,6 +84,13 @@ public class MainApplication extends Application {
         appListener = GameAppListener.getInstance();
         gameAppListener = User32.INSTANCE.SetWinEventHook(0x0003, 0x0003, null, appListener, 0, 0, 0);
 
+
+        NotificationManager.subscribe(NotificationKey.APP_EXIT,((s, objects) -> {
+            exit();
+        }));
+        NotificationManager.subscribe(NotificationKey.APP_HIDE,((s, objects) -> {
+            hide();
+        }));
     }
 
     private void initFont(){

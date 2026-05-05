@@ -7,6 +7,7 @@ import cn.tealc.ntemaid.FXResourcesLoader;
 import cn.tealc.ntemaid.MainApplication;
 import cn.tealc.ntemaid.base.Config;
 import cn.tealc.ntemaid.base.notification.NotificationKey;
+import cn.tealc.ntemaid.base.notification.NotificationManager;
 import cn.tealc.ntemaid.model.system.nav.NavData;
 import cn.tealc.ntemaid.thread.system.ui.MainBackgroundTask;
 import cn.tealc.ntemaid.ui.component.BaseDialog;
@@ -414,8 +415,8 @@ public class MainView implements Initializable, FxmlView<MainViewModel> {
     public void close() {
         switch (Config.setting.getCloseEvent()) {
             case 0 -> showExitDialog();
-            case 1 -> MainApplication.exit();
-            case 2 -> MainApplication.hide();
+            case 1 -> NotificationManager.publish(NotificationKey.APP_EXIT);
+            case 2 -> NotificationManager.publish(NotificationKey.APP_HIDE);
         }
     }
 
@@ -435,10 +436,10 @@ public class MainView implements Initializable, FxmlView<MainViewModel> {
         JFXDialog jfxDialog = new JFXDialog(root, dialogLayout, JFXDialog.DialogTransition.CENTER);
 
         exitBtn.setOnAction(event -> {
-            MainApplication.exit();
+            NotificationManager.publish(NotificationKey.APP_EXIT);
         });
         iconBtn.setOnAction(event -> {
-            MainApplication.hide();
+            NotificationManager.publish(NotificationKey.APP_HIDE);
             jfxDialog.close();
         });
 

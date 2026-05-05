@@ -159,9 +159,6 @@ public class GameBaseSettingView implements FxmlView<GameBaseSettingViewModel>, 
                 NotificationManager.publish(NotificationKey.MESSAGE, MessageInfo.warning(LanguageManager.getString("ui.setting.message.01")));
             }
         }
-
-
-        NotificationManager.publish(NotificationKey.GAME_MANAGE_TO_CHOOSE);
     }
 
     @FXML
