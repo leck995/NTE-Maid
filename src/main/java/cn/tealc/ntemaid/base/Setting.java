@@ -55,7 +55,8 @@ public class Setting {
     /*=================设置-游戏行为===================*/
     private final SimpleBooleanProperty exitWhenGameOver = new SimpleBooleanProperty(false); //检测到游戏关闭自动关闭程序
     private final SimpleBooleanProperty hideWhenGameStart = new SimpleBooleanProperty(false); //检测到游戏启动自动隐藏程序至托盘
-
+    private final SimpleBooleanProperty silentStartup = new SimpleBooleanProperty(false); //静默启动
+    private final SimpleBooleanProperty autoStartGame = new SimpleBooleanProperty(false); //启动时同时启动游戏
     /*=================设置-其他设置===================*/
     private final SimpleBooleanProperty checkNewVersion = new SimpleBooleanProperty(true); //检查更新
 
@@ -451,5 +452,29 @@ public class Setting {
 
     public void setMusicVolume(double musicVolume) {
         this.musicVolume.set(musicVolume);
+    }
+
+    public boolean isAutoStartGame() {
+        return autoStartGame.get();
+    }
+
+    public SimpleBooleanProperty autoStartGameProperty() {
+        return autoStartGame;
+    }
+
+    public void setAutoStartGame(boolean autoStartGame) {
+        this.autoStartGame.set(autoStartGame);
+    }
+
+    public boolean isSilentStartup() {
+        return silentStartup.get();
+    }
+
+    public SimpleBooleanProperty silentStartupProperty() {
+        return silentStartup;
+    }
+
+    public void setSilentStartup(boolean silentStartup) {
+        this.silentStartup.set(silentStartup);
     }
 }

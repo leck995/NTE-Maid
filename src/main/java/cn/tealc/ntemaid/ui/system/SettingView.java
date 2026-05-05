@@ -88,6 +88,10 @@ public class SettingView implements FxmlView<SettingViewModel>, Initializable {
     private StackPane diyBgDirInputGroup;
     @FXML
     private Spinner<Integer> uiScaleSpinner;
+    @FXML
+    private ToggleSwitch silentStartUp;
+    @FXML
+    private ToggleSwitch autoStartGame;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -103,6 +107,9 @@ public class SettingView implements FxmlView<SettingViewModel>, Initializable {
         hideWhenGameStart.setSkin(new ToggleSwitchSkin(hideWhenGameStart));
         hideWhenGameStart.selectedProperty().bindBidirectional(viewModel.hideWhenGameStartProperty());
         exitWhenGameOver.selectedProperty().bindBidirectional(viewModel.exitWhenGameOverProperty());
+        silentStartUp.selectedProperty().bindBidirectional(Config.setting.silentStartupProperty());
+        autoStartGame.selectedProperty().bindBidirectional(Config.setting.autoStartGameProperty());
+
 
         diyBgField.textProperty().bindBidirectional(viewModel.diyHomeBgNameProperty());
         diyBgInputGroup.managedProperty().bind(Bindings.equal(1, viewModel.homeBgTypeProperty()));

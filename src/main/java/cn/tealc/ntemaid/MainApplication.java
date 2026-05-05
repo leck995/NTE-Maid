@@ -7,6 +7,7 @@ import cn.tealc.ntemaid.base.notification.NotificationManager;
 import cn.tealc.ntemaid.dao.JdbcUtils;
 import cn.tealc.ntemaid.jna.GameAppListener;
 import cn.tealc.ntemaid.jna.GlobalKeyListener;
+import cn.tealc.ntemaid.thread.system.StartGameTask;
 import cn.tealc.ntemaid.ui.system.MainView;
 import cn.tealc.ntemaid.ui.system.MainViewModel;
 import cn.tealc.ntemaid.ui.tray.NewFxTrayIcon;
@@ -77,14 +78,28 @@ public class MainApplication extends Application {
         stage.initStyle(StageStyle.EXTENDED);
 
         initFont();
-        stage.show();
+        if (!Config.setting.isSilentStartup()){
+            stage.show();
+        }
+
         initKeyHook();
         createTrayIcon();
+        initSubscribe();
+        initAppListener();
 
+        if (Config.setting.isAutoStartGame()){
+            Thread.startVirtualThread(new StartGameTask());
+        }
+
+
+    }
+
+    private void initAppListener() {
         appListener = GameAppListener.getInstance();
         gameAppListener = User32.INSTANCE.SetWinEventHook(0x0003, 0x0003, null, appListener, 0, 0, 0);
+    }
 
-
+    private static void initSubscribe() {
         NotificationManager.subscribe(NotificationKey.APP_EXIT,((s, objects) -> {
             exit();
         }));

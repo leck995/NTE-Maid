@@ -10,7 +10,7 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.StackPane?>
 
-<AnchorPane fx:id="root" prefHeight="800.0" prefWidth="1300.0" styleClass="game-statistics" stylesheets="@../../../css/game/GameStatistics.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cn.tealc.ntemaid.ui.game.record.GameRecordParentView">
+<AnchorPane fx:id="root" prefHeight="800.0" prefWidth="1300.0" styleClass="game-statistics" stylesheets="@../../../css/game/record/GameRecordParent.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cn.tealc.ntemaid.ui.game.record.GameRecordParentView">
    <children>
       <HBox fx:id="headerPane" layoutX="10.0" layoutY="10.0" prefHeight="35.0" spacing="20.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>

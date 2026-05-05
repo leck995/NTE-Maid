@@ -96,6 +96,10 @@
                         <Label layoutX="10.0" layoutY="84.0" styleClass="title-3" text="%ui.setting.game" />
                         <VBox spacing="10.0">
                            <children>
+                              <Label layoutX="10.0" layoutY="73.0" styleClass="title-4" text="%ui.setting.game.silent_startup" />
+                              <ToggleSwitch fx:id="silentStartUp" labelPosition="RIGHT" layoutX="10.0" layoutY="102.0" text="%ui.setting.game.switch" />
+                              <Label layoutX="10.0" layoutY="136.0" styleClass="title-4" text="%ui.setting.game.auto_start_game" />
+                              <ToggleSwitch fx:id="autoStartGame" labelPosition="RIGHT" layoutX="10.0" layoutY="165.0" text="%ui.setting.game.switch" />
                               <Label styleClass="title-4" text="%ui.setting.game.hide" />
                               <ToggleSwitch fx:id="hideWhenGameStart" labelPosition="RIGHT" text="%ui.setting.game.switch" />
                               <Label styleClass="title-4" text="%ui.setting.game.exit" />

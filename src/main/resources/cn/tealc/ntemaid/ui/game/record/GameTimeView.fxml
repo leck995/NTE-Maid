@@ -12,7 +12,7 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane prefHeight="700.0" prefWidth="1000.0" styleClass="gametime" stylesheets="@../../../css/game/GameTime.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cn.tealc.ntemaid.ui.game.record.GameTimeView">
+<AnchorPane prefHeight="700.0" prefWidth="1000.0" styleClass="gametime" stylesheets="@../../../css/game/record/GameTime.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cn.tealc.ntemaid.ui.game.record.GameTimeView">
    <children>
       <Label styleClass="title-2" text="%ui.game_time.title" visible="false" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0" />
       <VBox alignment="TOP_CENTER" layoutX="18.0" layoutY="88.0" spacing="30.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="70.0">

@@ -41,6 +41,9 @@ public class SettingViewModel implements ViewModel, SceneLifecycle {
     private SimpleIntegerProperty homeBgType = new SimpleIntegerProperty();
     private SimpleStringProperty homeBgDir = new SimpleStringProperty();
 
+
+
+
     private ObservableList<Pair<String, Locale>> languages = FXCollections.observableArrayList();
 
     public SettingViewModel() {
