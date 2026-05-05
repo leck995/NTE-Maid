@@ -237,9 +237,6 @@ public class MainView implements Initializable, FxmlView<MainViewModel> {
         List<NavData> navList = viewModel.getNavList();
 
         for (NavData navData : navList) {
-            if (Config.setting.isNoKuJieQu() && navData.isKujiequ()) {
-                continue;
-            }
             FontIcon fontIcon = new FontIcon(navData.getIcon());
             String title = LanguageManager.getString(navData.getTitle());
             ToggleButton toggleButton = new ToggleButton(title, fontIcon);

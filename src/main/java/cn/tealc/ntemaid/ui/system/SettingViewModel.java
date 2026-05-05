@@ -31,7 +31,6 @@ import java.util.ResourceBundle;
  */
 public class SettingViewModel implements ViewModel, SceneLifecycle {
     private static final Logger LOG = LoggerFactory.getLogger(SettingViewModel.class);
-    private SimpleBooleanProperty startWithAnalysis = new SimpleBooleanProperty();
     private SimpleBooleanProperty exitWhenGameOver = new SimpleBooleanProperty();
     private SimpleBooleanProperty hideWhenGameStart = new SimpleBooleanProperty();
     private ObservableList<String> fontFamilyList = FXCollections.observableArrayList();
@@ -45,7 +44,6 @@ public class SettingViewModel implements ViewModel, SceneLifecycle {
     private ObservableList<Pair<String, Locale>> languages = FXCollections.observableArrayList();
 
     public SettingViewModel() {
-        startWithAnalysis.bindBidirectional(Config.setting.firstViewWithPoolAnalysisProperty());
         exitWhenGameOver.bindBidirectional(Config.setting.exitWhenGameOverProperty());
         hideWhenGameStart.bindBidirectional(Config.setting.hideWhenGameStartProperty());
         fontFamilyList.setAll(Font.getFamilies());
@@ -152,19 +150,6 @@ public class SettingViewModel implements ViewModel, SceneLifecycle {
         Config.setting.setLanguage(locale);
         Config.language = ResourceBundle.getBundle("cn.tealc/wutheringwavestool/language/local", Config.setting.getLanguage());
         MvvmFX.setGlobalResourceBundle(Config.language);
-    }
-
-
-    public boolean isStartWithAnalysis() {
-        return startWithAnalysis.get();
-    }
-
-    public SimpleBooleanProperty startWithAnalysisProperty() {
-        return startWithAnalysis;
-    }
-
-    public void setStartWithAnalysis(boolean startWithAnalysis) {
-        this.startWithAnalysis.set(startWithAnalysis);
     }
 
     public ObservableList<String> getFontFamilyList() {

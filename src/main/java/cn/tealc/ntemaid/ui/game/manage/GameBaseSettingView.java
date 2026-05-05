@@ -195,16 +195,10 @@ public class GameBaseSettingView implements FxmlView<GameBaseSettingViewModel>, 
                     }else {
                         gameStartAppField.setText("NTELauncher.exe");
                     }
-
                     gameStartAppField.positionCaret(gameStartAppField.getText().length());
                 }
                 case "custom" -> {
                     Config.setting.setGameStartAppCustom(true);
-                    File gameExeClient = GameResourcesManager.getGameExeClient();
-                    if (gameExeClient != null) {
-                        gameStartAppField.setText(gameExeClient.getAbsolutePath());
-                    }
-                    gameStartAppField.positionCaret(gameStartAppField.getText().length());
                 }
             }
         }

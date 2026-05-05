@@ -37,12 +37,12 @@ public class Setting {
     private final SimpleStringProperty homeViewRole = new SimpleStringProperty(); //主页人物
     private final SimpleStringProperty logLevel = new SimpleStringProperty("DEBUG"); //日志等级
 
-    private SimpleStringProperty skipVersion = new SimpleStringProperty(Config.version);
+    private final SimpleStringProperty skipVersion = new SimpleStringProperty(Config.version);
 
     /*=================设置-首选===================*/
     private final SimpleObjectProperty<GameClientType> gameRootDirSource = new SimpleObjectProperty<>(GameClientType.DEFAULT); //游戏来源类型
     private final SimpleStringProperty gameRootDir = new SimpleStringProperty();//游戏根目录
-    private final SimpleStringProperty gameStarAppPath = new SimpleStringProperty("Wuthering Waves.exe");//游戏启动文件
+    private final SimpleStringProperty gameStarAppPath = new SimpleStringProperty("NTELauncher.exe");//游戏启动文件
     private final SimpleBooleanProperty gameStartAppCustom = new SimpleBooleanProperty(false); //自定义启动程序
 
     /*=================设置-基础设置===================*/
@@ -89,6 +89,7 @@ public class Setting {
     // 自定义反序列化器
     public static class ObservableListDeserializer extends JsonDeserializer<ObservableList<String>> {
         @Override
+        @SuppressWarnings("unchecked")
         public ObservableList<String> deserialize(com.fasterxml.jackson.core.JsonParser p, DeserializationContext ctxt)
                 throws IOException {
             List<String> list = p.readValueAs(List.class);
