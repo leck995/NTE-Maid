@@ -1,4 +1,4 @@
-package cn.tealc.ntemaid.crypto;
+package cn.tealc.ntemaid.util.crypto;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.SecretKeySpec;

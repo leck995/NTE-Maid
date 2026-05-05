@@ -1,6 +1,6 @@
 package cn.tealc.ntemaid.thread.game.log;
 
-import cn.tealc.ntemaid.crypto.HTCryptoUtils;
+import cn.tealc.ntemaid.util.crypto.HTCryptoUtils;
 import javafx.concurrent.ScheduledService;
 import javafx.concurrent.Task;
 import javafx.util.Duration;
