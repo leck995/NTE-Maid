@@ -32,8 +32,11 @@ public class MusicPlayerClient {
         Path logPath = Paths.get(localAppData, "HT", "Saved", "Logs", "HT.log");
         LogMonitorForMusicService service = new LogMonitorForMusicService(logPath);
         service.setOnEventDetected(event -> {
+            if (!Config.setting.isMusicEnable()){
+                return;
+            }
             switch (event) {
-                case Off_VEHICLE, BEGIN_TRANSFER,MUSIC_PLAYING -> player.pauseWithFadeOut();
+                case Off_VEHICLE, BEGIN_TRANSFER -> player.pauseWithFadeOut();
                 case ON_VEHICLE -> player.playWithFadeIn();
             }
         });

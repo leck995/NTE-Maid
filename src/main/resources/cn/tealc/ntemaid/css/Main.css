@@ -1,16 +1,19 @@
-.main{
+.main {
     -fx-background-color: #7a7a7a;
 }
+
 /*侧边导航栏*/
-.main .main-nav{
+.main .main-nav {
     -fx-background-color: linear-gradient(from 0.0% 0.0% to 100.0% 0.0%, #ffffff30 0.0%, #ffffff00 100.0%);
 }
-.main .main-nav:hover{
+
+.main .main-nav:hover {
     -fx-background-radius: 0 10 10 0;
     -fx-background-color: linear-gradient(from 0.0% 0.0% to 100.0% 0.0%, #ffffff60 0.0%, #ffffff20 100.0%);
 }
+
 .main .main-nav .toggle-button,
-.main .main-nav .button{
+.main .main-nav .button {
     -fx-background-color: transparent;
     -fx-font-size: 14;
     -fx-font-weight: bold;
@@ -18,77 +21,90 @@
     -fx-background-radius: 10;
     -fx-graphic-text-gap: 15;
     -fx-padding: 5 5 5 5;
-    -fx-content-display:left;
+    -fx-content-display: left;
     -fx-alignment: center-left;
     -fx-min-width: 120;
     -fx-max-width: 130;
 }
-.main .main-nav .toggle-button.icon-only{
+
+.main .main-nav .toggle-button.icon-only {
     -fx-text-fill: -color-font-default;
-    -fx-content-display:graphic-only;
+    -fx-content-display: graphic-only;
     -fx-pref-width: 40px;
     -fx-alignment: center;
     -fx-min-width: 40;
 }
-.main .main-nav .toggle-button .ikonli-font-icon{
+
+.main .main-nav .toggle-button .ikonli-font-icon {
     -fx-icon-color: -color-font-default;
-    -fx-icon-size:22px;
+    -fx-icon-size: 22px;
 }
-.main .main-nav .toggle-button:hover{
+
+.main .main-nav .toggle-button:hover {
     -fx-background-color: -color-hover-muted;
 }
-.main .main-nav .toggle-button:selected .ikonli-font-icon{
+
+.main .main-nav .toggle-button:selected .ikonli-font-icon {
     -fx-icon-color: -color-selected-default;
 }
-.main .main-nav .toggle-button:selected{
+
+.main .main-nav .toggle-button:selected {
     -fx-background-color: -color-accent-fg;
     -fx-text-fill: -color-selected-default;
 }
-.main .main-nav .nav-btn{
-    -fx-content-display:graphic-only;
+
+.main .main-nav .nav-btn {
+    -fx-content-display: graphic-only;
     -fx-pref-width: 36px;
     -fx-padding: 5;
     -fx-alignment: center-left;
     -fx-min-width: 30;
 }
-.main .main-nav .nav-btn:hover{
+
+.main .main-nav .nav-btn:hover {
     -fx-background-color: -color-hover-muted;
 }
-.main .main-nav .nav-btn:selected{
+
+.main .main-nav .nav-btn:selected {
     -fx-background-color: transparent;
 }
-.main .main-nav .nav-btn:selected .ikonli-font-icon{
-    -fx-icon-color:  -color-font-default;
+
+.main .main-nav .nav-btn:selected .ikonli-font-icon {
+    -fx-icon-color: -color-font-default;
 }
-.main .main-nav .icon-1 > .ikonli-font-icon{
+
+.main .main-nav .icon-1 > .ikonli-font-icon {
     -fx-icon-color: #cd7e7e;
 }
-.main .main-nav .icon-2 > .ikonli-font-icon{
+
+.main .main-nav .icon-2 > .ikonli-font-icon {
     -fx-icon-color: #ddc66f;
 }
-.main .main-nav .icon-3 > .ikonli-font-icon{
+
+.main .main-nav .icon-3 > .ikonli-font-icon {
     -fx-icon-color: #34d2b1;
 }
-.main .main-nav .icon-4 > .ikonli-font-icon{
+
+.main .main-nav .icon-4 > .ikonli-font-icon {
     -fx-icon-color: #bfa07d;
 }
-.main .main-nav .icon-5 > .ikonli-font-icon{
+
+.main .main-nav .icon-5 > .ikonli-font-icon {
     -fx-icon-color: #41aec5;
 }
 
 .split-pane .split-pane-divider,
-.split-pane > .split-pane-divider > .horizontal-grabber{
+.split-pane > .split-pane-divider > .horizontal-grabber {
     -fx-background-color: transparent;
 }
 
 
-
-.main .title-bar{
+.main .title-bar {
     -fx-pref-height: 3.8em;
     -fx-min-height: 3.3em;
 }
 
-.main .title-bar .title{
+.main .title-bar .title {
     -fx-font-size: 1.4em;
     -fx-text-fill: -color-fg-default;
     -fx-font-weight: bold;
@@ -99,25 +115,25 @@
     -fx-min-height: 3.3em;
 }
 
-.main .headbar .leading{
+.main .headbar .leading {
     -fx-alignment: center-left;
 }
 
-.main .headbar .leading .title{
+.main .headbar .leading .title {
     -fx-font-size: 1.4em;
     -fx-text-fill: -color-fg-default;
     -fx-font-weight: bold;
 }
 
 
-.main .headbar .trailing{
+.main .headbar .trailing {
     -fx-spacing: 8;
     -fx-alignment: CENTER_RIGHT;
     -fx-padding: 0 10 0 0;
 }
 
 .main .headbar .trailing .button,
-.main .headbar .trailing .toggle-button{
+.main .headbar .trailing .toggle-button {
     -fx-content-display: graphic-only;
     -fx-graphic-text-gap: 0;
     -fx-background-color: transparent;
@@ -126,32 +142,42 @@
 }
 
 .main .headbar .trailing .button:hover,
-.main .headbar .trailing .toggle-button:hover{
+.main .headbar .trailing .toggle-button:hover {
     -fx-background-color: -color-accent-subtle;
     -fx-opacity: 0.9;
 }
 
 .main .headbar .trailing > .func,
-.main .headbar .trailing > .system-func{
+.main .headbar .trailing > .system-func {
     -fx-spacing: 8;
     -fx-alignment: CENTER_RIGHT;
 }
 
 
-
-.main .headbar .trailing > .system-func > .close-btn:hover{
+.main .headbar .trailing > .system-func > .close-btn:hover {
     -fx-background-color: -color-danger-5;
 }
 
-.main .headbar .trailing > .system-func > .max-btn > .ikonli-font-icon{
-    -fx-icon-code:mdral-fullscreen;
+.main .headbar .trailing > .system-func > .max-btn > .ikonli-font-icon {
+    -fx-icon-code: mdral-fullscreen;
 }
 
-.main .headbar .trailing > .system-func > .max-btn.full-exit > .ikonli-font-icon{
+.main .headbar .trailing > .system-func > .max-btn.full-exit > .ikonli-font-icon {
     -fx-icon-code: mdral-fullscreen_exit;
 }
 
+.main .headbar .trailing > .system-func > .music-switch{
+    -fx-scale-x: 0.8;
+    -fx-scale-y: 0.8;
+}
+.main .headbar .trailing > .system-func > .music-switch  > .label-container > .label {
+    -fx-text-fill: transparent;
+}
 
+.main .headbar .trailing > .system-func > .music-switch:hover   > .label-container > .label{
+    -fx-text-fill: -color-fg-default;
+    -fx-font-weight: bold;
+}
 
 
 

@@ -1,6 +1,7 @@
 package cn.tealc.ntemaid.ui.system;
 
 import atlantafx.base.controls.Message;
+import atlantafx.base.controls.ToggleSwitch;
 import atlantafx.base.theme.Styles;
 import atlantafx.base.util.Animations;
 import cn.tealc.ntemaid.FXResourcesLoader;
@@ -184,7 +185,9 @@ public class MainView implements Initializable, FxmlView<MainViewModel> {
         titleLabel.getStyleClass().add("title");
         ImageView imageView = new ImageView(new Image(FXResourcesLoader.load("image/icon.png"),30,30,true,true));
         titleLabel.setGraphic(imageView);
-        HBox leadingBox = new HBox();
+        HBox leadingBox = new HBox(10);
+
+
         leadingBox.getChildren().addAll(titleLabel);
         leadingBox.getStyleClass().add("leading");
         headerbar.setLeading(leadingBox);
@@ -194,12 +197,17 @@ public class MainView implements Initializable, FxmlView<MainViewModel> {
         Button maxBtn = new Button(null,new FontIcon());
         Button minBtn = new Button(null,new FontIcon(Material2OutlinedMZ.MINUS));
 
+        ToggleSwitch musicSwitch = new ToggleSwitch("开启音乐");
+        musicSwitch.selectedProperty().bindBidirectional(Config.setting.musicEnableProperty());
+
+
         closeBtn.setOnAction(event -> close());
-        HBox systemBox = new HBox(minBtn,maxBtn,closeBtn);
+        HBox systemBox = new HBox(musicSwitch,minBtn,maxBtn,closeBtn);
         HeaderBar.setButtonType(maxBtn,HeaderButtonType.MAXIMIZE);
         HeaderBar.setButtonType(minBtn,HeaderButtonType.ICONIFY);
         closeBtn.getStyleClass().add("close-btn");
         maxBtn.getStyleClass().add("max-btn");
+        musicSwitch.getStyleClass().add("music-switch");
         systemBox.getStyleClass().add("system-func");
         HBox trailingBox = new HBox(systemBox);
         trailingBox.getStyleClass().add("trailing");

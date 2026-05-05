@@ -1,5 +1,6 @@
 package cn.tealc.ntemaid.jna;
 
+import cn.tealc.ntemaid.base.Config;
 import cn.tealc.ntemaid.player.BaseAudioPlayer;
 import cn.tealc.ntemaid.player.MusicPlayerClient;
 import com.github.kwhat.jnativehook.keyboard.NativeKeyEvent;
@@ -13,6 +14,9 @@ import java.util.Optional;
 public class GlobalKeyListener implements NativeKeyListener {
   private static final String GAME_NAME="异环  ";
   public void nativeKeyPressed(NativeKeyEvent e) {
+    if (!Config.setting.isMusicEnable()){
+      return;
+    }
     boolean isGameActive = getForegroundWindowTitle()
             .map(t -> t.equals(GAME_NAME))
             .orElse(false);

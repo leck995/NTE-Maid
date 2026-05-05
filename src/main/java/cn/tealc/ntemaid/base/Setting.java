@@ -73,6 +73,7 @@ public class Setting {
     /*=================播放器相关===================*/
     private final SimpleStringProperty musicDir = new SimpleStringProperty(); //歌曲目录
     private final SimpleDoubleProperty musicVolume = new SimpleDoubleProperty(0.5); //歌曲目录
+    private final SimpleBooleanProperty musicEnable = new SimpleBooleanProperty(true); //启动游戏音乐播放功能
 
     // 自定义序列化器
     public static class ObservableListSerializer extends JsonSerializer<ObservableList<String>> {
@@ -476,5 +477,17 @@ public class Setting {
 
     public void setSilentStartup(boolean silentStartup) {
         this.silentStartup.set(silentStartup);
+    }
+
+    public boolean isMusicEnable() {
+        return musicEnable.get();
+    }
+
+    public SimpleBooleanProperty musicEnableProperty() {
+        return musicEnable;
+    }
+
+    public void setMusicEnable(boolean musicEnable) {
+        this.musicEnable.set(musicEnable);
     }
 }
