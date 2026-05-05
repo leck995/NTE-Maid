@@ -266,6 +266,7 @@ public class SettingView implements FxmlView<SettingViewModel>, Initializable {
                 LOG.error("打开赞助名单失败{}", e.getMessage());
             }
         });
+        browserBtn.setVisible(false);
 
         Button cancelBtn = new Button(LanguageManager.getString("ui.common.cancel"));
         cancelBtn.setCancelButton(true);

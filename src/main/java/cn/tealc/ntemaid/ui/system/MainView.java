@@ -240,7 +240,7 @@ public class MainView implements Initializable, FxmlView<MainViewModel> {
         supportBtn = new ToggleButton(LanguageManager.getString("ui.main.button.nav.type09"), new FontIcon(Material2AL.LOCAL_CAFE));
         supportBtn.getStyleClass().add("icon-only");
         supportBtn.setOnAction(this::toSupport);
-        navBottom.getChildren().addFirst(supportBtn);
+        //navBottom.getChildren().addFirst(supportBtn);
 
         navToggleGroup = new ToggleGroup();
         List<NavData> navList = viewModel.getNavList();
@@ -482,6 +482,7 @@ public class MainView implements Initializable, FxmlView<MainViewModel> {
                 LOG.error("打开赞助名单失败{}", e.getMessage());
             }
         });
+        browserBtn.setVisible(false);
         Button okBtn = new Button(LanguageManager.getString("ui.setting.sponsor.dialog.ok"));
         Button cancelBtn = new Button(LanguageManager.getString("ui.common.cancel"));
 
