@@ -7,6 +7,7 @@ import cn.tealc.ntemaid.base.notification.NotificationManager;
 import cn.tealc.ntemaid.dao.JdbcUtils;
 import cn.tealc.ntemaid.jna.GameAppListener;
 import cn.tealc.ntemaid.jna.GlobalKeyListener;
+import cn.tealc.ntemaid.player.MusicPlayerClient;
 import cn.tealc.ntemaid.thread.system.StartGameTask;
 import cn.tealc.ntemaid.ui.system.MainView;
 import cn.tealc.ntemaid.ui.system.MainViewModel;
@@ -139,11 +140,12 @@ public class MainApp extends Application {
             LOG.error("卸载键盘钩子失败", e);
         }
         Platform.setImplicitExit(true);
-        JdbcUtils.exit();
         window.setX(-10000);
         window.setMaximized(false);
-        Config.save();
         appLocked.release();
+        MusicPlayerClient.getInstance().save();
+        Config.save();
+        JdbcUtils.exit();
         window.close();
         System.exit(0);
     }

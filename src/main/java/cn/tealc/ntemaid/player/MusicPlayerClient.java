@@ -2,7 +2,13 @@ package cn.tealc.ntemaid.player;
 
 import cn.tealc.ntemaid.base.Config;
 import cn.tealc.ntemaid.model.game.music.Music;
+import cn.tealc.ntemaid.service.ConfigService;
+import cn.tealc.ntemaid.service.impl.ConfigServiceImpl;
 import cn.tealc.ntemaid.thread.game.log.LogMonitorForMusicService;
+import javafx.application.Platform;
+import javafx.collections.ObservableList;
+import javafx.util.Duration;
+import javafx.util.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -11,6 +17,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 public class MusicPlayerClient {
@@ -22,6 +29,10 @@ public class MusicPlayerClient {
     private static final String MUSIC_PLAYING = "UHTSoundSubsystem UHTUI_Vehicle::OnPlayOrPauseBtnCallBack ScrollMusicTitle.isValid = [1], bChecked = [1]";
     private static final String MUSIC_PAUSE = "UHTSoundSubsystem UHTUI_Vehicle::OnPlayOrPauseBtnCallBack ScrollMusicTitle.isValid = [1], bChecked = [0]";
     private static final String BEGIN_TRANSFER = "LevelTransferState BeginTransfer";
+
+
+    private static final String CONFIG_KEY = "last_music";
+    private ConfigService configService = new ConfigServiceImpl();
 
     private MusicPlayerClient() {
         player = new FxMediaPlayer();
@@ -46,7 +57,36 @@ public class MusicPlayerClient {
 
     public void init(){
         initPlayList();
+        initPlayingMusic();
         initLogMonitor();
+    }
+
+    private void initPlayingMusic() {
+        configService.getPairConfig(CONFIG_KEY).ifPresent(v -> {
+            ObservableList<Music> musics = player.getMusics();
+            if (musics.isEmpty()) return;
+            String historyUrl = v.getKey();
+            int index = -1;
+            for (int i = 0; i < musics.size(); i++) {
+                if (musics.get(i).getUrl().equals(historyUrl)) {
+                    index = i;
+                    break;
+                }
+            }
+            if (index != -1) {
+                double seconds = 0;
+                try {
+                    seconds = Double.parseDouble(v.getValue());
+                } catch (NumberFormatException e) {
+                    log.error("历史进度解析失败: {}", v.getValue());
+                }
+                Duration duration = Duration.seconds(seconds);
+
+                player.play(index, false, duration);
+            } else {
+                log.info("列表中未找到历史歌曲 URL: {}", historyUrl);
+            }
+        });
     }
 
     private void initPlayList() {
@@ -72,7 +112,7 @@ public class MusicPlayerClient {
                         return new Music(absolutePath, fileName);
                     })
                     .toList();
-            player.init(playlist,0);
+            player.init(playlist,5);
         } catch (IOException e) {
             log.debug("初始化歌单错误，｛｝",e);
         }
@@ -92,5 +132,15 @@ public class MusicPlayerClient {
 
     public BaseAudioPlayer getPlayer() {
         return player;
+    }
+
+
+    public void save(){
+        Music music = player.getPlayingMusic();
+        String url = music.getUrl();
+        double currentTime = player.getCurrentTime();
+
+
+        configService.setConfig("last_music",url,String.valueOf(currentTime));
     }
 }
