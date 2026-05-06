@@ -12,6 +12,15 @@ public class GameTime {
     private Long endTime;//结束时间
     private Long duration;//持续时长
 
+    public GameTime() {
+    }
+
+    public GameTime(String gameDate, Long startTime, Long endTime, Long duration) {
+        this.gameDate = gameDate;
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.duration = duration;
+    }
 
     public Integer getId() {
         return id;

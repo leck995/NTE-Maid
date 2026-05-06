@@ -2,6 +2,8 @@ package cn.tealc.ntemaid.base;
 
 import cn.tealc.ntemaid.util.LanguageManager;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -15,6 +17,7 @@ import java.util.ResourceBundle;
  * @create: 2024-07-03 00:37
  */
 public class Config {
+    private static final Logger log = LoggerFactory.getLogger(Config.class);
     public static final String version = "0.9.0";
     public static final String appAuthor = "Leck";
 
@@ -22,6 +25,7 @@ public class Config {
     public static final String URL_PHANTOM_GUIDE = "https://wave.tealc.fun/pages/advance/phantom.html";
     public static final String URL_APP_UPDATE = "https://wwt.999758.xyz/release.json";
     public static final String URL_APP_UPDATE_DEV = "https://wwt.999758.xyz/release-dev.json";
+
 
     public static Setting setting;
     public static ResourceBundle language;
@@ -38,7 +42,8 @@ public class Config {
                     setting.setAppParams(null);
                 }
             } catch (IOException e) {
-                throw new RuntimeException(e);
+                log.error("读取设置文件失败，将使用默认设置", e);
+                setting = new Setting();
             }
         }
         if (setting == null) {
@@ -49,13 +54,14 @@ public class Config {
     }
 
 
-    public static void save() {
+    public static synchronized void save() {
         File file = new File("settings.json");
         ObjectMapper mapper = new ObjectMapper();
         try {
             mapper.writerWithDefaultPrettyPrinter().writeValue(file, setting);
+            log.info("配置文件已保存");
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            log.error("保存配置文件失败", e);
         }
     }
 }

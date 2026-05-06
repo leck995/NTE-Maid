@@ -91,7 +91,16 @@
             <artifactId>mvvmfx</artifactId>
             <version>1.9.0-SNAPSHOT</version>
         </dependency>
-
+        <dependency>
+            <groupId>de.saxsys</groupId>
+            <artifactId>mvvmfx-guice</artifactId>
+            <version>1.9.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.inject</groupId>
+            <artifactId>guice</artifactId>
+            <version>7.0.0</version>
+        </dependency>
         <dependency>
             <groupId>eu.lestard</groupId>
             <artifactId>doc-annotations</artifactId>
@@ -126,6 +135,12 @@
             <groupId>net.java.dev.jna</groupId>
             <artifactId>jna-platform-jpms</artifactId>
             <version>5.14.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.zaxxer</groupId>
+            <artifactId>HikariCP</artifactId>
+            <version>5.1.0</version>
         </dependency>
 
         <dependency>
@@ -219,7 +234,7 @@
                         <!-- Default configuration for running with: mvn clean javafx:run -->
                         <id>default-cli</id>
                         <configuration>
-                            <mainClass>cn.tealc.ntemaid/cn.tealc.ntemaid.MainApplication</mainClass>
+                            <mainClass>cn.tealc.ntemaid/cn.tealc.ntemaid.MainApp</mainClass>
                             <launcher>app</launcher>
                             <jlinkZipName>app</jlinkZipName>
                             <jlinkImageName>app</jlinkImageName>

@@ -1,13 +1,14 @@
 package cn.tealc.ntemaid.ui.system;
 
 
-import cn.tealc.ntemaid.MainApplication;
 import cn.tealc.ntemaid.base.Config;
 import cn.tealc.ntemaid.base.notification.NotificationKey;
 import cn.tealc.ntemaid.base.notification.NotificationManager;
 import cn.tealc.ntemaid.dao.GameTimeDao;
 import cn.tealc.ntemaid.jna.GameAppListener;
 import cn.tealc.ntemaid.model.game.GameTime;
+import cn.tealc.ntemaid.service.GameTimeService;
+import cn.tealc.ntemaid.service.impl.GameTimeServiceImpl;
 import cn.tealc.ntemaid.util.LanguageManager;
 import cn.tealc.teafx.utils.message.MessageInfo;
 import de.saxsys.mvvmfx.MvvmFX;
@@ -16,10 +17,7 @@ import de.saxsys.mvvmfx.ViewModel;
 import de.saxsys.mvvmfx.utils.notifications.NotificationObserver;
 import javafx.animation.PauseTransition;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleDoubleProperty;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.scene.image.Image;
 import javafx.util.Duration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,6 +33,8 @@ import java.util.stream.Stream;
 
 public class HomeViewModel implements ViewModel, SceneLifecycle {
     private static final Logger LOG = LoggerFactory.getLogger(HomeViewModel.class);
+    private final GameTimeService gameTimeService = new GameTimeServiceImpl();
+
     private final SimpleStringProperty gameTimeText = new SimpleStringProperty();
     private final SimpleStringProperty gameTimeTipText = new SimpleStringProperty();
     private final SimpleBooleanProperty startGameBtnDisabled = new SimpleBooleanProperty(false);
@@ -43,43 +43,30 @@ public class HomeViewModel implements ViewModel, SceneLifecycle {
         updateGameTime(GameAppListener.getInstance().getDuration());
 
         gameTimeObserver = (s, objects) -> {
-            if (objects.length > 0) {
-                long playTime = (long) objects[0];
-                updateGameTime(playTime);
-            } else {
-                updateGameTime(0);
-            }
+            long playTime = (objects != null && objects.length > 0) ? (long) objects[0] : 0;
+            updateGameTime(playTime);
         };
         NotificationManager.subscribe(NotificationKey.HOME_GAME_TIME_UPDATE, gameTimeObserver);
     }
 
 
     /**
-     * @return void
-     * @description: 更新游玩时长；会对数据库与time进行相加处理，并显示
-     * @param: time    尚未保存到数据库中的时长
-     * @date: 2024/10/8
+     * 更新游玩时长文本和提示
+     * @param runningTime 尚未保存到数据库中的当前会话时长（毫秒）
      */
-    private void updateGameTime(long time) {
-        List<GameTime> list = getGameTimes();
-        if (list != null) {
-            long sum = list.stream().mapToLong(GameTime::getDuration).sum() + time;
-            updateGameTimeText(sum);
-        }
+    private void updateGameTime(long runningTime) {
+        // 直接从 Service 获取今日已存数据库的总时长
+        long savedTime = gameTimeService.getTodayTotalDuration();
+        long totalSum = savedTime + runningTime;
+
+        updateGameTimeUI(totalSum);
     }
+    private void updateGameTimeUI(long totalMillis) {
+        java.time.Duration duration = java.time.Duration.ofMillis(totalMillis);
+        long hour = duration.toHours();
+        long minute = duration.toMinutesPart(); // Java 9+ 使用 toMinutesPart，Java 8 请用 toMinutes() % 60
 
-
-    private List<GameTime> getGameTimes() {
-        GameTimeDao gameTimeDao = new GameTimeDao();
-        LocalDate localDate = LocalDate.now();
-        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        String date = dateTimeFormatter.format(localDate);
-        return gameTimeDao.getTimeListByData(date);
-    }
-
-    private void updateGameTimeText(long sum) {
-        int hour = (int) (sum / (1000 * 60 * 60));
-        int minute = (int) ((sum % (1000 * 60 * 60)) / (1000 * 60));
+        // 更新提示语逻辑
         String[] tips = LanguageManager.getStringArray("ui.home.label.time.others");
         if (hour == 0 && minute == 0) {
             gameTimeTipText.set(tips[0]);
@@ -93,9 +80,15 @@ public class HomeViewModel implements ViewModel, SceneLifecycle {
             gameTimeTipText.set(tips[4]);
         }
 
-        String total = LanguageManager.getString("ui.home.label.time.total");
-        gameTimeText.set(String.format(total, hour, minute));
+        // 更新时长文本
+        String format = LanguageManager.getString("ui.home.label.time.total");
+        gameTimeText.set(String.format(format, hour, minute));
     }
+
+
+
+
+
 
     public void checkIsWeekEnd() {
 /*        if (Config.setting.getGameRootDirSource() == SourceType.GLOBAL) {

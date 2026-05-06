@@ -15,8 +15,6 @@ import cn.tealc.ntemaid.util.AppLocked;
 import cn.tealc.ntemaid.util.LanguageManager;
 import com.github.kwhat.jnativehook.GlobalScreen;
 import com.github.kwhat.jnativehook.NativeHookException;
-import com.sun.jna.platform.win32.User32;
-import com.sun.jna.platform.win32.WinNT;
 import de.saxsys.mvvmfx.FluentViewLoader;
 import de.saxsys.mvvmfx.MvvmFX;
 import de.saxsys.mvvmfx.ViewTuple;
@@ -38,14 +36,13 @@ import org.slf4j.LoggerFactory;
 import java.awt.*;
 import java.io.IOException;
 
-public class MainApplication extends Application {
-    private static final Logger LOG= LoggerFactory.getLogger(MainApplication.class);
+public class MainApp extends Application {
+    private static final Logger LOG = LoggerFactory.getLogger(MainApp.class);
     public static Stage window;
     private static AppLocked appLocked;
     private NewFxTrayIcon newFxTrayIcon;
-    private static WinNT.HANDLE gameAppListener;
-    public GameAppListener appListener;
-    public MainApplication() {
+
+    public MainApp() {
         MvvmFX.setGlobalResourceBundle(Config.language);
         ch.qos.logback.classic.Logger root = (ch.qos.logback.classic.Logger) org.slf4j.LoggerFactory
                 .getLogger(ch.qos.logback.classic.Logger.ROOT_LOGGER_NAME);
@@ -56,65 +53,69 @@ public class MainApplication extends Application {
 
     @Override
     public void start(Stage stage) throws IOException {
-        JdbcUtils.init();
         window = stage;
+        try {
+            initStage(stage);
+            initKeyHook();
+            initAppListener();
+            initSubscribe();
+            createTrayIcon();
+            if (Config.setting.isAutoStartGame()) {
+                Thread.startVirtualThread(new StartGameTask());
+            }
+            LOG.info("应用启动成功");
+        } catch (Exception e) {
+            LOG.error("启动过程中发生严重错误", e);
+            exit();
+        }
 
+    }
+
+    private void initStage(Stage stage) throws IOException {
         Application.setUserAgentStylesheet(FXResourcesLoader.load("css/light.css"));
-
         ViewTuple<MainView, MainViewModel> viewTuple = FluentViewLoader.fxmlView(MainView.class).load();
-
         Scene scene = new Scene(viewTuple.getView());
         scene.getStylesheets().add(FXResourcesLoader.load("css/Default.css"));
+
         stage.setScene(scene);
-        stage.getIcons().add(new Image(FXResourcesLoader.load("image/icon.png"),45,45,true,true));
+        stage.getIcons().add(new Image(FXResourcesLoader.load("image/icon.png"), 45, 45, true, true));
         stage.setTitle(LanguageManager.getString("app.title"));
-        stage.setMinWidth(1200);
-        stage.setMinHeight(700);
-        stage.setWidth(Config.setting.getAppWidth()  < 1200 ? 1200 : Config.setting.getAppWidth());
-        stage.setHeight(Config.setting.getAppHeight() < 700 ? 700 : Config.setting.getAppHeight());
+        double width = Math.max(1200, Config.setting.getAppWidth());
+        double height = Math.max(700, Config.setting.getAppHeight());
+        stage.setWidth(width);
+        stage.setHeight(height);
+
         Config.setting.appWidthProperty().bind(scene.widthProperty());
         Config.setting.appHeightProperty().bind(scene.heightProperty());
-
         stage.initStyle(StageStyle.EXTENDED);
 
         initFont();
-        if (!Config.setting.isSilentStartup()){
+
+        if (!Config.setting.isSilentStartup()) {
             stage.show();
         }
-
-        initKeyHook();
-        createTrayIcon();
-        initSubscribe();
-        initAppListener();
-
-        if (Config.setting.isAutoStartGame()){
-            Thread.startVirtualThread(new StartGameTask());
-        }
-
-
     }
 
     private void initAppListener() {
-        appListener = GameAppListener.getInstance();
-        gameAppListener = User32.INSTANCE.SetWinEventHook(0x0003, 0x0003, null, appListener, 0, 0, 0);
+        GameAppListener.getInstance().startListening();
     }
 
     private static void initSubscribe() {
-        NotificationManager.subscribe(NotificationKey.APP_EXIT,((s, objects) -> {
+        NotificationManager.subscribe(NotificationKey.APP_EXIT, ((s, objects) -> {
             exit();
         }));
-        NotificationManager.subscribe(NotificationKey.APP_HIDE,((s, objects) -> {
+        NotificationManager.subscribe(NotificationKey.APP_HIDE, ((s, objects) -> {
             hide();
         }));
     }
 
-    private void initFont(){
-        javafx.scene.text.Font.loadFonts(FXResourcesLoader.loadStream("font/HarmonyOS_Sans_SC_Bold.ttf"),12);
-        Font.loadFonts(FXResourcesLoader.loadStream("font/HarmonyOS_Sans_SC_Bold.ttf"),12);
+    private void initFont() {
+        javafx.scene.text.Font.loadFonts(FXResourcesLoader.loadStream("font/HarmonyOS_Sans_SC_Bold.ttf"), 12);
+        Font.loadFonts(FXResourcesLoader.loadStream("font/HarmonyOS_Sans_SC_Bold.ttf"), 12);
         window.getScene().getRoot().setStyle("-fx-font-family: \"HarmonyOS Sans SC\"");
     }
 
-    public void initKeyHook(){
+    public void initKeyHook() {
         try {
             GlobalScreen.registerNativeHook();
         } catch (NativeHookException e) {
@@ -124,10 +125,8 @@ public class MainApplication extends Application {
     }
 
 
-    public static void exit(){
-        if (gameAppListener != null) {
-            User32.INSTANCE.UnhookWinEvent(gameAppListener);
-        }
+    public static void exit() {
+        GameAppListener.getInstance().stopListening();
         SystemTray systemTray = SystemTray.getSystemTray();
         for (TrayIcon trayIcon : systemTray.getTrayIcons()) {
             if (trayIcon instanceof NewFxTrayIcon tray) {
@@ -137,38 +136,38 @@ public class MainApplication extends Application {
         try {
             GlobalScreen.unregisterNativeHook();
         } catch (NativeHookException e) {
-            throw new RuntimeException(e);
+            LOG.error("卸载键盘钩子失败", e);
         }
         Platform.setImplicitExit(true);
         JdbcUtils.exit();
         window.setX(-10000);
         window.setMaximized(false);
-        window.close();
         Config.save();
         appLocked.release();
+        window.close();
         System.exit(0);
     }
 
-    public static void hide(){
+    public static void hide() {
         window.hide();
     }
 
     private void createTrayIcon() {
-        if (SystemTray.isSupported()){
-            javafx.scene.control.Button show = new javafx.scene.control.Button(LanguageManager.getString("ui.tray.show"),new FontIcon(Material2OutlinedMZ.REMOVE_FROM_QUEUE));
+        if (SystemTray.isSupported()) {
+            javafx.scene.control.Button show = new javafx.scene.control.Button(LanguageManager.getString("ui.tray.show"), new FontIcon(Material2OutlinedMZ.REMOVE_FROM_QUEUE));
             show.setOnAction(event -> {
                 window.setIconified(false);
                 window.show();
                 window.toFront();
             });
-            javafx.scene.control.Button exit = new Button(LanguageManager.getString("ui.tray.exit"),new FontIcon(Material2OutlinedMZ.POWER_SETTINGS_NEW));
-            exit.setOnAction(event -> Platform.runLater(MainApplication::exit));
+            javafx.scene.control.Button exit = new Button(LanguageManager.getString("ui.tray.exit"), new FontIcon(Material2OutlinedMZ.POWER_SETTINGS_NEW));
+            exit.setOnAction(event -> Platform.runLater(MainApp::exit));
             VBox vbox = new VBox(show, exit);
             vbox.getStyleClass().add("tray");
             vbox.getStylesheets().add(FXResourcesLoader.load("css/TrayIcon.css"));
             vbox.setPrefWidth(80);
             vbox.setPrefHeight(60);
-            newFxTrayIcon = new NewFxTrayIcon(SwingFXUtils.fromFXImage(window.getIcons().getFirst(),null),Config.appTitle,vbox);
+            newFxTrayIcon = new NewFxTrayIcon(SwingFXUtils.fromFXImage(window.getIcons().getFirst(), null), Config.appTitle, vbox);
             newFxTrayIcon.addActionListener(e -> {
                 Platform.runLater(() -> {
                     window.setIconified(false);
@@ -178,15 +177,13 @@ public class MainApplication extends Application {
             });
 
 
-
-
             SystemTray systemTray = SystemTray.getSystemTray();
             try {
                 systemTray.add(newFxTrayIcon);
             } catch (AWTException e) {
-                LOG.error("Tray Error",e);
+                LOG.error("Tray Error", e);
             }
-        }else {
+        } else {
             LOG.info("SystemTray is not supported");
         }
     }

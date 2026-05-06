@@ -3,8 +3,8 @@ package cn.tealc.ntemaid.jna;
 import cn.tealc.ntemaid.base.Config;
 import cn.tealc.ntemaid.base.notification.NotificationKey;
 import cn.tealc.ntemaid.base.notification.NotificationManager;
-import cn.tealc.ntemaid.dao.GameTimeDao;
-import cn.tealc.ntemaid.model.game.GameTime;
+import cn.tealc.ntemaid.service.GameTimeService;
+import cn.tealc.ntemaid.service.impl.GameTimeServiceImpl;
 import com.sun.jna.Native;
 import com.sun.jna.platform.win32.User32;
 import com.sun.jna.platform.win32.WinDef;
@@ -13,9 +13,7 @@ import com.sun.jna.platform.win32.WinUser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.time.*;
-import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
+import java.time.LocalDateTime;
 
 /**
  * @program: WutheringWavesTool
@@ -26,20 +24,37 @@ import java.time.temporal.ChronoUnit;
 public class GameAppListener implements WinUser.WinEventProc {
     private final Logger LOG = LoggerFactory.getLogger(GameAppListener.class);
     private static GameAppListener gameAppListener;
+    private final GameTimeService gameTimeService = new GameTimeServiceImpl(); // 引入 Service
     private WinDef.HWND game;
-    private boolean start = false;//标记游戏打开了
+    private WinNT.HANDLE hKey;
+    private boolean start = false;
     private final User32 user32 = User32.INSTANCE;
-    private long startGameTime;
+    private LocalDateTime startGameTime;
 
-    private GameAppListener() {
 
-    }
+    private GameAppListener() {}
 
     public static GameAppListener getInstance() {
-        if (gameAppListener == null) {
-            gameAppListener = new GameAppListener();
-        }
+        if (gameAppListener == null) gameAppListener = new GameAppListener();
         return gameAppListener;
+    }
+
+    // 提供开启方法
+    public void startListening() {
+        if (hKey == null) {
+            // 0x0003 是 EVENT_SYSTEM_FOREGROUND
+            hKey = User32.INSTANCE.SetWinEventHook(0x0003, 0x0003, null, this, 0, 0, 0);
+            LOG.info("游戏应用监听器已启动");
+        }
+    }
+
+    // 提供停止方法
+    public void stopListening() {
+        if (hKey != null) {
+            User32.INSTANCE.UnhookWinEvent(hKey);
+            hKey = null;
+            LOG.info("游戏应用监听器已停止");
+        }
     }
 
     @Override
@@ -47,86 +62,32 @@ public class GameAppListener implements WinUser.WinEventProc {
         char[] buffer = new char[256];
         user32.GetWindowText(hwnd, buffer, buffer.length);
         String title = Native.toString(buffer);
-        //LOG.debug("当前前台窗口是:{}",title);
+
         if (title.equals("异环  ")) {
             if (!start) {
                 game = hwnd;
                 start = true;
-                startGameTime = System.currentTimeMillis();
+                startGameTime = LocalDateTime.now(); // 记录开始时间
                 LOG.info("检测到异环已经启动");
             }
-        } else if (title.equals(Config.appTitle)) { //进入到助手界面，刷新游戏时间
+        } else if (title.equals(Config.appTitle)) {
             if (start) {
-                long endGameTime = System.currentTimeMillis(); //游戏结束时间
-                long totalGameTime = endGameTime - startGameTime;//总共游玩时间
-                NotificationManager.publish(NotificationKey.HOME_GAME_TIME_UPDATE, totalGameTime);
+                long duration = java.time.Duration.between(startGameTime, LocalDateTime.now()).toMillis();
+                NotificationManager.publish(NotificationKey.HOME_GAME_TIME_UPDATE, duration);
                 save();
             }
         } else {
-            if (start) {//当游戏已经启动，进入后台窗口时
-                save();
-            }
+            if (start) save();
         }
     }
 
-    /**
-     * @return void
-     * @description: 统计游玩时间
-     * @param:
-     * @date: 2024/7/21
-     */
     private void save() {
-        if (!user32.IsWindow(game)) {//窗口已经被关闭
+        if (!user32.IsWindow(game)) { // 窗口关闭
             start = false;
-            long endGameTime = System.currentTimeMillis(); //游戏结束时间
-            long totalGameTime = endGameTime - startGameTime;//总共游玩时间
+            LocalDateTime endTime = LocalDateTime.now();
 
-            //获取游戏开始时间日期
-            Instant instant = Instant.ofEpochMilli(startGameTime);
-            ZoneId zone = ZoneId.systemDefault();
-            ZonedDateTime zdt = instant.atZone(zone);
-            LocalDateTime startDateTime = zdt.toLocalDateTime();
-            LocalDate startDate = zdt.toLocalDate();
-
-            //获取结束日期
-            LocalDate localDate = LocalDate.now();
-
-            DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-            GameTimeDao dao = new GameTimeDao();
-
-
-            if (startDate.isBefore(localDate)) { //跨天
-                LocalDateTime endOfDay = startDate.plusDays(1).atStartOfDay();
-                long millisecondsUntilEndOfDay = ChronoUnit.MILLIS.between(startDateTime, endOfDay);
-                GameTime gameTime1 = new GameTime();
-                gameTime1.setGameDate(dateTimeFormatter.format(startDate));
-                gameTime1.setStartTime(startGameTime);
-                gameTime1.setEndTime(startGameTime + millisecondsUntilEndOfDay);
-                gameTime1.setDuration(millisecondsUntilEndOfDay);
-                dao.addTime(gameTime1);
-                LOG.info("检测到异环已经结束且跨天，保存昨天时间{}", gameTime1);
-
-
-                GameTime gameTime = new GameTime();
-                gameTime.setGameDate(dateTimeFormatter.format(localDate));
-                long todayMillis = totalGameTime - millisecondsUntilEndOfDay;
-                gameTime.setStartTime(endGameTime - todayMillis);
-                gameTime.setEndTime(endGameTime);
-                gameTime.setDuration(todayMillis);
-
-                dao.addTime(gameTime);
-                LOG.info("检测到异环已经结束且跨天，保存今天时间{}", gameTime);
-
-            } else {
-                GameTime gameTime = new GameTime();
-                gameTime.setGameDate(dateTimeFormatter.format(localDate));
-                gameTime.setStartTime(startGameTime);
-                gameTime.setEndTime(endGameTime);
-                gameTime.setDuration(totalGameTime);
-                dao.addTime(gameTime);
-                LOG.info("检测到异环已经结束，保存时间{}", gameTime);
-            }
-
+            gameTimeService.saveSession(startGameTime, endTime);
+            LOG.info("检测到异环已经结束，记录已保存");
 
             if (Config.setting.isExitWhenGameOver()){
                 LOG.info("游戏结束，自动退出程序");
@@ -135,11 +96,9 @@ public class GameAppListener implements WinUser.WinEventProc {
         }
     }
 
-
     public long getDuration() {
         if (start) {
-            long endGameTime = System.currentTimeMillis(); //游戏结束时间
-            return endGameTime - startGameTime;
+            return java.time.Duration.between(startGameTime, LocalDateTime.now()).toMillis();
         }
         return 0;
     }

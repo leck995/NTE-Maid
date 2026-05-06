@@ -1,6 +1,6 @@
 package cn.tealc.ntemaid.util;
 
-import cn.tealc.ntemaid.MainApplication;
+import cn.tealc.ntemaid.MainApp;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import org.slf4j.Logger;
@@ -28,7 +28,7 @@ public class AppLocked{
                 if(!delete){ //说明被占用了，助手存在,弹窗提示
                     LOG.info("检测到多开，即将关闭助手");
                     Alert alert = new Alert(Alert.AlertType.ERROR);
-                    alert.initOwner(MainApplication.window);
+                    alert.initOwner(MainApp.window);
                     alert.setTitle(LanguageManager.getString("ui.app_locked.title"));
                     alert.setHeaderText(LanguageManager.getString("ui.app_locked.header"));
                     alert.setContentText(LanguageManager.getString("ui.app_locked.content"));

@@ -5,7 +5,6 @@ import atlantafx.base.controls.ToggleSwitch;
 import atlantafx.base.theme.Styles;
 import atlantafx.base.util.Animations;
 import cn.tealc.ntemaid.FXResourcesLoader;
-import cn.tealc.ntemaid.MainApplication;
 import cn.tealc.ntemaid.base.Config;
 import cn.tealc.ntemaid.base.notification.NotificationKey;
 import cn.tealc.ntemaid.base.notification.NotificationManager;

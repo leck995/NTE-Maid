@@ -2,9 +2,6 @@ package cn.tealc.ntemaid.ui.system;
 
 
 import cn.tealc.ntemaid.FXResourcesLoader;
-import cn.tealc.ntemaid.MainApplication;
-import cn.tealc.ntemaid.base.notification.NotificationKey;
-import cn.tealc.ntemaid.base.notification.NotificationManager;
 import cn.tealc.ntemaid.model.system.nav.NavData;
 import cn.tealc.ntemaid.player.MusicPlayerClient;
 import com.fasterxml.jackson.core.type.TypeReference;
