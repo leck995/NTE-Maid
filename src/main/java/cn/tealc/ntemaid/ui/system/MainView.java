@@ -240,7 +240,7 @@ public class MainView implements Initializable, FxmlView<MainViewModel> {
         supportBtn = new ToggleButton(LanguageManager.getString("ui.main.button.nav.type09"), new FontIcon(Material2AL.LOCAL_CAFE));
         supportBtn.getStyleClass().add("icon-only");
         supportBtn.setOnAction(this::toSupport);
-        //navBottom.getChildren().addFirst(supportBtn);
+        navBottom.getChildren().addFirst(supportBtn);
 
         navToggleGroup = new ToggleGroup();
         List<NavData> navList = viewModel.getNavList();

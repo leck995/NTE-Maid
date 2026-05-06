@@ -429,7 +429,7 @@ public class FxMediaPlayer extends BaseAudioPlayer {
 
     @Override
     public void playWithFadeIn() {
-        if (!ready()) return;
+        if (!ready() || isPlaying()) return;
         System.out.println("playWithFadeIn1:" + volume.get());
         if (fadeTimeline != null) fadeTimeline.stop();
 

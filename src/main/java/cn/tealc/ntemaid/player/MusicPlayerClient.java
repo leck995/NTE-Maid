@@ -36,7 +36,7 @@ public class MusicPlayerClient {
                 return;
             }
             switch (event) {
-                case Off_VEHICLE, BEGIN_TRANSFER -> player.pauseWithFadeOut();
+                case Off_VEHICLE, BEGIN_TRANSFER,ENDPLAY_RACING -> player.pauseWithFadeOut();
                 case ON_VEHICLE -> player.playWithFadeIn();
             }
         });

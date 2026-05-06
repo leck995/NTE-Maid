@@ -26,6 +26,7 @@ public class LogMonitorForMusicService extends ScheduledService<LogMonitorForMus
     private static final String MUSIC_PLAYING = "UHTSoundSubsystem UHTUI_Vehicle::OnPlayOrPauseBtnCallBack ScrollMusicTitle.isValid = [1], bChecked = [1]";
     private static final String MUSIC_PAUSE = "UHTSoundSubsystem UHTUI_Vehicle::OnPlayOrPauseBtnCallBack ScrollMusicTitle.isValid = [1], bChecked = [0]";
     private static final String BEGIN_TRANSFER = "LevelTransferState BeginTransfer";
+    private static final String ENDPLAY_RACING = "EndPlay_Racing LEVEL_TYPE_RACING_PVP";
     public LogMonitorForMusicService(Path logPath) {
         this.logPath = logPath;
         setPeriod(Duration.seconds(1));
@@ -99,31 +100,36 @@ public class LogMonitorForMusicService extends ScheduledService<LogMonitorForMus
                     var result = HTCryptoUtils.HTCipher.tryDecryptBase64Line(trimmed);
                     if (result != null) {
                         String decrypted = result.text();
-                        //System.out.println(decrypted);
+                        System.out.println(decrypted);
                         if (decrypted.contains(MUSIC_PAUSE)) {
-                            log.info("检测到游戏内置播放器暂停音乐");
+                            log.debug("检测到游戏内置播放器暂停音乐");
                             //player.play();
                             Platform.runLater(() -> {
                                 if(onEventDetected != null) onEventDetected.accept(Event.MUSIC_PAUSE);
                             });
                         }else if (decrypted.contains(MUSIC_PLAYING)) {
-                            log.info("检测到游戏内置播放器播放音乐");
+                            log.debug("检测到游戏内置播放器播放音乐");
                             //player.pause();
                             Platform.runLater(() -> {
                                 if(onEventDetected != null) onEventDetected.accept(Event.MUSIC_PLAYING);
                             });
                         } else if (decrypted.contains(Off_VEHICLE)) {
-                            log.info("检测到玩家下车");
+                            log.debug("检测到玩家下车");
                             Platform.runLater(() -> {
                                 if(onEventDetected != null) onEventDetected.accept(Event.Off_VEHICLE);
                             });
-                        }  else if (decrypted.contains(BEGIN_TRANSFER)) {
-                            log.info("检测到玩家传送");
+                        } else if (decrypted.contains(BEGIN_TRANSFER)) {
+                            log.debug("检测到玩家传送");
                             Platform.runLater(() -> {
                                 if(onEventDetected != null) onEventDetected.accept(Event.BEGIN_TRANSFER);
                             });
+                        } else if (decrypted.contains(ENDPLAY_RACING)) {
+                            log.debug("检测到玩家结束赛车比赛");
+                            Platform.runLater(() -> {
+                                if(onEventDetected != null) onEventDetected.accept(Event.ENDPLAY_RACING);
+                            });
                         } else if (decrypted.contains(ON_VEHICLE)) {
-                            log.info("检测到玩家上车");
+                            log.debug("检测到玩家上车");
                             Platform.runLater(() -> {
                                 if(onEventDetected != null) onEventDetected.accept(Event.ON_VEHICLE);
                             });
@@ -166,6 +172,7 @@ public class LogMonitorForMusicService extends ScheduledService<LogMonitorForMus
         Off_VEHICLE,
         MUSIC_PLAYING,
         MUSIC_PAUSE,
-        BEGIN_TRANSFER
+        BEGIN_TRANSFER,
+        ENDPLAY_RACING //在线赛车结束
     }
 }
