@@ -38,16 +38,15 @@ public class GameTimeDao {
         }
     }
 
-    // 插入方法通常返回 Optional<Integer> 表示可能插入失败（重复忽略的情况）
     public Optional<Integer> addTime(GameTime gameTime) {
         String sql = "INSERT OR IGNORE INTO game_time (game_date, start_time, end_time, duration) VALUES (?,?,?,?)";
         try (Connection conn = JdbcUtils.getConnection()) {
-            Long id = qr.insert(conn, sql, new ScalarHandler<Long>(),
+            Number id = qr.insert(conn, sql, new ScalarHandler<Number>(),
                     gameTime.getGameDate(),
                     gameTime.getStartTime(),
                     gameTime.getEndTime(),
                     gameTime.getDuration());
-            return Optional.ofNullable(id).map(Long::intValue);
+            return Optional.ofNullable(id).map(Number::intValue);
         } catch (SQLException e) {
             LOG.error("添加游戏记录失败", e);
             return Optional.empty();

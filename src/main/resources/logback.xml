@@ -47,4 +47,6 @@
         <appender-ref ref="consoleLog" />
         <appender-ref ref="fileLog" />
     </root>
+
+    <logger name="com.zaxxer.hikari" level="WARN"/>
 </configuration>
