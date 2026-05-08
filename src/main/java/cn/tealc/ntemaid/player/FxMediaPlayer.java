@@ -52,8 +52,10 @@ public class FxMediaPlayer extends BaseAudioPlayer {
         disorder.addListener((observableValue, aBoolean, t1) -> {
             if (t1) {
                 Collections.shuffle(musics);
+                musicIndex.set(musics.indexOf(playingMusic.get()));
             } else {
                 musics.sort(Comparator.comparing(Music::getTitle));
+                musicIndex.set(musics.indexOf(playingMusic.get()));
             }
         });
 
