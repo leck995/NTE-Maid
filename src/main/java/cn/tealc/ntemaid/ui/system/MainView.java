@@ -9,11 +9,15 @@ import cn.tealc.ntemaid.base.Config;
 import cn.tealc.ntemaid.base.notification.NotificationKey;
 import cn.tealc.ntemaid.base.notification.NotificationManager;
 import cn.tealc.ntemaid.model.system.nav.NavData;
+import cn.tealc.ntemaid.model.system.realease.Release;
 import cn.tealc.ntemaid.thread.system.ui.MainBackgroundTask;
 import cn.tealc.ntemaid.ui.component.BaseDialog;
+import cn.tealc.ntemaid.ui.system.update.UpdateView;
+import cn.tealc.ntemaid.ui.system.update.UpdateViewModel;
 import cn.tealc.ntemaid.util.LanguageManager;
 import cn.tealc.ntemaid.util.LocalResourcesManager;
 import cn.tealc.ntemaid.util.NavLoader;
+import cn.tealc.teafx.utils.AnchorPaneUtil;
 import cn.tealc.teafx.utils.message.MessageInfo;
 import com.jfoenixN.controls.JFXDialog;
 import com.jfoenixN.controls.JFXDialogLayout;
@@ -120,9 +124,9 @@ public class MainView implements Initializable, FxmlView<MainViewModel> {
     }
 
     private void initGlobalEvent() {
-    /*    MvvmFX.getNotificationCenter().subscribe(NotificationKey.NOTIFICATION_SHOW_UPDATE, ((s, objects) -> {
+        MvvmFX.getNotificationCenter().subscribe(NotificationKey.NOTIFICATION_SHOW_UPDATE, ((s, objects) -> {
             showUpdateView((Release) objects[0]);
-        }));*/
+        }));
         MvvmFX.getNotificationCenter().subscribe(NotificationKey.MESSAGE, ((s, objects) -> {
             showMessage((MessageInfo) objects[0]);
         }));
@@ -434,6 +438,16 @@ public class MainView implements Initializable, FxmlView<MainViewModel> {
             case 2 -> NotificationManager.publish(NotificationKey.APP_HIDE);
         }
     }
+    private void showUpdateView(Release release) {
+        ViewTuple<UpdateView, UpdateViewModel> viewTuple = FluentViewLoader.fxmlView(UpdateView.class).viewModel(new UpdateViewModel(release)).load();
+        StackPane view = (StackPane) viewTuple.getView();
+        view.setBackground(bgPane02.getBackground());
+
+        //必须放在通知界面的后面
+        content.getChildren().add(content.getChildren().size() - 1, view);
+        AnchorPaneUtil.setPosition(view, 0, 0, 0, 0);
+    }
+
 
     private void showExitDialog() {
         JFXDialogLayout dialogLayout = new JFXDialogLayout();

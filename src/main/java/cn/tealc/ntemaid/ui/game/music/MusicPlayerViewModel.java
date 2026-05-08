@@ -99,6 +99,7 @@ public class MusicPlayerViewModel implements ViewModel, SceneLifecycle {
     /**
      * 修改后的加载逻辑：使用 Service 进行异步扫描和入库
      */
+    @Deprecated
     public void loadMusicListFromDir(File dir) {
         if (dir == null || !dir.exists()) return;
         Task<Integer> scanTask = new Task<>() {

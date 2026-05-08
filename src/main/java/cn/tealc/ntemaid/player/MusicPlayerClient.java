@@ -6,21 +6,15 @@ import cn.tealc.ntemaid.service.ConfigService;
 import cn.tealc.ntemaid.service.PlayingListService;
 import cn.tealc.ntemaid.service.impl.ConfigServiceImpl;
 import cn.tealc.ntemaid.thread.game.log.LogMonitorForMusicService;
-import javafx.application.Platform;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.util.Duration;
-import javafx.util.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Stream;
 
 public class MusicPlayerClient {
     private static final Logger log = LoggerFactory.getLogger(MusicPlayerClient.class);
@@ -58,20 +52,35 @@ public class MusicPlayerClient {
 
 
     public void init(){
-
-        //initPlayList();
-        //initPlayingMusic();
+        initPlayList();
+        initPlayingMusic();
         initLogMonitor();
+        addMusicListChangListener();
+    }
+
+    /**
+     * 添加播放列表监听，用于及时更新数据表
+     *
+     * @author leck
+     * @date 2026/05/08
+     */
+    private void addMusicListChangListener() {
+        PlayingListService playingListService = new PlayingListService();
+        player.musics.addListener((ListChangeListener<? super Music>) change ->{
+            @SuppressWarnings("unchecked")
+            List<Music> musicList = (List<Music>) change.getList();
+            playingListService.updatePlayingListAsync(musicList);
+        });
     }
 
     private void initPlayingMusic() {
         configService.getPairConfig(CONFIG_KEY).ifPresent(v -> {
             ObservableList<Music> musics = player.getMusics();
             if (musics.isEmpty()) return;
-            String historyUrl = v.getKey();
+            int id = Integer.parseInt(v.getKey());
             int index = -1;
             for (int i = 0; i < musics.size(); i++) {
-                if (musics.get(i).getFilePath().equals(historyUrl)) {
+                if (musics.get(i).getId().equals(id)) {
                     index = i;
                     break;
                 }
@@ -84,41 +93,19 @@ public class MusicPlayerClient {
                     log.error("历史进度解析失败: {}", v.getValue());
                 }
                 Duration duration = Duration.seconds(seconds);
-
                 player.play(index, false, duration);
             } else {
-                log.info("列表中未找到历史歌曲 URL: {}", historyUrl);
+                log.info("列表中未找到历史歌曲 id: {}", v.getKey());
             }
         });
     }
 
     private void initPlayList() {
-        String musicDir = Config.setting.getMusicDir();
-        if (musicDir == null)
-            return;
-        Path rootPath = Paths.get(musicDir);
-        if (!Files.exists(rootPath)) {
-            log.info("歌曲目录不存在，跳过初始化歌单");
-            return;
+        PlayingListService service = new PlayingListService();
+        List<Music> playinglist = service.getSavedPlayingList();
+        if (!playinglist.isEmpty()){
+            player.init(playinglist,5);
         }
-/*        try (Stream<Path> stream = Files.walk(rootPath)) {
-            List<Music> playlist = stream
-                    .filter(Files::isRegularFile) // 只处理文件
-                    .filter(path -> {
-                        String name = path.getFileName().toString().toLowerCase();
-                        return name.endsWith(".mp3") || name.endsWith(".wav");
-                    })
-                    .map(path -> {
-                        // 3. 映射为 Music 对象
-                        String absolutePath = path.toAbsolutePath().toString();
-                        String fileName = path.getFileName().toString();
-                        return new Music(absolutePath, fileName);
-                    })
-                    .toList();
-            player.init(playlist,5);
-        } catch (IOException e) {
-            log.debug("初始化歌单错误，｛｝",e);
-        }*/
     }
 
 
@@ -139,9 +126,13 @@ public class MusicPlayerClient {
 
 
     public void save(){
-   /*     Music music = player.getPlayingMusic();
-        String id = String.valueOf(music.getId());
-        String currentTime = String.valueOf(player.getCurrentTime());
-        configService.setConfig("last_music",id,currentTime);*/
+        Music music = player.getPlayingMusic();
+        if (music != null){
+            String id = String.valueOf(music.getId());
+            String currentTime = String.valueOf(player.getCurrentTime());
+            configService.setConfig("last_music",id,currentTime);
+        }else {
+            configService.removeConfig("last_music");
+        }
     }
 }

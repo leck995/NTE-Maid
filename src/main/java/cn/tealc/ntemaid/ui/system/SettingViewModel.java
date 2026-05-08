@@ -2,7 +2,13 @@ package cn.tealc.ntemaid.ui.system;
 
 import cn.tealc.ntemaid.base.Config;
 import cn.tealc.ntemaid.base.notification.NotificationKey;
+import cn.tealc.ntemaid.base.notification.NotificationManager;
+import cn.tealc.ntemaid.model.system.realease.Release;
+import cn.tealc.ntemaid.thread.system.update.CheckAppVersionTask;
+import cn.tealc.ntemaid.util.LanguageManager;
 import cn.tealc.ntemaid.util.LocalResourcesManager;
+import cn.tealc.teafx.utils.ResponseBody;
+import cn.tealc.teafx.utils.message.MessageInfo;
 import de.saxsys.mvvmfx.MvvmFX;
 import de.saxsys.mvvmfx.SceneLifecycle;
 import de.saxsys.mvvmfx.ViewModel;
@@ -58,13 +64,13 @@ public class SettingViewModel implements ViewModel, SceneLifecycle {
 
         diyHomeBgName.addListener((observableValue, s1, s2) -> {
             if (getDiyHomeBgName() != null) {
-                MvvmFX.getNotificationCenter().publish(NotificationKey.CHANGE_BG);
+               NotificationManager.publish(NotificationKey.CHANGE_BG);
             }
         });
 
         homeBgDir.addListener((observableValue, s1, s2) -> {
             if (getHomeBgDir() != null) {
-                MvvmFX.getNotificationCenter().publish(NotificationKey.CHANGE_BG);
+               NotificationManager.publish(NotificationKey.CHANGE_BG);
             }
         });
 
@@ -76,7 +82,7 @@ public class SettingViewModel implements ViewModel, SceneLifecycle {
     }
 
     public void changeBackground() {
-        MvvmFX.getNotificationCenter().publish(NotificationKey.CHANGE_BG);
+       NotificationManager.publish(NotificationKey.CHANGE_BG);
     }
 
 
@@ -126,7 +132,7 @@ public class SettingViewModel implements ViewModel, SceneLifecycle {
                 }
             }
             diyHomeBgName.set(newFile.getName());
-            MvvmFX.getNotificationCenter().publish(NotificationKey.CHANGE_BG);
+           NotificationManager.publish(NotificationKey.CHANGE_BG);
 
         } catch (IOException e) {
             LOG.error("IO ERROR", e);
@@ -134,18 +140,18 @@ public class SettingViewModel implements ViewModel, SceneLifecycle {
     }
 
     public void checkVersion() {
-//        CheckVersionTask task = new CheckVersionTask(false);
-//        task.setOnSucceeded(workerStateEvent -> {
-//            ResponseBody<Release> value = task.getValue();
-//            if (value.getCode() == 200) {
-//                MvvmFX.getNotificationCenter().publish(NotificationKey.NOTIFICATION_SHOW_UPDATE, value.getData());
-//            } else if (value.getCode() == 1) {
-//                MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE, new MessageInfo(MessageType.WARNING, LanguageManager.getString("ui.setting.about.update.tip01")));
-//            } else {
-//                MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE, new MessageInfo(MessageType.WARNING, LanguageManager.getString("ui.main.message.type01")));
-//            }
-//        });
-//        Thread.startVirtualThread(task);
+        CheckAppVersionTask task = new CheckAppVersionTask(false);
+        task.setOnSucceeded(workerStateEvent -> {
+            ResponseBody<Release> value = task.getValue();
+            if (value.getCode() == 200) {
+               NotificationManager.publish(NotificationKey.NOTIFICATION_SHOW_UPDATE, value.getData());
+            } else if (value.getCode() == 1) {
+               NotificationManager.publish(NotificationKey.MESSAGE, MessageInfo.warning(LanguageManager.getString("ui.setting.about.update.tip01")));
+            } else {
+               NotificationManager.publish(NotificationKey.MESSAGE, MessageInfo.warning(LanguageManager.getString("ui.main.message.type01")));
+            }
+        });
+        Thread.startVirtualThread(task);
     }
 
 

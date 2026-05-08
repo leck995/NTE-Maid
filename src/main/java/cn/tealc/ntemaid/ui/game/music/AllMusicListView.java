@@ -98,13 +98,13 @@ public class AllMusicListView implements FxmlView<AllMusicListViewModel>, Initia
             deleteMusic.setOnAction(event -> {
                 Music selected = row.getItem();
                 if (selected != null) {
-                    // 确认对话框
-                    Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "确定要从曲库中移除这首歌吗？\n文件不会被物理删除。");
-                    alert.showAndWait().ifPresent(response -> {
-                        if (response == ButtonType.OK) {
-                            viewModel.deleteMusicFromLibrary(selected);
-                        }
-                    });
+                    JFXDialogLayout build = DialogBuilder.create()
+                            .title("提示")
+                            .message("确定移除这首歌吗？")
+                            .button("确认", event1 -> viewModel.deleteMusicFromLibrary(selected))
+                            .cancel("取消")
+                            .build();
+                    NotificationManager.dialog(build);
                 }
             });
             Menu addToPlaylistGroup = new Menu("添加到歌单", new FontIcon(Material2OutlinedMZ.PLAYLIST_ADD));
@@ -115,7 +115,6 @@ public class AllMusicListView implements FxmlView<AllMusicListViewModel>, Initia
                 addToPlaylistGroup.getItems().clear(); // 先清空旧的列表
                 Music selected = row.getItem();
                 if (selected == null) return;
-                // 从 ViewModel 获取所有歌单（假设你有一个获取歌单列表的方法）
                 List<Playlist> playlists = viewModel.getAllPlaylists();
                 if (playlists.isEmpty()) {
                     MenuItem tip2 = new MenuItem("暂无歌单");

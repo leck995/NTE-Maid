@@ -4,6 +4,7 @@ import atlantafx.base.theme.Styles;
 import cn.tealc.ntemaid.base.notification.NotificationManager;
 import cn.tealc.ntemaid.model.game.music.Music;
 import cn.tealc.ntemaid.model.game.music.Playlist;
+import cn.tealc.ntemaid.util.DialogBuilder;
 import cn.tealc.ntemaid.util.TimeFormatUtil;
 import com.jfoenixN.controls.JFXDialogLayout;
 import de.saxsys.mvvmfx.FxmlView;
@@ -108,13 +109,13 @@ public class PlayListView implements FxmlView<PlayListViewModel>, Initializable 
             deleteMusic.setOnAction(event -> {
                 Music selected = row.getItem();
                 if (selected != null) {
-                    // 确认对话框
-                    Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "确定移除这首歌吗？\n文件不会被物理删除。");
-                    alert.showAndWait().ifPresent(response -> {
-                        if (response == ButtonType.OK) {
-                            viewModel.deleteMusicFromPlayList(selected);
-                        }
-                    });
+                    JFXDialogLayout build = DialogBuilder.create()
+                            .title("提示")
+                            .message("确定移除这首歌吗？")
+                            .button("确认", event1 -> viewModel.deleteMusicFromPlayList(selected))
+                            .cancel("取消")
+                            .build();
+                    NotificationManager.dialog(build);
                 }
             });
             Menu addToPlaylistGroup = new Menu("添加到歌单", new FontIcon(Material2OutlinedMZ.PLAYLIST_ADD));

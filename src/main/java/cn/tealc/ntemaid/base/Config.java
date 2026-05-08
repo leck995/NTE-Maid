@@ -11,7 +11,6 @@ import java.util.Locale;
 import java.util.ResourceBundle;
 
 /**
- * @program: WutheringWavesTool
  * @description:
  * @author: Leck
  * @create: 2024-07-03 00:37
@@ -23,10 +22,10 @@ public class Config {
 
     public static final String URL_SUPPORT_LIST = "https://www.yuque.com/chashuisuipian/sm05lg/ag7ct2or8ecz98cp";
     public static final String URL_PHANTOM_GUIDE = "https://wave.tealc.fun/pages/advance/phantom.html";
-    public static final String URL_APP_UPDATE = "https://wwt.999758.xyz/release.json";
-    public static final String URL_APP_UPDATE_DEV = "https://wwt.999758.xyz/release-dev.json";
-
-
+    public static final String URL_APP_UPDATE = "https://nte-update.999758.xyz/release.json";
+    public static final String URL_APP_UPDATE_DEV = "https://nte-update.999758.xyz/release-dev.json";
+    public static final String URL_GITHUB = "https://github.com/leck995/NTE-Maid";
+    public static final String URL_GITHUB_ISSUES = URL_GITHUB +"/issues";
     public static Setting setting;
     public static ResourceBundle language;
     public static String appTitle;
@@ -37,10 +36,6 @@ public class Config {
         if (settingFile.exists()) {
             try {
                 setting = mapper.readValue(settingFile, Setting.class);
-                if (setting.getAppParams() != null) { //暂时解决启动参数变更，未来版本删除
-                    setting.getStartUpParams().addAll(setting.getAppParams().split(" "));
-                    setting.setAppParams(null);
-                }
             } catch (IOException e) {
                 log.error("读取设置文件失败，将使用默认设置", e);
                 setting = new Setting();

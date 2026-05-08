@@ -28,7 +28,7 @@
                               <Pane prefHeight="200.0" prefWidth="200.0" />
                            </graphic>
                         </ToggleButton>
-                        <ToggleButton contentDisplay="BOTTOM" mnemonicParsing="false" onAction="#toAdvanceChild" styleClass="child-select" text="%ui.game_manager.base.tab.title02" toggleGroup="$childSelectedToggle">
+                        <ToggleButton contentDisplay="BOTTOM" mnemonicParsing="false" onAction="#toAdvanceChild" styleClass="child-select" text="%ui.game_manager.base.tab.title02" toggleGroup="$childSelectedToggle" visible="false">
                            <graphic>
                               <Pane prefHeight="200.0" prefWidth="200.0" />
                            </graphic>

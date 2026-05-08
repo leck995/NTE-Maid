@@ -2,11 +2,21 @@ package cn.tealc.ntemaid.ui.system;
 
 
 import cn.tealc.ntemaid.FXResourcesLoader;
+import cn.tealc.ntemaid.base.Config;
+import cn.tealc.ntemaid.base.notification.NotificationKey;
+import cn.tealc.ntemaid.base.notification.NotificationManager;
 import cn.tealc.ntemaid.model.system.nav.NavData;
+import cn.tealc.ntemaid.model.system.realease.Release;
 import cn.tealc.ntemaid.player.MusicPlayerClient;
+import cn.tealc.ntemaid.thread.system.update.CheckAppVersionTask;
+import cn.tealc.ntemaid.thread.system.update.DeleteOldAppVersionTask;
+import cn.tealc.ntemaid.util.LanguageManager;
+import cn.tealc.teafx.utils.ResponseBody;
+import cn.tealc.teafx.utils.message.MessageInfo;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.saxsys.mvvmfx.ViewModel;
+import javafx.application.Platform;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,7 +37,7 @@ public class MainViewModel implements ViewModel {
     private final AtomicBoolean warningSlash = new AtomicBoolean(false);
 
     public MainViewModel() {
-        checkVersion();
+        checkVersionAndClean();
         checkGameLogOpen();
         initMusicClient();
     }
@@ -50,24 +60,26 @@ public class MainViewModel implements ViewModel {
     }
 
 
-    public void checkVersion() {
-/*        if (Config.setting.isCheckNewVersion()) {
+    public void checkVersionAndClean() {
+        if (Config.setting.isCheckNewVersion()) {
             Platform.runLater(() -> {
-                CheckVersionTask task = new CheckVersionTask(true);
+                CheckAppVersionTask task = new CheckAppVersionTask(true);
                 task.setOnSucceeded(workerStateEvent -> {
                     ResponseBody<Release> value = task.getValue();
                     if (value.getCode() == 200) {
                         Platform.runLater(() -> {
-                            MvvmFX.getNotificationCenter().publish(NotificationKey.NOTIFICATION_SHOW_UPDATE, value.getData());
+                            NotificationManager.publish(NotificationKey.NOTIFICATION_SHOW_UPDATE, value.getData());
                         });
                     } else if (value.getCode() == -1) {
-                        MvvmFX.getNotificationCenter().publish(NotificationKey.NOTIFICATION_SHOW_UPDATE, value.getData());
-                        MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE, new MessageInfo(MessageType.WARNING, LanguageManager.getString("ui.main.message.type01")));
+                        NotificationManager.publish(NotificationKey.NOTIFICATION_SHOW_UPDATE, value.getData());
+                        NotificationManager.publish(NotificationKey.MESSAGE, MessageInfo.warning(LanguageManager.getString("ui.main.message.type01")));
                     }
                 });
                 Thread.startVirtualThread(task);
             });
-        }*/
+        }
+
+        Thread.startVirtualThread(new DeleteOldAppVersionTask());
     }
 
 

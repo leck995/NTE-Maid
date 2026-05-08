@@ -193,7 +193,7 @@ public class SettingView implements FxmlView<SettingViewModel>, Initializable {
     @FXML
     void toWeb(ActionEvent event) {
         try {
-            Desktop.getDesktop().browse(new URI("https://github.com/leck995/WutheringWavesTool"));
+            Desktop.getDesktop().browse(new URI(Config.URL_GITHUB));
         } catch (IOException | URISyntaxException e) {
             LOG.warn(e.getMessage());
         }
@@ -228,7 +228,7 @@ public class SettingView implements FxmlView<SettingViewModel>, Initializable {
     @FXML
     void toIssues(ActionEvent event) {
         try {
-            Desktop.getDesktop().browse(new URI("https://github.com/leck995/WutheringWavesTool/issues"));
+            Desktop.getDesktop().browse(new URI(Config.URL_GITHUB_ISSUES));
         } catch (IOException | URISyntaxException e) {
             LOG.warn(e.getMessage());
         }
