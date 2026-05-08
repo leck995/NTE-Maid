@@ -2,13 +2,15 @@ package cn.tealc.ntemaid.dao;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-
 public class JdbcUtils {
+    private static final Logger LOG = LoggerFactory.getLogger(JdbcUtils.class);
     private static final String DB_URL = "jdbc:sqlite:data.db";
     private static final HikariDataSource dataSource;
 
@@ -20,6 +22,11 @@ public class JdbcUtils {
         config.setConnectionTimeout(30000);
         config.setIdleTimeout(600000);
         config.setMaxLifetime(1800000);
+
+        // 【核心修改 1】通过连接池配置，确保每个连接创建后立即开启外键支持
+        // 这样你就不需要每次手动 execute("PRAGMA foreign_keys = ON")
+        config.setConnectionInitSql("PRAGMA foreign_keys = ON;");
+
         dataSource = new HikariDataSource(config);
         initDatabase();
     }
@@ -27,9 +34,11 @@ public class JdbcUtils {
     private static void initDatabase() {
         try (Connection conn = dataSource.getConnection();
              Statement st = conn.createStatement()) {
-            // 1. 设置性能模式
+
+            // 【核心修改 2】设置性能模式及确保当前连接开启外键
             st.execute("PRAGMA journal_mode=WAL;");
             st.execute("PRAGMA synchronous=NORMAL;");
+            st.execute("PRAGMA foreign_keys = ON;"); // 双重保证
 
             String sql = """
                 CREATE TABLE IF NOT EXISTS game_time(
@@ -52,30 +61,60 @@ public class JdbcUtils {
                     key VARCHAR NOT NULL UNIQUE,
                     value VARCHAR
                 );
+                
+                CREATE TABLE IF NOT EXISTS music (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    title VARCHAR(255) NOT NULL,
+                    artist VARCHAR(255),
+                    album VARCHAR(255),
+                    duration INTEGER,
+                    file_path TEXT UNIQUE,
+                    add_time BIGINT
+                );
+
+                CREATE TABLE IF NOT EXISTS playlist (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    name VARCHAR(100) NOT NULL UNIQUE,
+                    description VARCHAR(255),
+                    type VARCHAR(255),
+                    cover_path VARCHAR(255),
+                    create_time BIGINT
+                );
+
+                CREATE TABLE IF NOT EXISTS playlist_music_relation (
+                    playlist_id INTEGER,
+                    music_id INTEGER,
+                    sort_order INTEGER,
+                    PRIMARY KEY (playlist_id, music_id),
+                    FOREIGN KEY (playlist_id) REFERENCES playlist(id) ON DELETE CASCADE,
+                    FOREIGN KEY (music_id) REFERENCES music(id) ON DELETE CASCADE
+                );
+
+                CREATE TABLE IF NOT EXISTS playing_list (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    music_id INTEGER NOT NULL,
+                    sort_order INTEGER NOT NULL,
+                    UNIQUE(music_id),
+                    FOREIGN KEY (music_id) REFERENCES music(id) ON DELETE CASCADE
+                );
                 """;
+
             for (String s : sql.split(";")) {
                 if (!s.trim().isEmpty()) st.execute(s);
             }
+            LOG.info("数据库初始化完成，外键级联删除已启用");
         } catch (SQLException e) {
             throw new RuntimeException("数据库初始化失败", e);
         }
     }
 
-    /**
-     * 从池中获取连接
-     */
     public static Connection getConnection() throws SQLException {
         return dataSource.getConnection();
     }
 
-    /**
-     * 程序退出时彻底释放池
-     */
     public static void exit() {
         if (dataSource != null) {
             dataSource.close();
         }
     }
-
-
 }

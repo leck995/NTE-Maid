@@ -46,18 +46,18 @@ public class GameSettingParentView implements FxmlView<GameSettingParentViewMode
 
     @FXML
     void toAdvanceChild(ActionEvent event) {
-//        if (event.getSource() instanceof ToggleButton toggleButton){
-//            if (toggleButton.isSelected()) {
-//                if (advanceChild == null) {
-//                    ViewTuple<GameAdvanceSettingView, GameAdvanceSettingViewModel> viewTuple = FluentViewLoader.fxmlView(GameAdvanceSettingView.class).load();
-//                    advanceChild = viewTuple.getView();
-//                }
-//                content.getChildren().setAll(advanceChild);
-//                Animations.slideInUp(advanceChild, Duration.millis(300)).play();
-//            } else {
-//                toggleButton.setSelected(true);
-//            }
-//        }
+        if (event.getSource() instanceof ToggleButton toggleButton){
+            if (toggleButton.isSelected()) {
+                if (advanceChild == null) {
+                    ViewTuple<GameAdvanceSettingView, GameAdvanceSettingViewModel> viewTuple = FluentViewLoader.fxmlView(GameAdvanceSettingView.class).load();
+                    advanceChild = viewTuple.getView();
+                }
+                content.getChildren().setAll(advanceChild);
+                Animations.slideInUp(advanceChild, Duration.millis(300)).play();
+            } else {
+                toggleButton.setSelected(true);
+            }
+        }
     }
 
 

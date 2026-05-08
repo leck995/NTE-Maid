@@ -57,10 +57,10 @@ public class MainApp extends Application {
         window = stage;
         try {
             initStage(stage);
-            initKeyHook();
-            initAppListener();
+            //initKeyHook();
+            //initAppListener();
             initSubscribe();
-            createTrayIcon();
+            //createTrayIcon();
             if (Config.setting.isAutoStartGame()) {
                 Thread.startVirtualThread(new StartGameTask());
             }

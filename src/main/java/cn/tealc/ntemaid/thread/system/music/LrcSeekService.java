@@ -21,7 +21,7 @@ public class LrcSeekService extends Service<List<LrcBean>> {
     private final String[] extensions = {".lrc", ".LRC"};
     public void init(Music music) {
         this.music = music;
-        this.musicPath = music.getUrl();
+        this.musicPath = music.getFilePath();
 
     }
 

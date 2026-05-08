@@ -41,16 +41,13 @@ public class GameResourcesManager {
         return exe;
     }
 
-    public static File getGameEngineIni() {
-        String dir = Config.setting.getGameRootDir();
-        File exe = null;
-        if (dir != null) {
-            exe = new File(dir + File.separator + "Client/Saved/Config/WindowsNoEditor/Engine.ini");
-            if (!exe.exists()) {
-                return null;
-            }
+    public static Optional<File> getGameEngineIni() {
+        String localAppData = System.getenv("LOCALAPPDATA");
+        Path logPath = Paths.get(localAppData, "HT", "Saved", "Config", "Windows","Engine.ini");
+        if (Files.exists(logPath)){
+            return Optional.of(logPath.toFile());
         }
-        return exe;
+        return Optional.empty();
     }
 
     public static Optional<File> getGameScreenShoot() {

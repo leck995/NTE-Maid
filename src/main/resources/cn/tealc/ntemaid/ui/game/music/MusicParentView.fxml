@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.ToggleButton?>
 <?import javafx.scene.control.ToggleGroup?>
 <?import javafx.scene.layout.AnchorPane?>
@@ -10,17 +8,15 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.StackPane?>
 
-<StackPane fx:id="root" prefHeight="720.0" prefWidth="1280.0" styleClass="game-manage" stylesheets="@../../../css/game/manage/GameManage.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cn.tealc.ntemaid.ui.game.manage.GameSettingParentView">
+<StackPane fx:id="root" prefHeight="720.0" prefWidth="1280.0" styleClass="game-manage" stylesheets="@../../../css/game/manage/GameManage.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cn.tealc.ntemaid.ui.game.music.MusicParentView">
    <children>
       <AnchorPane>
          <children>
-            <HBox fx:id="headerPane" prefHeight="35.0" spacing="20.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <HBox fx:id="headerPane" alignment="CENTER" prefHeight="35.0" spacing="20.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                <children>
-                  <Label styleClass="title-2" text="%ui.game_manager.base.title" />
-                  <Separator orientation="VERTICAL" />
                   <HBox>
                      <children>
-                        <ToggleButton contentDisplay="BOTTOM" mnemonicParsing="false" onAction="#toBaseChild" selected="true" styleClass="child-select" text="%ui.game_manager.base.tab.title01">
+                        <ToggleButton fx:id="toMusicPlayerViewBtn" contentDisplay="BOTTOM" mnemonicParsing="false" selected="true" styleClass="child-select" text="%ui.music.parent.title01">
                            <toggleGroup>
                               <ToggleGroup fx:id="childSelectedToggle" />
                            </toggleGroup>
@@ -28,7 +24,12 @@
                               <Pane prefHeight="200.0" prefWidth="200.0" />
                            </graphic>
                         </ToggleButton>
-                        <ToggleButton contentDisplay="BOTTOM" mnemonicParsing="false" onAction="#toAdvanceChild" styleClass="child-select" text="%ui.game_manager.base.tab.title02" toggleGroup="$childSelectedToggle">
+                        <ToggleButton fx:id="toAllMusicListViewBtn" contentDisplay="BOTTOM" mnemonicParsing="false" styleClass="child-select" text="%ui.music.parent.title02" toggleGroup="$childSelectedToggle">
+                           <graphic>
+                              <Pane prefHeight="200.0" prefWidth="200.0" />
+                           </graphic>
+                        </ToggleButton>
+                        <ToggleButton fx:id="toPlaylistListViewBtn" contentDisplay="BOTTOM" layoutX="188.0" layoutY="10.0" mnemonicParsing="false" styleClass="child-select" text="%ui.music.parent.title03" toggleGroup="$childSelectedToggle">
                            <graphic>
                               <Pane prefHeight="200.0" prefWidth="200.0" />
                            </graphic>

@@ -5,49 +5,85 @@ import java.net.URI;
 import java.nio.file.Path;
 
 public class Music {
-    private String name;
-    private String url;//路径
+    private Integer id;
+    private String title;
+    private String artist;
+    private String album;
+    private Integer duration; // 秒
+    private String filePath;//路径
+    private Long addTime;
 
     public Music() {
     }
 
-    public Music(String url, String name) {
-        this.url = url;
-        if (name.contains(".")){
-            this.name = name.substring(0, name.lastIndexOf("."));
-        }else {
-            this.name = name;
-        }
 
+    public Integer getId() {
+        return id;
     }
 
-    public String getUrl() {
-        return url;
+    public String getTitle() {
+        return title;
     }
 
-    public void setUrl(String url) {
-        this.url = url;
+    public String getArtist() {
+        return artist;
     }
 
-    public String getName() {
-        return name;
+    public String getAlbum() {
+        return album;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public Integer getDuration() {
+        return duration;
+    }
+
+    public Long getAddTime() {
+        return addTime;
+    }
+
+    public String getFilePath() {
+        return filePath;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public void setArtist(String artist) {
+        this.artist = artist;
+    }
+
+    public void setAlbum(String album) {
+        this.album = album;
+    }
+
+    public void setDuration(Integer duration) {
+        this.duration = duration;
+    }
+
+    public void setFilePath(String filePath) {
+        this.filePath = filePath;
+    }
+
+    public void setAddTime(Long addTime) {
+        this.addTime = addTime;
     }
 
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof Music music) {
-            return music.url.equals(this.url);
+            return music.filePath.equals(this.filePath);
         }
         return super.equals(obj);
     }
 
     public URI getUri() {
-        if (url == null) return null;
-        return Path.of(url).toUri();
+        if (filePath == null) return null;
+        return Path.of(filePath).toUri();
     }
 
 }

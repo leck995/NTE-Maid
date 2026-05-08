@@ -6,12 +6,15 @@ import cn.tealc.ntemaid.player.BaseAudioPlayer;
 import cn.tealc.ntemaid.model.game.music.LrcBean;
 import cn.tealc.ntemaid.model.game.music.Music;
 import cn.tealc.ntemaid.player.MusicPlayerClient;
+import cn.tealc.ntemaid.service.MusicService;
+import cn.tealc.ntemaid.service.PlayingListService;
 import cn.tealc.teafx.utils.message.MessageInfo;
 import de.saxsys.mvvmfx.SceneLifecycle;
 import de.saxsys.mvvmfx.ViewModel;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Task;
 import javafx.scene.image.Image;
 import javafx.util.Duration;
 import org.slf4j.Logger;
@@ -44,6 +47,11 @@ public class MusicPlayerViewModel implements ViewModel, SceneLifecycle {
     private final SimpleIntegerProperty lrcSelectedIndex;
     private final SimpleStringProperty musicDir;
     private ObservableList<Music> musicList;
+
+    private final MusicService musicService;
+    private final PlayingListService playingListService;
+
+
 
     public MusicPlayerViewModel() {
         desktopLrc = new SimpleBooleanProperty();
@@ -82,32 +90,42 @@ public class MusicPlayerViewModel implements ViewModel, SceneLifecycle {
         musicList = player.getMusics();
         musicDir.bindBidirectional(Config.setting.musicDirProperty());
         lrcSelectedIndex.bindBidirectional(player.lrcSelectedIndexProperty());
+        musicService = new MusicService();
+        playingListService = new PlayingListService();
+
     }
 
 
+    /**
+     * 修改后的加载逻辑：使用 Service 进行异步扫描和入库
+     */
     public void loadMusicListFromDir(File dir) {
-        Path rootPath = dir.toPath();
-        try (Stream<Path> stream = Files.walk(rootPath)) {
-            // 2. 筛选并转换
-            List<Music> playlist = stream
-                    .filter(Files::isRegularFile) // 只处理文件
-                    .filter(path -> {
-                        String name = path.getFileName().toString().toLowerCase();
-                        return name.endsWith(".mp3") || name.endsWith(".wav");
-                    })
-                    .map(path -> {
-                        // 3. 映射为 Music 对象
-                        String absolutePath = path.toAbsolutePath().toString();
-                        String fileName = path.getFileName().toString();
-                        return new Music(absolutePath, fileName);
-                    })
-                    .toList();
-            player.init(playlist, 0);
-            musicDir.set(rootPath.toString());
-            NotificationManager.message(MessageInfo.success(String.format("成功添加 %d 首歌曲", playlist.size())));
-        } catch (IOException e) {
-            log.debug("加载新歌单错误，｛｝", e);
-        }
+        if (dir == null || !dir.exists()) return;
+        Task<Integer> scanTask = new Task<>() {
+            @Override
+            protected Integer call() throws Exception {
+                return musicService.scanAndImportDirectory(dir.getAbsolutePath());
+            }
+        };
+
+        scanTask.setOnSucceeded(event -> {
+            int addedCount = scanTask.getValue();
+            List<Music> allMusic = musicService.getAllMusic();
+            if (musicList.isEmpty()){
+                player.init(allMusic, 0);
+                playingListService.updatePlayingListAsync(allMusic);
+            }
+            NotificationManager.message(MessageInfo.success(
+                    String.format("同步完成：新增 %d 首，曲库共 %d 首歌曲", addedCount, allMusic.size())));
+            musicDir.set(dir.getAbsolutePath());
+        });
+
+        scanTask.setOnFailed(event -> {
+            Throwable e = scanTask.getException();
+            log.error("加载音乐目录失败", e);
+            NotificationManager.message(MessageInfo.error("加载音乐目录失败: " + e.getMessage()));
+        });
+        Thread.startVirtualThread(scanTask);
     }
 
 
@@ -323,6 +341,7 @@ public class MusicPlayerViewModel implements ViewModel, SceneLifecycle {
     public SimpleIntegerProperty lrcSelectedIndexProperty() {
         return lrcSelectedIndex;
     }
+
 
     @Override
     public void onViewAdded() {

@@ -21,6 +21,7 @@ import javafx.fxml.Initializable;
 import javafx.geometry.*;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
@@ -71,6 +72,8 @@ public class MusicPlayerView extends StackPane implements FxmlView<MusicPlayerVi
     private ContextMenu volumePopup;
     private SimpleDoubleProperty current;
     private ListView<Music> musicListView;
+
+
 
 
     public MusicPlayerView() {
@@ -166,6 +169,8 @@ public class MusicPlayerView extends StackPane implements FxmlView<MusicPlayerVi
         modalPane = new ModalPane();
         modalPane.setAlignment(Pos.BOTTOM_RIGHT);
         root.getChildren().add(modalPane);
+
+
     }
 
 
@@ -227,8 +232,8 @@ public class MusicPlayerView extends StackPane implements FxmlView<MusicPlayerVi
         modalPane.usePredefinedTransitionFactories(Side.RIGHT);
         modalPane.show(playlistPane);
         Platform.runLater(()->{
-            System.out.println("viewModel.getPlayingIndex():" + viewModel.getPlayingIndex());
             musicListView.getSelectionModel().select(viewModel.getPlayingIndex());
+            musicListView.scrollTo(viewModel.getPlayingIndex());
         });
     }
 
@@ -285,7 +290,7 @@ public class MusicPlayerView extends StackPane implements FxmlView<MusicPlayerVi
                     protected void updateItem(Music item, boolean empty) {
                         super.updateItem(item, empty);
                         if (!empty) {
-                            setText(item.getName());
+                            setText(item.getTitle());
                             setOnMouseClicked(event -> {
                                 if (event.getClickCount() == 2) {
                                     viewModel.play(getIndex());

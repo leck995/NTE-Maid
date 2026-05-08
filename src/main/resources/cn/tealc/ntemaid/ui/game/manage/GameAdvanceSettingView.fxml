@@ -7,6 +7,7 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.RadioButton?>
 <?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.ToggleGroup?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
@@ -44,6 +45,13 @@
                               </HBox>
                            </children>
                         </VBox>
+                        <TextArea fx:id="engineConfigTextarea" prefHeight="200.0" prefWidth="200.0" />
+                        <HBox>
+                           <children>
+                              <Button mnemonicParsing="false" onAction="#engineConfigSaveEvent" text="%ui.game_manager.advance.engine.save" />
+                              <Button mnemonicParsing="false" onAction="#engineConfigReloadEvent" text="%ui.game_manager.advance.engine.reload" />
+                           </children>
+                        </HBox>
                      </children>
                   </VBox>
                   <VBox maxWidth="350.0" prefHeight="200.0" prefWidth="100.0" spacing="10.0" styleClass="right" HBox.hgrow="ALWAYS">

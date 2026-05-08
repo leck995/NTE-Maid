@@ -359,6 +359,14 @@ public class MainView implements Initializable, FxmlView<MainViewModel> {
                     button.setOnAction(event -> {
                         dialog.close();
                     });
+                }else {
+                    EventHandler<ActionEvent> onAction = button.getOnAction();
+                    if (onAction != null){
+                        button.setOnAction(event -> {
+                            onAction.handle(event);
+                            dialog.close();
+                        });
+                    }
                 }
             }
         }

@@ -16,6 +16,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
+import javafx.scene.control.TextArea;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
 import org.slf4j.Logger;
@@ -49,6 +50,8 @@ public class GameAdvanceSettingView implements FxmlView<GameAdvanceSettingViewMo
     private RadioButton gameFps60;
     @FXML
     private ToggleGroup gameFpsToggleGroup;
+    @FXML
+    private TextArea engineConfigTextarea;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -63,6 +66,20 @@ public class GameAdvanceSettingView implements FxmlView<GameAdvanceSettingViewMo
                 case "3" -> gameFpsToggleGroup.selectToggle(gameFpsToggleGroup.getToggles().get(3));
             }
         }
+
+        engineConfigTextarea.textProperty().bindBidirectional(viewModel.engineConfigRowProperty());
+    }
+
+
+    @FXML
+    void engineConfigReloadEvent(ActionEvent event) {
+        viewModel.loadEngineConfig();
+    }
+
+    @FXML
+    void engineConfigSaveEvent(ActionEvent event) {
+        viewModel.saveEngineConfig();
+
     }
 
     @FXML

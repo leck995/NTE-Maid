@@ -3,9 +3,11 @@ package cn.tealc.ntemaid.player;
 import cn.tealc.ntemaid.base.Config;
 import cn.tealc.ntemaid.model.game.music.Music;
 import cn.tealc.ntemaid.service.ConfigService;
+import cn.tealc.ntemaid.service.PlayingListService;
 import cn.tealc.ntemaid.service.impl.ConfigServiceImpl;
 import cn.tealc.ntemaid.thread.game.log.LogMonitorForMusicService;
 import javafx.application.Platform;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.util.Duration;
 import javafx.util.Pair;
@@ -56,8 +58,9 @@ public class MusicPlayerClient {
 
 
     public void init(){
-        initPlayList();
-        initPlayingMusic();
+
+        //initPlayList();
+        //initPlayingMusic();
         initLogMonitor();
     }
 
@@ -68,7 +71,7 @@ public class MusicPlayerClient {
             String historyUrl = v.getKey();
             int index = -1;
             for (int i = 0; i < musics.size(); i++) {
-                if (musics.get(i).getUrl().equals(historyUrl)) {
+                if (musics.get(i).getFilePath().equals(historyUrl)) {
                     index = i;
                     break;
                 }
@@ -98,7 +101,7 @@ public class MusicPlayerClient {
             log.info("歌曲目录不存在，跳过初始化歌单");
             return;
         }
-        try (Stream<Path> stream = Files.walk(rootPath)) {
+/*        try (Stream<Path> stream = Files.walk(rootPath)) {
             List<Music> playlist = stream
                     .filter(Files::isRegularFile) // 只处理文件
                     .filter(path -> {
@@ -115,7 +118,7 @@ public class MusicPlayerClient {
             player.init(playlist,5);
         } catch (IOException e) {
             log.debug("初始化歌单错误，｛｝",e);
-        }
+        }*/
     }
 
 
@@ -136,11 +139,9 @@ public class MusicPlayerClient {
 
 
     public void save(){
-        Music music = player.getPlayingMusic();
-        String url = music.getUrl();
-        double currentTime = player.getCurrentTime();
-
-
-        configService.setConfig("last_music",url,String.valueOf(currentTime));
+   /*     Music music = player.getPlayingMusic();
+        String id = String.valueOf(music.getId());
+        String currentTime = String.valueOf(player.getCurrentTime());
+        configService.setConfig("last_music",id,currentTime);*/
     }
 }

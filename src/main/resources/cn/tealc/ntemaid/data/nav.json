@@ -20,7 +20,7 @@
     "visible": true,
     "order": 2,
     "kujiequ": false,
-    "viewClass": "cn.tealc.ntemaid.ui.game.music.MusicPlayerView",
+    "viewClass": "cn.tealc.ntemaid.ui.game.music.MusicParentView",
     "viewModelClass": null,
     "bottom": false,
     "fxml": true,

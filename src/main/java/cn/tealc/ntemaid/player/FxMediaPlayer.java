@@ -53,7 +53,7 @@ public class FxMediaPlayer extends BaseAudioPlayer {
             if (t1) {
                 Collections.shuffle(musics);
             } else {
-                musics.sort(Comparator.comparing(Music::getName));
+                musics.sort(Comparator.comparing(Music::getTitle));
             }
         });
 
@@ -165,7 +165,7 @@ public class FxMediaPlayer extends BaseAudioPlayer {
 
     @Override
     public void add(List<Music> musics) {
-        List<Music> list = musics.stream().filter(music -> !musics.contains(music)).toList();
+        List<Music> list = musics.stream().filter(music -> !this.musics.contains(music)).toList();
         this.musics.addAll(list);
     }
 
@@ -180,7 +180,10 @@ public class FxMediaPlayer extends BaseAudioPlayer {
 
     @Override
     public void addAndPlay(Music music) {
-        addAndPlay(List.of(music),0);
+        add(music);
+        int newIndex = musics.indexOf(music);
+        musicIndex.set(newIndex);
+        load(musics.get(newIndex), true, Duration.ZERO);
     }
 
     @Override
@@ -215,7 +218,7 @@ public class FxMediaPlayer extends BaseAudioPlayer {
             mediaPlayer = new MediaPlayer(media);
         } catch (MediaException mediaException) {
             if (mediaException.getType() == MediaException.Type.MEDIA_UNSUPPORTED) {
-                LOG.info("目前软件不支持该音频类型，不支持压缩的wav格式{}", music.getName());
+                LOG.info("目前软件不支持该音频类型，不支持压缩的wav格式{}", music.getTitle());
                 NotificationManager.publish(NotificationKey.MESSAGE, MessageInfo.warning("不支持压缩的wav格式,请使用VLC内核进行播放"));
             } else if (mediaException.getType() == MediaException.Type.MEDIA_UNAVAILABLE) {
                 LOG.info("找不到指定文件");
@@ -234,7 +237,7 @@ public class FxMediaPlayer extends BaseAudioPlayer {
                 String tempTitle = (String) media.getMetadata().get("title");
                 String tempArtist = (String) media.getMetadata().get("artist");
                 Image coverImage = (Image) media.getMetadata().get("image");
-                title.set(tempTitle != null ? tempTitle : music.getName());
+                title.set(tempTitle != null ? tempTitle : music.getTitle());
                 artist.set(tempArtist);
                 if (coverImage == null){
                     cover.set(defaultCover);
@@ -314,7 +317,8 @@ public class FxMediaPlayer extends BaseAudioPlayer {
 
     @Override
     public void removeMusic(Music music) {
-
+        int i = musics.indexOf(music);
+        removeMusic(i);
     }
 
     @Override

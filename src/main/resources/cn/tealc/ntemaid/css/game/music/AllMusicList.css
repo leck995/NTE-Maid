@@ -1,0 +1,120 @@
+/* 表格主体透明 */
+.table-view {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}
+/* 列头背景透明 */
+.table-view .column-header-background {
+    -fx-background-color: transparent;
+}
+/* 列头区域透明 */
+.table-view .column-header-background .filler {
+    -fx-background-color: transparent;
+}
+/* 单个列头透明 */
+.table-view .column-header {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}
+/* 列标签文字（保持可见） */
+table-view .column-header .label {
+    -fx-text-fill: #333;  /* 根据需要调整文字颜色 */
+    -fx-font-weight: bold;
+}
+/* 表格行透明 */
+.table-row-cell {
+    -fx-background-color: transparent;
+}
+/* 表格行悬停效果（可选的悬停效果） */
+.table-row-cell:hover {
+    -fx-background-color: rgba(200, 200, 200, 0.3);
+}
+/* 选中行半透明效果 */
+.table-row-cell:selected {
+    -fx-background-color: rgba(200, 200, 200, 0.3);
+}
+/* 单元格透明 */
+.table-cell {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}
+/* 滚动条背景透明（如果有滚动条） */
+.scroll-bar:vertical,
+.scroll-bar:horizontal {
+    -fx-background-color: transparent;
+}
+.table-row-cell:hover .table-cell,
+.table-row-cell:selected:hover .table-cell{
+    -fx-text-fill: -color-accent-fg;
+}
+
+.table-view .index-cell {
+    -fx-text-fill: gray;
+    -fx-alignment: center;
+}
+
+
+
+
+.all-music{
+
+}
+.all-music .nav-button{
+    -fx-background-color: -color-bg-default-60;
+}
+.all-music .nav-button:hover{
+    -fx-background-color: -color-bg-default-80;
+
+}
+
+
+
+
+
+
+
+
+
+/* ==================== Playlist 专属样式 ==================== */
+.playlist {
+    -fx-background-color: transparent;
+}
+
+/* ==================== ListView 样式 ==================== */
+.playlist .list-view {
+    -fx-background-color: -color-bg-default-40;
+    -fx-background-radius: 12px;
+    -fx-border-radius: 12px;
+    -fx-border-width: 1px;
+    -fx-border-color: rgba(200, 200, 200, 0.5);
+    -fx-padding: 8px 4px;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.05), 5, 0, 0, 2);
+}
+
+.playlist .list-view .list-cell {
+    -fx-background-color: transparent;
+    -fx-padding: 10px 12px;
+    -fx-text-fill: #444;
+    -fx-font-size: 13px;
+    -fx-graphic-text-gap: 10px;
+}
+
+/* ListView 单元格悬停 */
+.playlist .list-view .list-cell:hover {
+    -fx-background-color: rgba(100, 150, 255, 0.1);
+    -fx-background-radius: 8px;
+    -fx-text-fill: #2c7be5;
+}
+
+/* ListView 选中项 */
+.playlist .list-view .list-cell:selected {
+    -fx-background-color: rgba(100, 150, 255, 0.2);
+    -fx-background-radius: 8px;
+    -fx-text-fill: #2c7be5;
+    -fx-font-weight: 500;
+}
+
+/* ListView 滚动条适配 */
+.playlist .list-view .scroll-bar:vertical {
+    -fx-pref-width: 6px;
+}
