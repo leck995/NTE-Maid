@@ -171,6 +171,7 @@
                         </StackPane>
                     </children>
                 </GridPane>
+            <Button mnemonicParsing="false" onAction="#showTipEvent" styleClass="flat" text="?" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0" />
             </children>
         </AnchorPane>
     </children>
