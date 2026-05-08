@@ -159,4 +159,40 @@ public class PlaylistDao {
             return false;
         }
     }
+
+    /**
+     * 更新歌单基本信息 (名称、描述、封面路径)
+     * @param playlist 包含更新后数据的歌单对象
+     * @return 是否修改成功
+     */
+    public boolean updatePlaylist(Playlist playlist) {
+        String sql = "UPDATE playlist SET name = ?, description = ?, cover_path = ? WHERE id = ?";
+        try (Connection conn = JdbcUtils.getConnection()) {
+            int rows = qr.update(conn, sql,
+                    playlist.getName(),
+                    playlist.getDescription(),
+                    playlist.getCoverPath(),
+                    playlist.getId());
+            return rows > 0;
+        } catch (SQLException e) {
+            LOG.error("修改歌单信息失败: id={}", playlist.getId(), e);
+            return false;
+        }
+    }
+
+    /**
+     * 仅修改歌单名称
+     * @param id 歌单ID
+     * @param newName 新名称
+     * @return 是否修改成功
+     */
+    public boolean updatePlaylistName(int id, String newName) {
+        String sql = "UPDATE playlist SET name = ? WHERE id = ?";
+        try (Connection conn = JdbcUtils.getConnection()) {
+            return qr.update(conn, sql, newName, id) > 0;
+        } catch (SQLException e) {
+            LOG.error("修改歌单名称失败: id={}", id, e);
+            return false;
+        }
+    }
 }

@@ -22,23 +22,28 @@
                   <Pane HBox.hgrow="ALWAYS" />
                   <HBox alignment="CENTER" spacing="10.0">
                      <children>
+                        <Button layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#refreshMusicListEvent" styleClass="flat">
+                           <graphic>
+                              <FontIcon iconLiteral="mdrmz-refresh" />
+                           </graphic>
+                        </Button>
                         <Button mnemonicParsing="false" onAction="#createPlaylistEvent" text="创建">
-                           <styleClass>
-                              <String fx:value="lc-label-btn" />
-                              <String fx:value="lc-btn-success" />
-                           </styleClass>
                            <graphic>
                               <FontIcon iconLiteral="mdrmz-playlist_add" />
                            </graphic>
+                           <styleClass>
+                              <String fx:value="rounded" />
+                              <String fx:value="success" />
+                           </styleClass>
                         </Button>
                         <Button fx:id="playSelectedPlaylistBtn" mnemonicParsing="false" onAction="#playSelectedPlaylistEvent" text="播放全部">
-                           <styleClass>
-                              <String fx:value="lc-label-btn" />
-                              <String fx:value="lc-btn-info" />
-                           </styleClass>
                            <graphic>
                               <FontIcon iconLiteral="mdomz-play_circle_outline" />
                            </graphic>
+                           <styleClass>
+                              <String fx:value="rounded" />
+                              <String fx:value="accent" />
+                           </styleClass>
                         </Button>
                      </children>
                   </HBox>

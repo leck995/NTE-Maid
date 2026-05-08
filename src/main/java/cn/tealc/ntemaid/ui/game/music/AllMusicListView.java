@@ -152,6 +152,7 @@ public class AllMusicListView implements FxmlView<AllMusicListViewModel>, Initia
                     viewModel.playSelectedMusic(rowData);
                 }
             });
+            row.disableProperty().bind(row.itemProperty().isNull());
             return row;
         });
         allMusicTableView.setItems(viewModel.getAllMusicList());
@@ -184,9 +185,12 @@ public class AllMusicListView implements FxmlView<AllMusicListViewModel>, Initia
                 })
                 .cancel("取消")
                 .build();
-
         NotificationManager.dialog(build);
-
-
     }
+
+    @FXML
+    void refreshMusicListEvent(ActionEvent event) {
+        viewModel.refreshMusicList();
+    }
+
 }

@@ -28,10 +28,10 @@ public class AllMusicListViewModel implements ViewModel {
         musicService = new MusicService();
         playlistService = new PlaylistService();
         allMusicList = FXCollections.observableArrayList();
-        refresh();
+        refreshMusicList();
     }
 
-    private void refresh() {
+    public void refreshMusicList() {
         List<Music> allMusic = musicService.getAllMusic();
         allMusicList.setAll(allMusic);
     }
@@ -50,7 +50,7 @@ public class AllMusicListViewModel implements ViewModel {
 
         scanTask.setOnSucceeded(event -> {
             int addedCount = scanTask.getValue();
-            refresh();
+            refreshMusicList();
             NotificationManager.message(MessageInfo.success(
                     String.format("同步完成：新增 %d 首，曲库共 %d 首歌曲", addedCount, allMusicList.size())));
         });
@@ -118,4 +118,6 @@ public class AllMusicListViewModel implements ViewModel {
             NotificationManager.message(MessageInfo.error("无法添加到歌单"));
         }
     }
+
+   
 }

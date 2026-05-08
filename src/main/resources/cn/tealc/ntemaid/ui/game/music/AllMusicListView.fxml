@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import atlantafx.base.controls.Spacer?>
+<?import java.lang.String?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
@@ -9,26 +10,42 @@
 <?import javafx.scene.layout.StackPane?>
 <?import org.kordamp.ikonli.javafx.FontIcon?>
 
-
 <BorderPane prefHeight="800.0" prefWidth="1000.0" styleClass="all-music" stylesheets="@../../../css/game/music/AllMusicList.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cn.tealc.ntemaid.ui.game.music.AllMusicListView">
    <top>
       <HBox prefHeight="50.0" prefWidth="200.0" spacing="15.0" BorderPane.alignment="CENTER">
          <children>
-            <Button mnemonicParsing="false" onAction="#playAllEvent" styleClass="accent" text="播放全部">
-               <graphic>
-                  <FontIcon iconLiteral="mdmz-play_arrow" />
-               </graphic>
-            </Button>
-            <Button mnemonicParsing="false" onAction="#importMusicEvent" styleClass="nav-button" text="导入音乐">
+            <Button mnemonicParsing="false" onAction="#importMusicEvent" text="导入音乐">
                <graphic>
                   <FontIcon iconLiteral="mdoal-folder_open" />
                </graphic>
+               <styleClass>
+                  <String fx:value="nav-button" />
+                  <String fx:value="rounded" />
+               </styleClass>
             </Button>
             <Spacer />
-            <Button layoutX="129.0" layoutY="10.0" mnemonicParsing="false" onAction="#deleteAllMusicEvent" styleClass="danger" text="清空">
+            <Button mnemonicParsing="false" onAction="#refreshMusicListEvent" styleClass="flat">
+               <graphic>
+                  <FontIcon iconLiteral="mdrmz-refresh" />
+               </graphic>
+            </Button>
+            <Button mnemonicParsing="false" onAction="#playAllEvent" text="播放全部">
+               <graphic>
+                  <FontIcon iconLiteral="mdmz-play_arrow" />
+               </graphic>
+               <styleClass>
+                  <String fx:value="accent" />
+                  <String fx:value="rounded" />
+               </styleClass>
+            </Button>
+            <Button layoutX="129.0" layoutY="10.0" mnemonicParsing="false" onAction="#deleteAllMusicEvent" text="清空">
                <graphic>
                   <FontIcon iconLiteral="mdral-delete_outline" />
                </graphic>
+               <styleClass>
+                  <String fx:value="danger" />
+                  <String fx:value="rounded" />
+               </styleClass>
             </Button>
          </children>
       </HBox>

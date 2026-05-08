@@ -85,4 +85,32 @@ public class PlaylistService {
     public boolean removeMusicFromPlaylist(int playlistId, int musicId) {
         return playlistDao.removeMusicFromPlaylist(playlistId, musicId);
     }
+
+    /**
+     * 更新歌单基本信息
+     * 包含非空校验逻辑
+     */
+    public boolean updatePlaylist(Playlist playlist) {
+        if (playlist == null || playlist.getId() == null) {
+            return false;
+        }
+        if (playlist.getName() == null || playlist.getName().trim().isEmpty()) {
+            return false;
+        }
+        return playlistDao.updatePlaylist(playlist);
+    }
+
+    /**
+     * 重命名歌单
+     * @param id 歌单ID
+     * @param newName 新名称
+     */
+    public boolean renamePlaylist(int id, String newName) {
+        if (newName == null || newName.trim().isEmpty()) {
+            return false;
+        }
+        return playlistDao.updatePlaylistName(id, newName.trim());
+    }
+
+
 }

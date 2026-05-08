@@ -1,8 +1,11 @@
 package cn.tealc.ntemaid.ui.game.music;
 
+import atlantafx.base.theme.Styles;
+import cn.tealc.ntemaid.base.notification.NotificationManager;
 import cn.tealc.ntemaid.model.game.music.Music;
 import cn.tealc.ntemaid.model.game.music.Playlist;
 import cn.tealc.ntemaid.util.TimeFormatUtil;
+import com.jfoenixN.controls.JFXDialogLayout;
 import de.saxsys.mvvmfx.FxmlView;
 import de.saxsys.mvvmfx.InjectViewModel;
 import javafx.beans.binding.Bindings;
@@ -159,6 +162,7 @@ public class PlayListView implements FxmlView<PlayListViewModel>, Initializable 
                     viewModel.playSelectedMusic(rowData);
                 }
             });
+            row.disableProperty().bind(row.itemProperty().isNull());
             return row;
         });
         musicTableView.setItems(viewModel.getMusicList());
@@ -166,15 +170,40 @@ public class PlayListView implements FxmlView<PlayListViewModel>, Initializable 
 
     @FXML
     void createPlaylistEvent(ActionEvent event) {
+        JFXDialogLayout layout = new JFXDialogLayout();
+        Label title = new Label("创建歌单");
+        title.getStyleClass().add(Styles.TITLE_2);
+        layout.setHeading(title);
+        TextField nameField = new TextField();
+        nameField.setPromptText("请输入歌单名称");
+        layout.setBody(nameField);
 
+        Button okBtn = new Button("创建");
+        okBtn.getStyleClass().add(Styles.ACCENT);
+        okBtn.setOnAction(event1 -> viewModel.createPlaylist(nameField.getText()));
+        Button cancelBtn = new Button("取消");
+        cancelBtn.setCancelButton(true);
+        layout.setActions(okBtn, cancelBtn);
+        NotificationManager.dialog(layout);
     }
 
     @FXML
     void playSelectedPlaylistEvent(ActionEvent event) {
+        viewModel.playSelectedPlaylist();
+    }
 
+    @FXML
+    void refreshMusicListEvent(ActionEvent event) {
+        viewModel.refreshMusicListInPlaylist();
     }
 
 
+    /**
+     * 歌单Cell
+     *
+     * @author leck
+     * @date 2026/05/08
+     */
     class SheetCell extends ListCell<Playlist> {
         @Override
         protected void updateItem(Playlist sheetData, boolean b) {
@@ -185,7 +214,7 @@ public class PlayListView implements FxmlView<PlayListViewModel>, Initializable 
                 setContextMenu(createContextMenu());
                 setOnMouseClicked(event -> {
                     if (event.getButton() == MouseButton.PRIMARY) {
-                        viewModel.loadPlaylist(sheetData);
+                        viewModel.loadMusicListPlaylist(sheetData);
                     }
                 });
             } else {
@@ -193,16 +222,41 @@ public class PlayListView implements FxmlView<PlayListViewModel>, Initializable 
                 setDisable(true);
             }
         }
-    }
-    private ContextMenu createContextMenu() {
-        ContextMenu contextMenu = new ContextMenu();
-        MenuItem updateMI = new MenuItem("修改", new FontIcon(Material2OutlinedAL.EDIT));
-        //updateMI.setOnAction(actionEvent -> updateSheet(getItem()));
-        MenuItem deleteMI = new MenuItem("删除", new FontIcon(Material2OutlinedAL.DELETE_OUTLINE));
-        deleteMI.setOnAction(actionEvent -> {
 
-        });
-        contextMenu.getItems().addAll(updateMI, deleteMI);
-        return contextMenu;
+        private ContextMenu createContextMenu() {
+            ContextMenu contextMenu = new ContextMenu();
+            MenuItem updateMI = new MenuItem("修改", new FontIcon(Material2OutlinedAL.EDIT));
+            updateMI.setOnAction(actionEvent -> showAlterDialog());
+            MenuItem deleteMI = new MenuItem("删除", new FontIcon(Material2OutlinedAL.DELETE_OUTLINE));
+            deleteMI.setOnAction(actionEvent -> {
+                viewModel.deletePlaylist(getItem());
+            });
+            contextMenu.getItems().addAll(updateMI, deleteMI);
+            return contextMenu;
+        }
+
+        /**
+         * 弹出修改歌单名称窗口
+         *
+         * @author leck
+         * @date 2026/05/08
+         */
+        private void showAlterDialog() {
+            JFXDialogLayout layout = new JFXDialogLayout();
+            Label title = new Label("修改歌单");
+            title.getStyleClass().add(Styles.TITLE_2);
+            layout.setHeading(title);
+            TextField nameField = new TextField(getItem().getName());
+            layout.setBody(nameField);
+
+            Button okBtn = new Button("修改");
+            okBtn.getStyleClass().add(Styles.ACCENT);
+            okBtn.setOnAction(event1 -> viewModel.updatePlaylist(getItem(), nameField.getText()));
+            Button cancelBtn = new Button("取消");
+            cancelBtn.setCancelButton(true);
+            layout.setActions(okBtn, cancelBtn);
+            NotificationManager.dialog(layout);
+        }
     }
+
 }

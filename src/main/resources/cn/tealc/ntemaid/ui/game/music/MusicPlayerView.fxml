@@ -149,9 +149,9 @@
                                         </Button>
                                     </children>
                                 </HBox>
-                        <StackPane maxWidth="320.0" styleClass="input-group">
+                        <StackPane disable="true" maxWidth="320.0" styleClass="input-group" visible="false">
                            <children>
-                              <TextField fx:id="musicDirField" editable="false" onMouseClicked="#chooseMusicDir" prefWidth="250.0" promptText="点此设置歌曲目录（支持搜索子目录）" />
+                              <TextField fx:id="musicDirField" editable="false" onMouseClicked="#chooseMusicDir" prefWidth="250.0" promptText="点此快速切花" />
                               <Button contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#chooseMusicDir" StackPane.alignment="CENTER_RIGHT">
                                  <graphic>
                                     <FontIcon iconLiteral="mdal-folder_open" />
