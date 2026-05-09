@@ -61,15 +61,18 @@ public class MainApp extends Application {
             initAppListener();
             initSubscribe();
             createTrayIcon();
-            if (Config.setting.isAutoStartGame()) {
-                Thread.startVirtualThread(new StartGameTask());
-            }
+            autoStartGame();
             LOG.info("应用启动成功");
         } catch (Exception e) {
             LOG.error("启动过程中发生严重错误", e);
             exit();
         }
+    }
 
+    private void autoStartGame() {
+        if (Config.setting.isAutoStartGame()) {
+            Thread.startVirtualThread(new StartGameTask());
+        }
     }
 
     private void initStage(Stage stage) throws IOException {
@@ -81,17 +84,15 @@ public class MainApp extends Application {
         stage.setScene(scene);
         stage.getIcons().add(new Image(FXResourcesLoader.load("image/icon.png"), 45, 45, true, true));
         stage.setTitle(LanguageManager.getString("app.title"));
-        double width = Math.max(1200, Config.setting.getAppWidth());
-        double height = Math.max(700, Config.setting.getAppHeight());
+        double width = Math.max(1100, Config.setting.getAppWidth());
+        double height = Math.max(650, Config.setting.getAppHeight());
         stage.setWidth(width);
         stage.setHeight(height);
 
         Config.setting.appWidthProperty().bind(scene.widthProperty());
         Config.setting.appHeightProperty().bind(scene.heightProperty());
         stage.initStyle(StageStyle.EXTENDED);
-
         initFont();
-
         if (!Config.setting.isSilentStartup()) {
             stage.show();
         }
@@ -111,7 +112,6 @@ public class MainApp extends Application {
     }
 
     private void initFont() {
-        javafx.scene.text.Font.loadFonts(FXResourcesLoader.loadStream("font/HarmonyOS_Sans_SC_Bold.ttf"), 12);
         Font.loadFonts(FXResourcesLoader.loadStream("font/HarmonyOS_Sans_SC_Bold.ttf"), 12);
         window.getScene().getRoot().setStyle("-fx-font-family: \"HarmonyOS Sans SC\"");
     }
@@ -143,7 +143,7 @@ public class MainApp extends Application {
         window.setX(-10000);
         window.setMaximized(false);
         appLocked.release();
-        MusicPlayerClient.getInstance().save();
+        MusicPlayerClient.getInstance().close();
         Config.save();
         JdbcUtils.exit();
         window.close();
@@ -153,6 +153,8 @@ public class MainApp extends Application {
     public static void hide() {
         window.hide();
     }
+
+
 
     private void createTrayIcon() {
         if (SystemTray.isSupported()) {
@@ -177,8 +179,6 @@ public class MainApp extends Application {
                     window.toFront();
                 });
             });
-
-
             SystemTray systemTray = SystemTray.getSystemTray();
             try {
                 systemTray.add(newFxTrayIcon);

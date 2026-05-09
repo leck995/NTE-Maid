@@ -26,7 +26,6 @@ import java.util.List;
 
 
 /**
- * @program: AmsrPlayer-old
  * @description:
  * @author: Leck
  * @create: 2023-02-06 22:25
@@ -35,7 +34,7 @@ public class FxMediaPlayer extends BaseAudioPlayer {
     private static final Logger LOG = LoggerFactory.getLogger(FxMediaPlayer.class);
     private MediaPlayer mediaPlayer;
     private Timeline fadeTimeline; // 抽取为成员变量，防止多个渐变冲突
-    private static final Duration FADE_DURATION = Duration.millis(1000);
+    private static final Duration FADE_DURATION = Duration.millis(2000);
     private int lastLrcIndex = -1;
 
     private final Image defaultCover = new Image(this.getClass().getResource("/cn/tealc/ntemaid/image/album.jpg").toExternalForm());

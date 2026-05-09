@@ -281,11 +281,12 @@ public class SettingView implements FxmlView<SettingViewModel>, Initializable {
 
     @FXML
     void toWiki(ActionEvent event) {
-        try {
-            Desktop.getDesktop().browse(new URI("https://wave.tealc.fun/#/"));
+   /*     try {
+            Desktop.getDesktop().browse(new URI(Config.URL_APP_WIKI));
         } catch (IOException | URISyntaxException e) {
             LOG.info(e.getMessage());
-        }
+        }*/
+        NotificationManager.message(MessageInfo.info("开发中"));
     }
 
     @FXML

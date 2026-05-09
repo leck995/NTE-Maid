@@ -4,9 +4,7 @@ package cn.tealc.ntemaid.ui.system;
 import cn.tealc.ntemaid.base.Config;
 import cn.tealc.ntemaid.base.notification.NotificationKey;
 import cn.tealc.ntemaid.base.notification.NotificationManager;
-import cn.tealc.ntemaid.dao.GameTimeDao;
 import cn.tealc.ntemaid.jna.GameAppListener;
-import cn.tealc.ntemaid.model.game.GameTime;
 import cn.tealc.ntemaid.service.GameTimeService;
 import cn.tealc.ntemaid.service.impl.GameTimeServiceImpl;
 import cn.tealc.ntemaid.util.LanguageManager;
@@ -16,16 +14,18 @@ import de.saxsys.mvvmfx.SceneLifecycle;
 import de.saxsys.mvvmfx.ViewModel;
 import de.saxsys.mvvmfx.utils.notifications.NotificationObserver;
 import javafx.animation.PauseTransition;
+import javafx.application.Platform;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.util.Duration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
+import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
@@ -47,6 +47,52 @@ public class HomeViewModel implements ViewModel, SceneLifecycle {
             updateGameTime(playTime);
         };
         NotificationManager.subscribe(NotificationKey.HOME_GAME_TIME_UPDATE, gameTimeObserver);
+
+        if (Config.setting.getGameRootDir() == null){
+            String gameInstallPath = getGameInstallPath();
+            if (gameInstallPath != null){
+                Config.setting.setGameRootDir(gameInstallPath);
+                Platform.runLater(()->{
+                    NotificationManager.message(MessageInfo.info("已识别到安装目录，若错误请手动设置"));
+                });
+            }
+        }
+    }
+
+    public String getGameInstallPath() {
+        // 将命令拆分为数组，ProcessBuilder 会自动处理参数中的空格和转义
+        String[] command = {
+                "reg", "query",
+                "HKEY_LOCAL_MACHINE\\SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\YH",
+                "/v", "InstallLocation"
+        };
+
+        ProcessBuilder pb = new ProcessBuilder(command);
+        pb.redirectErrorStream(true);
+        try {
+            Process process = pb.start();
+            try (BufferedReader reader = new BufferedReader(
+                    new InputStreamReader(process.getInputStream(), Charset.forName("GBK")))) {
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    if (line.contains("REG_SZ")) {
+                        String[] parts = line.split("REG_SZ");
+                        if (parts.length > 1) {
+                            String path = parts[1].trim();
+                            System.out.println(path);
+                            if (path.endsWith("\\"))
+                                return path.substring(0, path.length()-1);
+                            else
+                                return path;
+                        }
+                    }
+                }
+            }
+            process.waitFor();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
 
