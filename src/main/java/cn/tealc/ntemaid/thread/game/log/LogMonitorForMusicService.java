@@ -100,7 +100,7 @@ public class LogMonitorForMusicService extends ScheduledService<LogMonitorForMus
                     var result = HTCryptoUtils.HTCipher.tryDecryptBase64Line(trimmed);
                     if (result != null) {
                         String decrypted = result.text();
-                        System.out.println(decrypted);
+                        //System.out.println(decrypted);
                         if (decrypted.contains(MUSIC_PAUSE)) {
                             log.debug("检测到游戏内置播放器暂停音乐");
                             //player.play();
