@@ -1,32 +1,42 @@
-# NTE Maid
-### 一款服务于异环(Neverness to Everness)的工具，支持国服国际服；无侵入式代码，安全可靠。
+# 🛠️ NTE Maid
+### 一款服务于《异环》(Neverness to Everness) 的全能助手
 
-*因为异环的车载音乐有所欠缺，遂开发本程序，解决大世界开车时的听歌需求*
+**支持区服：** 国服 / 国际服  
+**核心优势：** 无侵入式代码，不修改游戏数据，安全可靠。
 
-<img src="./docs/image/image01.png" alt="主页" style="zoom:67%;" width="1137" height="693"/>
+> **开发初衷：** 86下山了，没有专属BGM总觉得少了些什么。
 
-[点此下载程序](https://github.com/leck995/NTE-Maid/releases)
+---
 
+## 🚀 核心特色
+* **📈 游戏时长统计** 程序运行期间，精准记录每日游玩时长及累计总时长，助你掌控游戏人生。
+* **🎵 极致车载音乐体验** * **智能联动：** 完美替代游戏原装播放器，支持**上车自动播放、下车自动暂停**。
+    * **快捷控制：** 支持全局快捷键，游戏过程中无需切屏即可自由切歌（*需管理员权限*）。
 
-## 特色
-___
+---
 
-1. 游戏时长统计，程序运行时，可统计每日游玩时长与总时长。*（推荐)*。
-2. 更好的车载音乐，替代游戏内播放器，支持开车自动播放，下车自动暂停；支持游戏时快捷键控制（*需要管理员权限*）。
-
-
-## 部分截图
-
+## 📸 界面预览
 <img src="./docs/image/image01.png" alt="image01" style="zoom:67%;" width="1137" height="693"/>
 <img src="./docs/image/image02.png" alt="image02" style="zoom:67%;" width="1137" height="693"/>
 <img src="./docs/image/image03.png" alt="image03" style="zoom:67%;" />
 
-## 其他
-#### 1. 由于异环限制，目前无法直接通过游戏本体启动游戏，只能通过官方启动器启动。为减少启动游戏步骤，可在本程序设置中启用静默启动与自动启动游戏功能。
-#### 2. 本程序的音乐功能支持游戏内快捷键功能，该功能需要授予程序管理员权限。
+---
 
-## 感谢与支持
-***
+## ⚙️ 使用须知
+1.  **启动说明：** 受限于游戏机制，目前无法绕过官方启动器。建议在程序设置中开启 **[静默启动]** 与 **[自动启动游戏]** 选项，一键直达大世界。
+2.  **权限要求：** 若需使用游戏内快捷键控制音乐，请务必以 **管理员身份** 运行本程序。
+
+---
+
+## 🔗 下载与交流
+* **官方发布页：** [GitHub Releases](https://github.com/leck995/NTE-Maid/releases)
+* **交流 QQ 群：** `1102349327` (下载缓慢或有疑问请进群)
+
+---
+
+## ❤️ 感谢与技术栈支持
+本程序的诞生离不开以下开源项目的支持：
+
 * [OpenJFX](https://openjfx.io/) - JavaFX 框架
 * [Controlsfx](https://github.com/controlsfx/controlsfx) - JavaFX 控件扩展库
 * [MvvmFX](https://github.com/sialcasa/mvvmFX) - JavaFX MVVM 框架
@@ -45,9 +55,11 @@ ___
 * [Filters](https://github.com/johannburkard/filters) (JH Labs) - 图像滤镜
 * [JUnit](https://github.com/junit-team/junit5) - 单元测试框架
 * [Collapse](https://github.com/CollapseLauncher/Collapse) - UI参考
-### 赞助
-倘若喜欢本程序，欢迎支持一下开发者，您的支持会加快软件的开发进度。
+---
 
-您可以按以下格式留言：[名称]:[想说的话]
+## 💰 赞助支持
+如果您觉得本程序有所帮助，欢迎赞助开发者，您的支持将促进程序的持续维护！
 
-<img src="./docs/image/support.png" alt="support"  />
+**留言格式：** `[名称]:[想说的话]`
+
+![赞助二维码](./docs/image/support.png)
