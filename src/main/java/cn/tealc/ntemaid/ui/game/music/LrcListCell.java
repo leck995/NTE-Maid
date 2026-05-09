@@ -17,47 +17,40 @@ import javafx.scene.text.Text;
 public class LrcListCell extends ListCell<LrcBean> {
 
     private SimpleBooleanProperty showTrans=new SimpleBooleanProperty(true);
-/*一开始实现了row，tran的复用，但一旦复用就会出现listview经典的bug：复用导致空值cell显示错误，还解决不掉，平常cell只需要在为空时设置一下就行，但复用仍有*/
+    private VBox box = new VBox();
+    private Text row = new Text();
+    private Text tran = new Text();
 
+    public LrcListCell() {
+        box.setPadding(new Insets(10, 0, 10, 0));
+        box.setSpacing(5);
+        // 关键：限制 Text 的包裹宽度，防止横向溢出
+        row.wrappingWidthProperty().bind(widthProperty().subtract(20));
+        tran.wrappingWidthProperty().bind(widthProperty().subtract(20));
 
+        // 构造函数里只写一次监听
+        showTrans.addListener((obs, old, val) -> updateLayout());
+    }
 
     @Override
-    protected void updateItem(LrcBean lrcBean, boolean b) {
-        if (!b){
-            super.updateItem(lrcBean, b);
-//                            row.effectProperty().bind(
-//                                    Bindings.createObjectBinding(
-//                                            ()->
-//                                                    (new DropShadow(BlurType.THREE_PASS_BOX,Color.web(SettingProperties.desktopLRCBorderColor.get()),10.0,0,0,0)),
-//                                            SettingProperties.desktopLRCBorderColor));
-            VBox box=new VBox();
-            box.setPadding(new Insets(10,0,10,0));
-            box.setSpacing(5);
-            //box.setAlignment(SettingProperties.detailLrcAlignment.get() ? Pos.CENTER : Pos.CENTER_LEFT);
-            Text row=new Text(lrcBean.getRowText());
-            box.getChildren().add(row);
-
-            if (showTrans.get() && lrcBean.getTransText()!=null){
-                Text tran=new Text(lrcBean.getTransText());
-                box.getChildren().add(tran);
-            }
-
-            showTrans.addListener((observableValue, aBoolean, t1) -> {
-                if (t1){
-                    if (lrcBean.getTransText()!=null){
-                        Text tran=new Text(lrcBean.getTransText());
-                        box.getChildren().add(tran);
-                    }
-                }else {
-                    if (box.getChildren().size() > 1){
-                        box.getChildren().remove(box.getChildren().size() -1);
-                    }
-                }
-            });
+    protected void updateItem(LrcBean lrcBean, boolean empty) {
+        super.updateItem(lrcBean, empty);
+        if (empty || lrcBean == null) {
+            setGraphic(null);
+            setText(null);
+        } else {
+            row.setText(lrcBean.getRowText());
+            tran.setText(lrcBean.getTransText());
+            updateLayout();
             setGraphic(box);
+        }
+    }
 
-        }else{
-           setGraphic(null);
+    private void updateLayout() {
+        box.getChildren().clear();
+        box.getChildren().add(row);
+        if (showTrans.get() && getItem() != null && getItem().getTransText() != null) {
+            box.getChildren().add(tran);
         }
     }
 
@@ -67,9 +60,5 @@ public class LrcListCell extends ListCell<LrcBean> {
 
     public SimpleBooleanProperty showTransProperty() {
         return showTrans;
-    }
-
-    public void setShowTrans(boolean showTrans) {
-        this.showTrans.set(showTrans);
     }
 }
