@@ -4,10 +4,14 @@ import cn.tealc.ntemaid.base.Config;
 import cn.tealc.ntemaid.model.game.music.Music;
 import cn.tealc.ntemaid.service.ConfigService;
 import cn.tealc.ntemaid.service.PlayingListService;
+import cn.tealc.ntemaid.service.RobotService;
 import cn.tealc.ntemaid.service.impl.ConfigServiceImpl;
 import cn.tealc.ntemaid.thread.game.log.LogMonitorForMusicService;
+import javafx.animation.PauseTransition;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.scene.input.KeyCode;
+import javafx.scene.robot.Robot;
 import javafx.util.Duration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,25 +33,36 @@ public class MusicPlayerClient {
 
     private static final String CONFIG_KEY = "last_music";
     private ConfigService configService = new ConfigServiceImpl();
+    private LogMonitorForMusicService monitorForMusicService;
 
     private MusicPlayerClient() {
         player = new FxMediaPlayer();
     }
 
+    private boolean isFirstTime = true;
+
     private void initLogMonitor() {
         String localAppData = System.getenv("LOCALAPPDATA");
         Path logPath = Paths.get(localAppData, "HT", "Saved", "Logs", "HT.log");
-        LogMonitorForMusicService service = new LogMonitorForMusicService(logPath);
-        service.setOnEventDetected(event -> {
+        monitorForMusicService = new LogMonitorForMusicService(logPath);
+        monitorForMusicService.setOnEventDetected(event -> {
             if (!Config.setting.isMusicEnable()){
                 return;
             }
             switch (event) {
                 case Off_VEHICLE, BEGIN_TRANSFER,ENDPLAY_RACING -> player.pauseWithFadeOut();
                 case ON_VEHICLE -> player.playWithFadeIn();
+                case MUSIC_PLAYING -> {
+                    if (isFirstTime){
+                        log.info("游戏启动第一次开车，关闭游戏内音乐");
+                        isFirstTime = false;
+                        stopGameFirstMusic();
+                    }
+
+                }
             }
         });
-        service.start();
+        monitorForMusicService.start();
     }
 
 
@@ -56,6 +71,21 @@ public class MusicPlayerClient {
         initPlayingMusic();
         initLogMonitor();
         addMusicListChangListener();
+    }
+
+    /**
+     * 关闭游戏内音乐
+     * @author leck
+     * @date 2026/05/09
+     */
+    public void stopGameFirstMusic() {
+        PauseTransition pause = new PauseTransition(Duration.millis(1500));
+        pause.setOnFinished(e -> {
+            RobotService robotService = new RobotService();
+            robotService.clickKeyCodeDigit2();
+        });
+        pause.play();
+
     }
 
     /**
@@ -104,7 +134,7 @@ public class MusicPlayerClient {
         PlayingListService service = new PlayingListService();
         List<Music> playinglist = service.getSavedPlayingList();
         if (!playinglist.isEmpty()){
-            player.init(playinglist,5);
+            player.init(playinglist,0);
         }
     }
 
@@ -125,7 +155,17 @@ public class MusicPlayerClient {
     }
 
 
-    public void save(){
+    /**
+     * 保存当前播放记录，用于下次启动继续播放
+     *
+     * @author leck
+     * @date 2026/05/09
+     */
+    public void close(){
+        if (monitorForMusicService.isRunning()) {
+            monitorForMusicService.cancel();
+        }
+
         Music music = player.getPlayingMusic();
         if (music != null){
             String id = String.valueOf(music.getId());
