@@ -21,15 +21,16 @@ public class LrcBean {
     public LrcBean(long longTime, String time, String rowText) {
         this.longTime = longTime;
         this.time = time;
-        //判断歌词是否有翻译
-        Matcher matcher=Pattern.compile("(.+)(「.*」)").matcher(rowText);
+        // 判断歌词是否有单行内的「」翻译（兼容旧格式）
+        Matcher matcher = Pattern.compile("(.+)(「.*」)").matcher(rowText);
         if (matcher.find()){
-            this.rowText=matcher.group(1);
-            this.transText=matcher.group(2).substring(1,matcher.group(2).length()-1);
-        }else{
+            this.rowText = matcher.group(1).trim();
+            this.transText = matcher.group(2).substring(1, matcher.group(2).length() - 1).trim();
+        } else {
             this.rowText = rowText;
         }
     }
+
 
     public Boolean hasTranslate(){
         return transText!=null;
