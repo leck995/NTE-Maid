@@ -17,7 +17,7 @@ import java.util.ResourceBundle;
  */
 public class Config {
     private static final Logger log = LoggerFactory.getLogger(Config.class);
-    public static final String version = "0.9.0";
+    public static final String version = "1.0.0";
     public static final String appAuthor = "Leck";
 
     public static final String URL_SUPPORT_LIST = "https://www.yuque.com/chashuisuipian/sm05lg/ag7ct2or8ecz98cp";
