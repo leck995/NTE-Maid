@@ -16,5 +16,18 @@ public class RobotService {
     }
 
 
+    public void clickKeyCodeF(){
+        Robot robot = new Robot();
+        robot.keyPress(KeyCode.F);
+        robot.keyRelease(KeyCode.F);
+    }
+
+
+    public void clickKeyCodeESC(){
+        Robot robot = new Robot();
+        robot.keyPress(KeyCode.ESCAPE);
+        robot.keyRelease(KeyCode.ESCAPE);
+    }
+
 
 }

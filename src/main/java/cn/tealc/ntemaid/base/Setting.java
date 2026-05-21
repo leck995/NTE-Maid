@@ -75,6 +75,12 @@ public class Setting {
     private final SimpleDoubleProperty musicVolume = new SimpleDoubleProperty(0.5); //歌曲目录
     private final SimpleBooleanProperty musicEnable = new SimpleBooleanProperty(true); //启动游戏音乐播放功能
 
+
+    /*=================钓鱼相关===================*/
+    private final SimpleBooleanProperty fishing = new SimpleBooleanProperty(true);//开启钓鱼优化
+    private final SimpleBooleanProperty fishingBait = new SimpleBooleanProperty(true);//自动拉杆
+    private final SimpleBooleanProperty fishingFinish = new SimpleBooleanProperty(true);//退出结算界面
+
     // 自定义序列化器
     public static class ObservableListSerializer extends JsonSerializer<ObservableList<String>> {
         @Override
@@ -489,5 +495,41 @@ public class Setting {
 
     public void setMusicEnable(boolean musicEnable) {
         this.musicEnable.set(musicEnable);
+    }
+
+    public boolean isFishing() {
+        return fishing.get();
+    }
+
+    public SimpleBooleanProperty fishingProperty() {
+        return fishing;
+    }
+
+    public void setFishing(boolean fishing) {
+        this.fishing.set(fishing);
+    }
+
+    public boolean isFishingBait() {
+        return fishingBait.get();
+    }
+
+    public SimpleBooleanProperty fishingBaitProperty() {
+        return fishingBait;
+    }
+
+    public void setFishingBait(boolean fishingBait) {
+        this.fishingBait.set(fishingBait);
+    }
+
+    public boolean isFishingFinish() {
+        return fishingFinish.get();
+    }
+
+    public SimpleBooleanProperty fishingFinishProperty() {
+        return fishingFinish;
+    }
+
+    public void setFishingFinish(boolean fishingFinish) {
+        this.fishingFinish.set(fishingFinish);
     }
 }

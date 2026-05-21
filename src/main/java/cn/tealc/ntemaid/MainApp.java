@@ -8,6 +8,7 @@ import cn.tealc.ntemaid.dao.JdbcUtils;
 import cn.tealc.ntemaid.jna.GameAppListener;
 import cn.tealc.ntemaid.jna.GlobalKeyListener;
 import cn.tealc.ntemaid.player.MusicPlayerClient;
+import cn.tealc.ntemaid.thread.game.log.LogMonitorManager;
 import cn.tealc.ntemaid.thread.system.StartGameTask;
 import cn.tealc.ntemaid.ui.system.MainView;
 import cn.tealc.ntemaid.ui.system.MainViewModel;
@@ -55,6 +56,9 @@ public class MainApp extends Application {
     @Override
     public void start(Stage stage) throws IOException {
         window = stage;
+        Thread.setDefaultUncaughtExceptionHandler((thread, throwable) -> {
+            LOG.error("检测到未捕获的异常: ", throwable);
+        });
         try {
             initStage(stage);
             initKeyHook();
@@ -62,11 +66,18 @@ public class MainApp extends Application {
             initSubscribe();
             createTrayIcon();
             autoStartGame();
+
+            startLogMonitor();
+
             LOG.info("应用启动成功");
         } catch (Exception e) {
             LOG.error("启动过程中发生严重错误", e);
             exit();
         }
+    }
+
+    private void startLogMonitor() {
+        LogMonitorManager.getInstance().start();
     }
 
     private void autoStartGame() {
@@ -144,6 +155,7 @@ public class MainApp extends Application {
         window.setMaximized(false);
         appLocked.release();
         MusicPlayerClient.getInstance().close();
+        LogMonitorManager.getInstance().stop();
         Config.save();
         JdbcUtils.exit();
         window.close();

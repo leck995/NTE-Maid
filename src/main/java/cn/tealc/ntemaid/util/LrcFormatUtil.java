@@ -11,7 +11,7 @@ import java.util.regex.Pattern;
  * description: LrcFormatUtil <br>
  * date: 2021/4/22 18:27 <br>
  * author: Leck <br>
- * version: 1.1 (Modified) <br>
+ * version: 1.1 (Modified)
  */
 public class LrcFormatUtil {
     private static final Pattern pattern = Pattern.compile("((\\[\\d{2,3}:\\d{2}\\.\\d{2,3}\\])+)(.+)");

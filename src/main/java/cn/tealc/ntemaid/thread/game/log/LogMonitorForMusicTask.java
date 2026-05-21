@@ -15,8 +15,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.function.Consumer;
 
-public class LogMonitorForMusicService extends ScheduledService<LogMonitorForMusicService.Event> {
-    private static final Logger log = LoggerFactory.getLogger(LogMonitorForMusicService.class);
+public class LogMonitorForMusicTask extends ScheduledService<LogMonitorForMusicTask.Event> {
+    private static final Logger log = LoggerFactory.getLogger(LogMonitorForMusicTask.class);
     private final Path logPath;
     private RandomAccessFile raf;
     private long lastKnownPosition = 0;
@@ -27,7 +27,13 @@ public class LogMonitorForMusicService extends ScheduledService<LogMonitorForMus
     private static final String MUSIC_PAUSE = "UHTSoundSubsystem UHTUI_Vehicle::OnPlayOrPauseBtnCallBack ScrollMusicTitle.isValid = [1], bChecked = [0]";
     private static final String BEGIN_TRANSFER = "LevelTransferState BeginTransfer";
     private static final String ENDPLAY_RACING = "EndPlay_Racing LEVEL_TYPE_RACING_PVP";
-    public LogMonitorForMusicService(Path logPath) {
+    private static final String FISHING_START = "CurrFishingState = FISHING_TYPE_THROWROD";
+    private static final String FISHING_BAIT = "CurrFishingState = FISHING_TYPE_BAIT";
+    private static final String FISHING_FINISH = "CurrFishingState = FISHING_TYPE_SELECTPOINT";
+
+
+
+    public LogMonitorForMusicTask(Path logPath) {
         this.logPath = logPath;
         setPeriod(Duration.seconds(1));
     }
@@ -35,10 +41,10 @@ public class LogMonitorForMusicService extends ScheduledService<LogMonitorForMus
     public void setOnEventDetected(Consumer<Event> handler) { this.onEventDetected = handler; }
 
     @Override
-    protected Task<LogMonitorForMusicService.Event> createTask() {
+    protected Task<LogMonitorForMusicTask.Event> createTask() {
         return new Task<>() {
             @Override
-            protected LogMonitorForMusicService.Event call() throws Exception {
+            protected LogMonitorForMusicTask.Event call() throws Exception {
                 // 每次执行时调用外部类的监控方法
                 checkAndReadNewLines();
                 return null;
@@ -133,6 +139,22 @@ public class LogMonitorForMusicService extends ScheduledService<LogMonitorForMus
                             Platform.runLater(() -> {
                                 if(onEventDetected != null) onEventDetected.accept(Event.ON_VEHICLE);
                             });
+                        } else if (decrypted.contains(FISHING_FINISH)) {
+                            log.debug("检测到玩家钓鱼结束");
+                            Platform.runLater(() -> {
+                                if(onEventDetected != null) onEventDetected.accept(Event.FISHING_FINISH);
+                            });
+                        } else if (decrypted.contains(FISHING_BAIT)) {
+                            log.debug("检测到玩家钓鱼上钩");
+                            Platform.runLater(() -> {
+                                if(onEventDetected != null) onEventDetected.accept(Event.FISHING_BAIT);
+                            });
+                        }
+                        else if (decrypted.contains(FISHING_START)) {
+                            log.debug("检测到玩家开始钓鱼");
+                            Platform.runLater(() -> {
+                                if(onEventDetected != null) onEventDetected.accept(Event.FISHING_START);
+                            });
                         }
                     }
                 }
@@ -173,6 +195,9 @@ public class LogMonitorForMusicService extends ScheduledService<LogMonitorForMus
         MUSIC_PLAYING,
         MUSIC_PAUSE,
         BEGIN_TRANSFER,
-        ENDPLAY_RACING //在线赛车结束
+        ENDPLAY_RACING, //在线赛车结束
+        FISHING_START,
+        FISHING_BAIT,
+        FISHING_FINISH
     }
 }

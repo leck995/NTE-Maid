@@ -1,5 +1,6 @@
 package cn.tealc.ntemaid.ui.game.manage;
 
+import atlantafx.base.controls.ToggleSwitch;
 import atlantafx.base.theme.Styles;
 import cn.tealc.ntemaid.base.Config;
 import cn.tealc.ntemaid.base.notification.NotificationKey;
@@ -52,11 +53,27 @@ public class GameBaseSettingView implements FxmlView<GameBaseSettingViewModel>, 
     private TextField paramField;
     @FXML
     private ToggleGroup gameDxToggleGroup;
+    @FXML
+    private ToggleSwitch fishingEnableSwitch;
+    @FXML
+    private ToggleSwitch fishingBaitSwitch;
+    @FXML
+    private ToggleSwitch fishingFinishSwitch;
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         viewModel.init();
         initGameAsset();
         initStartParam();
+
+        initFishing();
+    }
+
+    private void initFishing() {
+        fishingEnableSwitch.selectedProperty().bindBidirectional(Config.setting.fishingProperty());
+        fishingBaitSwitch.selectedProperty().bindBidirectional(Config.setting.fishingBaitProperty());
+        fishingFinishSwitch.selectedProperty().bindBidirectional(Config.setting.fishingFinishProperty());
+        fishingBaitSwitch.disableProperty().bind(fishingEnableSwitch.selectedProperty().not());
+        fishingFinishSwitch.disableProperty().bind(fishingEnableSwitch.selectedProperty().not());
     }
 
 

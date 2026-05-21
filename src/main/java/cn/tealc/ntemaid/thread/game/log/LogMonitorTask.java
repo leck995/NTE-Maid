@@ -10,13 +10,13 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-public class LogMonitorService extends ScheduledService<Void> {
+public class LogMonitorTask extends ScheduledService<Void> {
 
     private final Path logPath;
     private RandomAccessFile raf;
     private long lastKnownPosition = 0;
     private boolean firstRun = true; // 引入标志位，默认为第一次执行
-    public LogMonitorService(Path logPath) {
+    public LogMonitorTask(Path logPath) {
         this.logPath = logPath;
         setPeriod(Duration.seconds(1));
         //setDelay(Duration.seconds(1));

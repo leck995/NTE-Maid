@@ -2,10 +2,8 @@ package cn.tealc.ntemaid.ui.game.music;
 
 import atlantafx.base.util.Animations;
 import de.saxsys.mvvmfx.*;
-import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
@@ -77,7 +75,7 @@ public class MusicParentView extends BorderPane implements FxmlView<MusicParentV
     void toPlaylistListView() {
         if (toPlaylistListViewBtn.isSelected()) {
             if (playlistView == null) {
-                ViewTuple<PlayListView, PlayListViewModel> viewTuple = FluentViewLoader.fxmlView(PlayListView.class).load();
+                ViewTuple<PlaylistView, PlaylistViewModel> viewTuple = FluentViewLoader.fxmlView(PlaylistView.class).load();
                 playlistView = viewTuple.getView();
             }
             content.getChildren().setAll(playlistView);

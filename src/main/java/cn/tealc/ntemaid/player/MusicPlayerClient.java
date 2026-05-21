@@ -1,91 +1,36 @@
 package cn.tealc.ntemaid.player;
 
-import cn.tealc.ntemaid.base.Config;
 import cn.tealc.ntemaid.model.game.music.Music;
 import cn.tealc.ntemaid.service.ConfigService;
 import cn.tealc.ntemaid.service.PlayingListService;
 import cn.tealc.ntemaid.service.RobotService;
 import cn.tealc.ntemaid.service.impl.ConfigServiceImpl;
-import cn.tealc.ntemaid.thread.game.log.LogMonitorForMusicService;
+import cn.tealc.ntemaid.thread.game.log.LogMonitorForMusicTask;
+import cn.tealc.ntemaid.thread.game.log.LogMonitorManager;
 import javafx.animation.PauseTransition;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
-import javafx.scene.input.KeyCode;
-import javafx.scene.robot.Robot;
 import javafx.util.Duration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
 
 public class MusicPlayerClient {
     private static final Logger log = LoggerFactory.getLogger(MusicPlayerClient.class);
     private static volatile MusicPlayerClient client;
-    private BaseAudioPlayer player;
-    private static final String ON_VEHICLE = "End Get On Vehicle";
-    private static final String Off_VEHICLE = "Start Get Off Vehicle";
-    private static final String MUSIC_PLAYING = "UHTSoundSubsystem UHTUI_Vehicle::OnPlayOrPauseBtnCallBack ScrollMusicTitle.isValid = [1], bChecked = [1]";
-    private static final String MUSIC_PAUSE = "UHTSoundSubsystem UHTUI_Vehicle::OnPlayOrPauseBtnCallBack ScrollMusicTitle.isValid = [1], bChecked = [0]";
-    private static final String BEGIN_TRANSFER = "LevelTransferState BeginTransfer";
-
-
+    private final BaseAudioPlayer player;
     private static final String CONFIG_KEY = "last_music";
-    private ConfigService configService = new ConfigServiceImpl();
-    private LogMonitorForMusicService monitorForMusicService;
+    private final ConfigService configService = new ConfigServiceImpl();
 
     private MusicPlayerClient() {
         player = new FxMediaPlayer();
     }
 
-    private boolean isFirstTime = true;
-
-    private void initLogMonitor() {
-        String localAppData = System.getenv("LOCALAPPDATA");
-        Path logPath = Paths.get(localAppData, "HT", "Saved", "Logs", "HT.log");
-        monitorForMusicService = new LogMonitorForMusicService(logPath);
-        monitorForMusicService.setOnEventDetected(event -> {
-            if (!Config.setting.isMusicEnable()){
-                return;
-            }
-            switch (event) {
-                case Off_VEHICLE, BEGIN_TRANSFER,ENDPLAY_RACING -> player.pauseWithFadeOut();
-                case ON_VEHICLE -> player.playWithFadeIn();
-                case MUSIC_PLAYING -> {
-                    if (isFirstTime){
-                        log.info("游戏启动第一次开车，关闭游戏内音乐");
-                        isFirstTime = false;
-                        stopGameFirstMusic();
-                    }
-
-                }
-            }
-        });
-        monitorForMusicService.start();
-    }
-
-
-    public void init(){
+    public void init() {
         initPlayList();
         initPlayingMusic();
-        initLogMonitor();
         addMusicListChangListener();
-    }
-
-    /**
-     * 关闭游戏内音乐
-     * @author leck
-     * @date 2026/05/09
-     */
-    public void stopGameFirstMusic() {
-        PauseTransition pause = new PauseTransition(Duration.millis(1500));
-        pause.setOnFinished(e -> {
-            RobotService robotService = new RobotService();
-            robotService.clickKeyCodeDigit2();
-        });
-        pause.play();
-
     }
 
     /**
@@ -96,7 +41,7 @@ public class MusicPlayerClient {
      */
     private void addMusicListChangListener() {
         PlayingListService playingListService = new PlayingListService();
-        player.musics.addListener((ListChangeListener<? super Music>) change ->{
+        player.musics.addListener((ListChangeListener<? super Music>) change -> {
             @SuppressWarnings("unchecked")
             List<Music> musicList = (List<Music>) change.getList();
             playingListService.updatePlayingListAsync(musicList);
@@ -133,8 +78,8 @@ public class MusicPlayerClient {
     private void initPlayList() {
         PlayingListService service = new PlayingListService();
         List<Music> playinglist = service.getSavedPlayingList();
-        if (!playinglist.isEmpty()){
-            player.init(playinglist,0);
+        if (!playinglist.isEmpty()) {
+            player.init(playinglist, 0);
         }
     }
 
@@ -161,17 +106,13 @@ public class MusicPlayerClient {
      * @author leck
      * @date 2026/05/09
      */
-    public void close(){
-        if (monitorForMusicService.isRunning()) {
-            monitorForMusicService.cancel();
-        }
-
+    public void close() {
         Music music = player.getPlayingMusic();
-        if (music != null){
+        if (music != null) {
             String id = String.valueOf(music.getId());
             String currentTime = String.valueOf(player.getCurrentTime());
-            configService.setConfig("last_music",id,currentTime);
-        }else {
+            configService.setConfig("last_music", id, currentTime);
+        } else {
             configService.removeConfig("last_music");
         }
     }

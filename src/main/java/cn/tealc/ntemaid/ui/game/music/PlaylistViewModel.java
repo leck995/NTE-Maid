@@ -14,13 +14,13 @@ import javafx.collections.ObservableList;
 import java.util.List;
 import java.util.Optional;
 
-public class PlayListViewModel implements ViewModel {
+public class PlaylistViewModel implements ViewModel {
     private final PlaylistService playlistService;
     private final ObservableList<Playlist> playlists = FXCollections.observableArrayList();
     private final ObservableList<Music> musicList = FXCollections.observableArrayList();
     private final SimpleObjectProperty<Playlist> selectedPlayList = new SimpleObjectProperty<>();
 
-    public PlayListViewModel() {
+    public PlaylistViewModel() {
         playlistService = new PlaylistService();
         getAllPlaylist();
     }

@@ -27,10 +27,10 @@ import java.net.URL;
 import java.util.List;
 import java.util.ResourceBundle;
 
-public class PlayListView implements FxmlView<PlayListViewModel>, Initializable {
-    private static final Logger log = LoggerFactory.getLogger(PlayListView.class);
+public class PlaylistView implements FxmlView<PlaylistViewModel>, Initializable {
+    private static final Logger log = LoggerFactory.getLogger(PlaylistView.class);
     @InjectViewModel
-    private PlayListViewModel viewModel;
+    private PlaylistViewModel viewModel;
     @FXML
     private TableColumn<Music, String> musicAlbumCol;
     @FXML
