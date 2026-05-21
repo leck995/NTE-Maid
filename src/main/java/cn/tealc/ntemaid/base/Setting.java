@@ -54,6 +54,7 @@ public class Setting {
     private final SimpleIntegerProperty closeEvent = new SimpleIntegerProperty(0); //关闭主界面行为，0选择，1退出，2最小化
     /*=================设置-游戏行为===================*/
     private final SimpleBooleanProperty exitWhenGameOver = new SimpleBooleanProperty(false); //检测到游戏关闭自动关闭程序
+    private final SimpleBooleanProperty autoKillOfficialLauncher = new SimpleBooleanProperty(false); //自动关闭官方启动器
     private final SimpleBooleanProperty hideWhenGameStart = new SimpleBooleanProperty(false); //检测到游戏启动自动隐藏程序至托盘
     private final SimpleBooleanProperty silentStartup = new SimpleBooleanProperty(false); //静默启动
     private final SimpleBooleanProperty autoStartGame = new SimpleBooleanProperty(false); //启动时同时启动游戏
@@ -531,5 +532,17 @@ public class Setting {
 
     public void setFishingFinish(boolean fishingFinish) {
         this.fishingFinish.set(fishingFinish);
+    }
+
+    public boolean isAutoKillOfficialLauncher() {
+        return autoKillOfficialLauncher.get();
+    }
+
+    public SimpleBooleanProperty autoKillOfficialLauncherProperty() {
+        return autoKillOfficialLauncher;
+    }
+
+    public void setAutoKillOfficialLauncher(boolean autoKillOfficialLauncher) {
+        this.autoKillOfficialLauncher.set(autoKillOfficialLauncher);
     }
 }

@@ -92,6 +92,8 @@ public class SettingView implements FxmlView<SettingViewModel>, Initializable {
     private ToggleSwitch silentStartUp;
     @FXML
     private ToggleSwitch autoStartGame;
+    @FXML
+    private ToggleSwitch autoKillOfficialLauncher;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -109,6 +111,7 @@ public class SettingView implements FxmlView<SettingViewModel>, Initializable {
         exitWhenGameOver.selectedProperty().bindBidirectional(viewModel.exitWhenGameOverProperty());
         silentStartUp.selectedProperty().bindBidirectional(Config.setting.silentStartupProperty());
         autoStartGame.selectedProperty().bindBidirectional(Config.setting.autoStartGameProperty());
+        autoKillOfficialLauncher.selectedProperty().bindBidirectional(Config.setting.autoKillOfficialLauncherProperty());
 
 
         diyBgField.textProperty().bindBidirectional(viewModel.diyHomeBgNameProperty());
@@ -181,6 +184,8 @@ public class SettingView implements FxmlView<SettingViewModel>, Initializable {
 
 
         fileSourceType.getToggles().get(Config.setting.getResourceSource()).setSelected(true);
+
+
     }
 
 

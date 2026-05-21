@@ -4,6 +4,7 @@ import cn.tealc.ntemaid.base.Config;
 import cn.tealc.ntemaid.base.notification.NotificationKey;
 import cn.tealc.ntemaid.base.notification.NotificationManager;
 import cn.tealc.ntemaid.service.GameTimeService;
+import cn.tealc.ntemaid.service.NativeProcessService;
 import cn.tealc.ntemaid.service.impl.GameTimeServiceImpl;
 import com.sun.jna.Native;
 import com.sun.jna.platform.win32.User32;
@@ -88,6 +89,12 @@ public class GameAppListener implements WinUser.WinEventProc {
 
             gameTimeService.saveSession(startGameTime, endTime);
             LOG.info("检测到异环已经结束，记录已保存");
+
+            if (Config.setting.isAutoKillOfficialLauncher()){
+                LOG.info("游戏结束，自动退出官方启动器");
+                NativeProcessService service = new NativeProcessService();
+                service.killOfficialLauncher();
+            }
 
             if (Config.setting.isExitWhenGameOver()){
                 LOG.info("游戏结束，自动退出程序");
