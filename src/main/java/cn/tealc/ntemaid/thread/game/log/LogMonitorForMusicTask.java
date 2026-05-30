@@ -30,6 +30,7 @@ public class LogMonitorForMusicTask extends ScheduledService<LogMonitorForMusicT
     private static final String FISHING_START = "CurrFishingState = FISHING_TYPE_THROWROD";
     private static final String FISHING_BAIT = "CurrFishingState = FISHING_TYPE_BAIT";
     private static final String FISHING_FINISH = "CurrFishingState = FISHING_TYPE_SELECTPOINT";
+    private static final String OPEN_ADVENTURE_MANUAL = "OnUIOpened ResetbIgnoreInputing UIName:AdventureManual";
 
 
 
@@ -156,6 +157,12 @@ public class LogMonitorForMusicTask extends ScheduledService<LogMonitorForMusicT
                                 if(onEventDetected != null) onEventDetected.accept(Event.FISHING_START);
                             });
                         }
+                        else if (decrypted.contains(OPEN_ADVENTURE_MANUAL)) {
+                            log.debug("检测到玩家打开探索指南");
+                            Platform.runLater(() -> {
+                                if(onEventDetected != null) onEventDetected.accept(Event.OPEN_ADVENTURE_MANUAL);
+                            });
+                        }
                     }
                 }
             }
@@ -198,6 +205,7 @@ public class LogMonitorForMusicTask extends ScheduledService<LogMonitorForMusicT
         ENDPLAY_RACING, //在线赛车结束
         FISHING_START,
         FISHING_BAIT,
-        FISHING_FINISH
+        FISHING_FINISH,
+        OPEN_ADVENTURE_MANUAL
     }
 }

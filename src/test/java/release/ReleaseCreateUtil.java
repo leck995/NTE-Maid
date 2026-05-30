@@ -17,7 +17,7 @@ import java.util.Date;
  * @create: 2024-12-22 15:20
  */
 public class ReleaseCreateUtil {
-    private static final String JAR_PATH = "D:\\Code\\Reposities\\JavaFX\\NTEMaid\\target\\NTEMaid-0.9.0.jar";
+    private static final String JAR_PATH = "D:\\Code\\Reposities\\JavaFX\\NTEMaid\\target\\NTEMaid-1.0.0.jar";
     private static final String RELEASE_FILE="release/release.json";
     public static void main(String[] args) throws IOException {
         Release latestRelease = latestRelease();
@@ -37,9 +37,9 @@ public class ReleaseCreateUtil {
                 若无法自动更新，请前往发布页或者群手动下载最新版程序。
                 
                 更新日志：
-                1. 重新设计窗口装饰，可自由拖动与响应系统事件
-                2. 修复角色查看数据不刷新的问题
-                3. 其他修复与优化
+                1. 新增游戏钓鱼优化功能，减少钓鱼的繁琐度
+                2. 新增自动关闭官方启动器功能
+                3. 优化播放器功能
                 
                 """;
         boolean latestForce = false; //是否是强制更新

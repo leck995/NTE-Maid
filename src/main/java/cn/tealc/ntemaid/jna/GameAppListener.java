@@ -109,4 +109,8 @@ public class GameAppListener implements WinUser.WinEventProc {
         }
         return 0;
     }
+
+    public WinDef.HWND getGameHWND() {
+        return game;
+    }
 }

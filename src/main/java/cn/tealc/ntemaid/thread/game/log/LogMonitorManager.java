@@ -2,6 +2,7 @@ package cn.tealc.ntemaid.thread.game.log;
 
 import cn.tealc.ntemaid.thread.game.log.event.FishingEvent;
 import cn.tealc.ntemaid.thread.game.log.event.MusicPlayerEvent;
+import cn.tealc.ntemaid.thread.game.log.event.OtherEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,6 +41,8 @@ public class LogMonitorManager {
         });
         addListener(new MusicPlayerEvent());
         addListener(new FishingEvent());
+        addListener(new OtherEvent());
+
     }
 
     public static LogMonitorManager getInstance() {
