@@ -3,7 +3,6 @@ package cn.tealc.ntemaid.thread.game.log.event;
 import cn.tealc.ntemaid.jna.Win32KeySender;
 import cn.tealc.ntemaid.jna.WindowClientSizeUtil;
 import cn.tealc.ntemaid.thread.game.log.LogMonitorForMusicTask;
-import javafx.animation.PauseTransition;
 import javafx.geometry.Point2D;
 import javafx.util.Duration;
 import org.slf4j.Logger;
@@ -16,6 +15,7 @@ import java.util.function.Consumer;
 
 public class OtherEvent implements Consumer<LogMonitorForMusicTask.Event> {
     private static final Logger log = LoggerFactory.getLogger(OtherEvent.class);
+
     private final Win32KeySender win32KeySender;
     private final Map<String, Point2D> screenMap = new HashMap<>();
 
@@ -43,11 +43,7 @@ public class OtherEvent implements Consumer<LogMonitorForMusicTask.Event> {
                 log.debug("当前窗户尺寸不在预设范围");
                 return;
             }
-            PauseTransition pause = new PauseTransition(Duration.seconds(0.5));
-            pause.setOnFinished(event1 -> {
-                win32KeySender.clickLeft((int) point2D.getX(), (int) point2D.getY());//1280*720
-            });
-            pause.play();
+            win32KeySender.clickLeft((int) point2D.getX(), (int) point2D.getY(), Duration.seconds(0.5));
         }
     }
 
