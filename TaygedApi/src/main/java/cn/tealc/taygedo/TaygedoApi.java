@@ -4,19 +4,11 @@ import cn.tealc.taygedo.model.*;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import javax.crypto.Cipher;
-import javax.crypto.spec.SecretKeySpec;
 import java.net.URI;
-import java.net.URLEncoder;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.nio.charset.StandardCharsets;
-import java.security.SecureRandom;
-import java.time.Duration;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -54,32 +46,24 @@ import static cn.tealc.taygedo.TaygedoConstants.*;
  * </ul>
  */
 public class TaygedoApi {
-    private static final Logger log = LoggerFactory.getLogger(TaygedoApi.class);
     private static final ObjectMapper MAPPER = new ObjectMapper();
-    private static final SecureRandom SECURE_RANDOM = new SecureRandom();
 
-    private final HttpClient httpClient;
-
-    /** 是否输出详细日志（请求体和响应体），默认关闭 */
-    private volatile boolean verbose = true;
+    private final TaygedoHttpClient http;
 
     public TaygedoApi() {
-        this.httpClient = HttpClient.newBuilder()
-                .connectTimeout(Duration.ofSeconds(10))
-                .build();
+        this.http = new TaygedoHttpClient();
     }
 
     public TaygedoApi(HttpClient httpClient) {
-        this.httpClient = httpClient;
+        this.http = new TaygedoHttpClient(httpClient);
     }
 
-    /** 设置是否输出请求体和响应体的详细日志 */
     public void setVerbose(boolean verbose) {
-        this.verbose = verbose;
+        http.setVerbose(verbose);
     }
 
     public boolean isVerbose() {
-        return verbose;
+        return http.isVerbose();
     }
 
     // ==================== 登录流程 ====================
@@ -108,9 +92,9 @@ public class TaygedoApi {
         body.put("bid", "com.pwrd.htassistant");
         body.put("channelId", "1");
 
-        String encodedBody = signedLaohuBody(body);
-        HttpRequest request = buildLaohuRequestWithBody("/m/newApi/sendPhoneCaptchaWithOutLogin", encodedBody);
-        executeLaohuAndParse(request, "sendCaptcha", encodedBody);
+        String encodedBody = TaygedoCrypto.signedLaohuBody(body);
+        HttpRequest request = http.buildLaohuRequestWithBody("/m/newApi/sendPhoneCaptchaWithOutLogin", encodedBody);
+        http.executeLaohuAndParse(request, "sendCaptcha", encodedBody);
     }
 
     /**
@@ -137,9 +121,9 @@ public class TaygedoApi {
         body.put("bid", "com.pwrd.htassistant");
         body.put("channelId", "1");
 
-        String encodedBody = signedLaohuBody(body);
-        HttpRequest request = buildLaohuRequestWithBody("/m/newApi/checkPhoneCaptchaWithOutLogin", encodedBody);
-        executeLaohuAndParse(request, "checkCaptcha", encodedBody);
+        String encodedBody = TaygedoCrypto.signedLaohuBody(body);
+        HttpRequest request = http.buildLaohuRequestWithBody("/m/newApi/checkPhoneCaptchaWithOutLogin", encodedBody);
+        http.executeLaohuAndParse(request, "checkCaptcha", encodedBody);
     }
 
     /**
@@ -165,18 +149,18 @@ public class TaygedoApi {
         body.put("mac", "");
         body.put("t", String.valueOf(System.currentTimeMillis()));
         body.put("areaCodeId", "1");
-        body.put("captcha", aesBase64Encode(captcha));
+        body.put("captcha", TaygedoCrypto.aesBase64Encode(captcha));
         body.put("appId", "10550");
         body.put("deviceSys", "12");
-        body.put("cellphone", aesBase64Encode(phone));
+        body.put("cellphone", TaygedoCrypto.aesBase64Encode(phone));
         body.put("deviceModel", "LGE-AN10");
         body.put("sdkVersion", "4.129.0");
         body.put("bid", "com.pwrd.htassistant");
         body.put("channelId", "1");
 
-        String encodedBody = signedLaohuBody(body);
-        HttpRequest request = buildLaohuRequestWithBody("/openApi/sms/new/login", encodedBody);
-        JsonNode data = executeLaohuAndParse(request, "loginWithCaptcha", encodedBody);
+        String encodedBody = TaygedoCrypto.signedLaohuBody(body);
+        HttpRequest request = http.buildLaohuRequestWithBody("/openApi/sms/new/login", encodedBody);
+        JsonNode data = http.executeLaohuAndParse(request, "loginWithCaptcha", encodedBody);
         return extractLaohuLoginResult(data, "loginWithCaptcha");
     }
 
@@ -203,16 +187,16 @@ public class TaygedoApi {
         body.put("t", String.valueOf(System.currentTimeMillis()));
         body.put("appId", "10550");
         body.put("deviceSys", "12");
-        body.put("username", aesBase64Encode(phone));
-        body.put("password", aesBase64Encode(password));
+        body.put("username", TaygedoCrypto.aesBase64Encode(phone));
+        body.put("password", TaygedoCrypto.aesBase64Encode(password));
         body.put("deviceModel", "LGE-AN10");
         body.put("sdkVersion", "4.129.0");
         body.put("bid", "com.pwrd.htassistant");
         body.put("channelId", "1");
 
-        String encodedBody = signedLaohuBody(body);
-        HttpRequest request = buildLaohuRequestWithBody("/openApi/secureLogin", encodedBody);
-        JsonNode data = executeLaohuAndParse(request, "loginWithPassword", encodedBody);
+        String encodedBody = TaygedoCrypto.signedLaohuBody(body);
+        HttpRequest request = http.buildLaohuRequestWithBody("/openApi/secureLogin", encodedBody);
+        JsonNode data = http.executeLaohuAndParse(request, "loginWithPassword", encodedBody);
         return extractLaohuLoginResult(data, "loginWithPassword");
     }
 
@@ -227,7 +211,7 @@ public class TaygedoApi {
      * @throws TaygedoException 登录失败时抛出
      */
     public UserCenterLoginResult userCenterLogin(String token, String userId, String deviceId) {
-        String body = formEncode(Map.of("token", token, "userIdentity", userId, "appId", "10551"));
+        String body = TaygedoHttpClient.formEncode(Map.of("token", token, "userIdentity", userId, "appId", "10551"));
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(TAYGEDO_BASE_URL + "/usercenter/api/login"))
                 .header("platform", "android")
@@ -240,7 +224,7 @@ public class TaygedoApi {
                 .POST(HttpRequest.BodyPublishers.ofString(body))
                 .build();
 
-        JsonNode root = executeAndParse(request, "userCenterLogin", body);
+        JsonNode root = http.executeAndParse(request, "userCenterLogin", body);
         JsonNode data = root.get("data");
         if (data == null || !data.has("accessToken") || !data.has("refreshToken") || !data.has("uid")) {
             throw new TaygedoException("userCenterLogin 返回数据缺少必要字段");
@@ -273,23 +257,16 @@ public class TaygedoApi {
                 .POST(HttpRequest.BodyPublishers.noBody())
                 .build();
 
-        logRequest(request, null, "refreshToken");
-
-        HttpResponse<String> response;
-        try {
-            response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-        } catch (Exception e) {
-            throw new TaygedoException("refreshToken 请求失败: " + e.getMessage(), e);
-        }
-
-        logResponse(response, "refreshToken");
+        http.logRequest(request, null, "refreshToken");
+        HttpResponse<String> response = http.send(request, "refreshToken");
+        http.logResponse(response, "refreshToken");
 
         if (response.statusCode() == 402) {
             throw new TaygedoException("REFRESH_REJECTED_402: refreshToken 已失效，请重新登录");
         }
 
-        JsonNode root = parseJsonBody(response, "refreshToken");
-        checkApiCode(root, response, "refreshToken");
+        JsonNode root = http.parseJsonBody(response, "refreshToken");
+        http.checkApiCode(root, response, "refreshToken");
         JsonNode data = root.get("data");
         if (data == null || !data.has("accessToken") || !data.has("refreshToken")) {
             throw new TaygedoException("refreshToken 返回数据缺少必要字段");
@@ -315,9 +292,9 @@ public class TaygedoApi {
      * @throws TaygedoException 请求失败时抛出
      */
     public GameRolesResult getGameRoles(String accessToken, String uid, String deviceId, String gameId) {
-        HttpRequest request = buildNativeGet("/usercenter/api/v2/getGameRoles",
+        HttpRequest request = http.buildNativeGet("/usercenter/api/v2/getGameRoles",
                 Map.of("gameId", gameId), accessToken, uid, deviceId);
-        JsonNode root = executeAndParse(request, "getGameRoles", null);
+        JsonNode root = http.executeAndParse(request, "getGameRoles", null);
         JsonNode data = root.get("data");
         if (data == null) {
             throw new TaygedoException("getGameRoles 返回数据为空");
@@ -345,14 +322,14 @@ public class TaygedoApi {
      * @throws TaygedoException 请求失败时抛出
      */
     public BindRoleInfo getBindRole(String accessToken, String uid, String gameId) {
-        String url = buildUrl("/apihub/api/getGameBindRole", Map.of("uid", uid, "gameId", gameId));
+        String url = http.buildUrl("/apihub/api/getGameBindRole", Map.of("uid", uid, "gameId", gameId));
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(url))
                 .header("Authorization", accessToken)
                 .GET()
                 .build();
 
-        JsonNode root = executeAndParse(request, "getBindRole", null);
+        JsonNode root = http.executeAndParse(request, "getBindRole", null);
         JsonNode dataNode = root.get("data");
         if (dataNode == null) {
             throw new TaygedoException("getBindRole 返回数据为空");
@@ -366,7 +343,6 @@ public class TaygedoApi {
 
     /**
      * 获取游戏记录卡（角色发现的备用数据源）
-     * 当getGameRoles返回空时，可尝试此接口获取角色信息
      *
      * @param accessToken 塔吉多访问令牌
      * @param uid         用户ID
@@ -375,9 +351,9 @@ public class TaygedoApi {
      * @throws TaygedoException 请求失败时抛出
      */
     public GameRecordCardResult getGameRecordCards(String accessToken, String uid, String deviceId) {
-        HttpRequest request = buildNativeGet("/apihub/api/getGameRecordCard",
+        HttpRequest request = http.buildNativeGet("/apihub/api/getGameRecordCard",
                 Map.of("uid", uid), accessToken, uid, deviceId);
-        JsonNode root = executeAndParse(request, "getGameRecordCards", null);
+        JsonNode root = http.executeAndParse(request, "getGameRecordCards", null);
         JsonNode dataNode = root.get("data");
         if (dataNode == null || !dataNode.isArray()) {
             throw new TaygedoException("getGameRecordCards 返回数据为空");
@@ -397,24 +373,35 @@ public class TaygedoApi {
             throw new TaygedoException("getGameRecordCards 解析响应失败: " + e.getMessage(), e);
         }
     }
+    // ==================== 抽卡数据 ====================
+
+    public void getGameGacha(String accessToken) {
+        String url = http.buildUrl("/apihub/awapi/yh/gacha", Map.of());
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(url))
+                .header("Authorization", accessToken)
+                .GET()
+                .build();
+
+    }
+
 
     // ==================== 签到 ====================
 
     /**
      * APP签到
-     * 塔吉多App每日签到，获得经验值和金币
      *
      * @param accessToken 塔吉多访问令牌
      * @param uid         用户ID
      * @param deviceId    设备唯一标识
      * @return 签到结果（经验值 + 金币数）
-     * @throws TaygedoException 签到失败时抛出（注意：重复签到也会抛出异常，调用方需自行处理幂等）
+     * @throws TaygedoException 签到失败时抛出（注意：重复签到也会抛出异常）
      */
     public AppSigninResult appSignin(String accessToken, String uid, String deviceId) {
-        String body = formEncode(Map.of("communityId", "1"));
-        HttpRequest request = buildNativePostWithBody("/apihub/api/signin",
+        String body = TaygedoHttpClient.formEncode(Map.of("communityId", "1"));
+        HttpRequest request = http.buildNativePostWithBody("/apihub/api/signin",
                 null, body, accessToken, uid, deviceId);
-        JsonNode root = executeAndParse(request, "appSignin", body);
+        JsonNode root = http.executeAndParse(request, "appSignin", body);
         JsonNode data = root.get("data");
         if (data == null) {
             throw new TaygedoException("appSignin 返回数据为空");
@@ -428,7 +415,6 @@ public class TaygedoApi {
 
     /**
      * 异环游戏签到
-     * 对指定游戏的指定角色执行每日签到
      *
      * @param accessToken 塔吉多访问令牌
      * @param roleId      角色ID
@@ -436,14 +422,13 @@ public class TaygedoApi {
      * @throws TaygedoException 签到失败时抛出（重复签到也会抛出异常）
      */
     public void gameSignin(String accessToken, String roleId, String gameId) {
-        String body = formEncode(Map.of("roleId", roleId, "gameId", gameId));
-        HttpRequest request = buildH5PostWithBody("/apihub/awapi/sign", null, body, accessToken);
-        executeAndParse(request, "gameSignin", body);
+        String body = TaygedoHttpClient.formEncode(Map.of("roleId", roleId, "gameId", gameId));
+        HttpRequest request = http.buildH5PostWithBody("/apihub/awapi/sign", null, body, accessToken);
+        http.executeAndParse(request, "gameSignin", body);
     }
 
     /**
      * 获取异环签到状态
-     * 查询当前月份已签到的累计天数
      *
      * @param accessToken 塔吉多访问令牌
      * @param gameId      游戏ID
@@ -451,9 +436,9 @@ public class TaygedoApi {
      * @throws TaygedoException 请求失败时抛出
      */
     public SigninState getSigninState(String accessToken, String gameId) {
-        HttpRequest request = buildH5Get("/apihub/awapi/signin/state",
+        HttpRequest request = http.buildH5Get("/apihub/awapi/signin/state",
                 Map.of("gameId", gameId), accessToken);
-        JsonNode root = executeAndParse(request, "getSigninState", null);
+        JsonNode root = http.executeAndParse(request, "getSigninState", null);
         JsonNode data = root.get("data");
         if (data == null) {
             throw new TaygedoException("getSigninState 返回数据为空");
@@ -467,7 +452,6 @@ public class TaygedoApi {
 
     /**
      * 获取异环签到奖励列表
-     * 返回当月每天的签到奖励配置，通过签到天数-1作为索引获取当天奖励
      *
      * @param accessToken 塔吉多访问令牌
      * @param gameId      游戏ID
@@ -475,9 +459,9 @@ public class TaygedoApi {
      * @throws TaygedoException 请求失败时抛出
      */
     public List<SigninReward> getSigninRewards(String accessToken, String gameId) {
-        HttpRequest request = buildH5Get("/apihub/awapi/sign/rewards",
+        HttpRequest request = http.buildH5Get("/apihub/awapi/sign/rewards",
                 Map.of("gameId", gameId), accessToken);
-        JsonNode root = executeAndParse(request, "getSigninRewards", null);
+        JsonNode root = http.executeAndParse(request, "getSigninRewards", null);
         JsonNode data = root.get("data");
         if (data == null || !data.isArray()) {
             throw new TaygedoException("getSigninRewards 返回数据为空");
@@ -497,18 +481,17 @@ public class TaygedoApi {
 
     /**
      * 获取用户任务状态
-     * 查询每日金币任务的完成进度（浏览、点赞、分享等）
      *
      * @param accessToken 塔吉多访问令牌
      * @param uid         用户ID
      * @param deviceId    设备唯一标识
-     * @return 金币任务列表，每项包含任务编码、已完成次数、上限次数
+     * @return 金币任务列表
      * @throws TaygedoException 请求失败时抛出
      */
     public List<CoinTask> getUserTasks(String accessToken, String uid, String deviceId) {
-        HttpRequest request = buildNativeGet("/apihub/api/getUserTasks",
+        HttpRequest request = http.buildNativeGet("/apihub/api/getUserTasks",
                 Map.of("gid", "1"), accessToken, uid, deviceId);
-        JsonNode root = executeAndParse(request, "getUserTasks", null);
+        JsonNode root = http.executeAndParse(request, "getUserTasks", null);
         JsonNode data = root.get("data");
         if (data == null) {
             throw new TaygedoException("getUserTasks 返回数据为空");
@@ -537,7 +520,6 @@ public class TaygedoApi {
 
     /**
      * BBS签到
-     * 社区金币签到（communityId=2），区别于APP签到（communityId=1）
      *
      * @param accessToken 塔吉多访问令牌
      * @param uid         用户ID
@@ -545,15 +527,14 @@ public class TaygedoApi {
      * @throws TaygedoException 签到失败时抛出
      */
     public void bbsSignin(String accessToken, String uid, String deviceId) {
-        String body = formEncode(Map.of("communityId", "2"));
-        HttpRequest request = buildNativePostWithBody("/apihub/api/signin",
+        String body = TaygedoHttpClient.formEncode(Map.of("communityId", "2"));
+        HttpRequest request = http.buildNativePostWithBody("/apihub/api/signin",
                 null, body, accessToken, uid, deviceId);
-        executeAndParse(request, "bbsSignin", body);
+        http.executeAndParse(request, "bbsSignin", body);
     }
 
     /**
      * 获取推荐帖子列表
-     * 用于完成浏览、点赞、分享等金币任务
      *
      * @param accessToken 塔吉多访问令牌
      * @param uid         用户ID
@@ -565,15 +546,14 @@ public class TaygedoApi {
      */
     public List<RecommendPost> getRecommendPostList(String accessToken, String uid, String deviceId,
                                                      int count, int page) {
-        HttpRequest request = buildNativeGet("/bbs/api/getRecommendPostList",
+        HttpRequest request = http.buildNativeGet("/bbs/api/getRecommendPostList",
                 Map.of("communityId", "2", "count", String.valueOf(count), "page", String.valueOf(page)),
                 accessToken, uid, deviceId);
-        JsonNode root = executeAndParse(request, "getRecommendPostList", null);
+        JsonNode root = http.executeAndParse(request, "getRecommendPostList", null);
         JsonNode dataNode = root.get("data");
         if (dataNode == null) {
             throw new TaygedoException("getRecommendPostList 返回数据为空");
         }
-        // 兼容多种响应格式：直接数组 / {list: [...]} / {posts: [...]}
         JsonNode list;
         if (dataNode.isArray()) {
             list = dataNode;
@@ -608,9 +588,9 @@ public class TaygedoApi {
      * @throws TaygedoException 请求失败时抛出
      */
     public RecommendPost getPostFull(String accessToken, String uid, String deviceId, String postId) {
-        HttpRequest request = buildNativeGet("/bbs/api/getPostFull",
+        HttpRequest request = http.buildNativeGet("/bbs/api/getPostFull",
                 Map.of("postId", postId), accessToken, uid, deviceId);
-        JsonNode root = executeAndParse(request, "getPostFull", null);
+        JsonNode root = http.executeAndParse(request, "getPostFull", null);
         JsonNode data = root.get("data");
         if (data == null || !data.isObject()) {
             throw new TaygedoException("getPostFull 返回数据为空");
@@ -632,10 +612,10 @@ public class TaygedoApi {
      * @throws TaygedoException 点赞失败时抛出
      */
     public void likePost(String accessToken, String uid, String deviceId, String postId) {
-        String body = formEncode(Map.of("postId", postId));
-        HttpRequest request = buildNativePostWithBody("/bbs/api/post/like",
+        String body = TaygedoHttpClient.formEncode(Map.of("postId", postId));
+        HttpRequest request = http.buildNativePostWithBody("/bbs/api/post/like",
                 null, body, accessToken, uid, deviceId);
-        executeAndParse(request, "likePost", body);
+        http.executeAndParse(request, "likePost", body);
     }
 
     /**
@@ -649,23 +629,22 @@ public class TaygedoApi {
      * @throws TaygedoException 分享失败时抛出
      */
     public void sharePost(String accessToken, String uid, String deviceId, String postId, String platform) {
-        String body = formEncode(Map.of("platform", platform, "postId", postId));
-        HttpRequest request = buildNativePostWithBody("/bbs/api/post/share",
+        String body = TaygedoHttpClient.formEncode(Map.of("platform", platform, "postId", postId));
+        HttpRequest request = http.buildNativePostWithBody("/bbs/api/post/share",
                 null, body, accessToken, uid, deviceId);
-        executeAndParse(request, "sharePost", body);
+        http.executeAndParse(request, "sharePost", body);
     }
 
     /**
      * 获取金币任务状态
-     * 查询当日金币获取汇总（今日已获得/每日上限）
      *
      * @param accessToken 塔吉多访问令牌
      * @return 金币状态
      * @throws TaygedoException 请求失败时抛出
      */
     public CoinState getUserCoinTaskState(String accessToken) {
-        HttpRequest request = buildH5Get("/apihub/api/getUserCoinTaskState", null, accessToken);
-        JsonNode root = executeAndParse(request, "getUserCoinTaskState", null);
+        HttpRequest request = http.buildH5Get("/apihub/api/getUserCoinTaskState", null, accessToken);
+        JsonNode root = http.executeAndParse(request, "getUserCoinTaskState", null);
         JsonNode data = root.get("data");
         if (data == null || !data.isObject()) {
             throw new TaygedoException("getUserCoinTaskState 返回数据为空");
@@ -677,273 +656,7 @@ public class TaygedoApi {
         }
     }
 
-    // ==================== 加密工具方法 ====================
-
-    /**
-     * 生成DS签名
-     * 格式：{timestamp},{nonce},{MD5(timestamp + nonce + appVer + dsSecret)}
-     * 用于Native请求的ds请求头
-     */
-    private static String makeDs() {
-        long timestamp = System.currentTimeMillis() / 1000;
-        String nonce = makeNonce();
-        String raw = timestamp + nonce + TAYGEDO_APP_VER + TAYGEDO_DS_SECRET;
-        String sign = org.apache.commons.codec.digest.DigestUtils.md5Hex(raw);
-        return timestamp + "," + nonce + "," + sign;
-    }
-
-    /**
-     * 生成8位随机nonce
-     * 使用拒绝采样避免模偏差，字符集为大小写字母+数字（62个字符）
-     */
-    private static String makeNonce() {
-        int alphabetLen = NONCE_ALPHABET.length();
-        int fairRange = (256 / alphabetLen) * alphabetLen;
-        StringBuilder nonce = new StringBuilder(8);
-        byte[] bytes = new byte[8];
-        while (nonce.length() < 8) {
-            SECURE_RANDOM.nextBytes(bytes);
-            for (byte b : bytes) {
-                int unsigned = b & 0xFF;
-                if (unsigned < fairRange) {
-                    nonce.append(NONCE_ALPHABET.charAt(unsigned % alphabetLen));
-                    if (nonce.length() == 8) break;
-                }
-            }
-        }
-        return nonce.toString();
-    }
-
-    /**
-     * 老虎平台请求签名
-     * 将参数按key排序后拼接所有value，再追加LAOHU_SECRET，计算MD5
-     */
-    private static String laohuSign(Map<String, String> data) {
-        String values = data.keySet().stream()
-                .sorted()
-                .map(data::get)
-                .collect(Collectors.joining());
-        return org.apache.commons.codec.digest.DigestUtils.md5Hex(values + LAOHU_SECRET);
-    }
-
-    /**
-     * 构建带签名的老虎请求体
-     * 先对原始数据计算签名，将sign字段加入参数，再form编码
-     */
-    private static String signedLaohuBody(Map<String, String> data) {
-        Map<String, String> withSign = new LinkedHashMap<>(data);
-        withSign.put("sign", laohuSign(data));
-        return formEncode(withSign);
-    }
-
-    /**
-     * AES-128-ECB加密并Base64编码
-     * 密钥为LAOHU_SECRET的后16个字符，用于加密手机号和验证码
-     */
-    private static String aesBase64Encode(String value) {
-        try {
-            String keyStr = LAOHU_SECRET.substring(LAOHU_SECRET.length() - AES_KEY_LENGTH);
-            SecretKeySpec key = new SecretKeySpec(keyStr.getBytes(StandardCharsets.UTF_8), "AES");
-            Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
-            cipher.init(Cipher.ENCRYPT_MODE, key);
-            byte[] encrypted = cipher.doFinal(value.getBytes(StandardCharsets.UTF_8));
-            return Base64.getEncoder().encodeToString(encrypted);
-        } catch (Exception e) {
-            throw new TaygedoException("AES 加密失败: " + e.getMessage(), e);
-        }
-    }
-
-    // ==================== HTTP请求构建 ====================
-
-    /** 将Map编码为application/x-www-form-urlencoded格式 */
-    private static String formEncode(Map<String, String> data) {
-        return data.entrySet().stream()
-                .map(e -> URLEncoder.encode(e.getKey(), StandardCharsets.UTF_8) + "="
-                        + URLEncoder.encode(e.getValue(), StandardCharsets.UTF_8))
-                .collect(Collectors.joining("&"));
-    }
-
-    /** 构建塔吉多API完整URL（基础地址 + 路径 + 查询参数） */
-    private static String buildUrl(String path, Map<String, String> query) {
-        StringBuilder sb = new StringBuilder(TAYGEDO_BASE_URL).append(path);
-        if (query != null && !query.isEmpty()) {
-            sb.append('?');
-            sb.append(query.entrySet().stream()
-                    .map(e -> URLEncoder.encode(e.getKey(), StandardCharsets.UTF_8) + "="
-                            + URLEncoder.encode(e.getValue(), StandardCharsets.UTF_8))
-                    .collect(Collectors.joining("&")));
-        }
-        return sb.toString();
-    }
-
-    /** 构建老虎用户中心POST请求（使用预编码的body） */
-    private HttpRequest buildLaohuRequestWithBody(String path, String encodedBody) {
-        return HttpRequest.newBuilder()
-                .uri(URI.create(LAOHU_BASE_URL + path))
-                .header("platform", "android")
-                .header("Content-Type", "application/x-www-form-urlencoded")
-                .POST(HttpRequest.BodyPublishers.ofString(encodedBody))
-                .build();
-    }
-
-    private HttpRequest buildNativeGet(String path, Map<String, String> query,
-                                        String accessToken, String uid, String deviceId) {
-        return buildNativeRequest("GET", path, query, null, accessToken, uid, deviceId);
-    }
-
-    private HttpRequest buildNativePostWithBody(String path, Map<String, String> query,
-                                                 String encodedBody,
-                                                 String accessToken, String uid, String deviceId) {
-        return buildNativeRequest("POST", path, query, encodedBody, accessToken, uid, deviceId);
-    }
-
-    /**
-     * 构建Native请求（模拟iOS原生App）
-     * 设置Android/iOS混合的请求头：platform=ios, User-Agent=iOS，同时模拟App版本和设备ID
-     */
-    private HttpRequest buildNativeRequest(String method, String path, Map<String, String> query,
-                                            String body,
-                                            String accessToken, String uid, String deviceId) {
-        HttpRequest.Builder builder = HttpRequest.newBuilder()
-                .uri(URI.create(buildUrl(path, query)))
-                .header("Accept", "application/json")
-                .header("Authorization", accessToken)
-                .header("appversion", TAYGEDO_APP_VER)
-                .header("platform", "ios")
-                .header("uid", uid)
-                .header("deviceid", deviceId)
-                .header("ds", makeDs())
-                .header("User-Agent", NATIVE_USER_AGENT);
-
-        if (body != null && !body.isEmpty()) {
-            builder.header("Content-Type", "application/x-www-form-urlencoded");
-            builder.method(method, HttpRequest.BodyPublishers.ofString(body));
-        } else {
-            builder.method(method, HttpRequest.BodyPublishers.noBody());
-        }
-        return builder.build();
-    }
-
-    private HttpRequest buildH5Get(String path, Map<String, String> query, String accessToken) {
-        return buildH5Request("GET", path, query, null, accessToken);
-    }
-
-    private HttpRequest buildH5PostWithBody(String path, Map<String, String> query,
-                                             String body, String accessToken) {
-        return buildH5Request("POST", path, query, body, accessToken);
-    }
-
-    /**
-     * 构建H5请求（模拟App内嵌WebView）
-     * 设置浏览器风格的User-Agent，添加Origin和Referer头
-     */
-    private HttpRequest buildH5Request(String method, String path, Map<String, String> query,
-                                        String body, String accessToken) {
-        HttpRequest.Builder builder = HttpRequest.newBuilder()
-                .uri(URI.create(buildUrl(path, query)))
-                .header("Accept", "application/json")
-                .header("Authorization", accessToken)
-                .header("Origin", H5_ORIGIN)
-                .header("Referer", H5_ORIGIN + "/")
-                .header("User-Agent", H5_USER_AGENT);
-
-        if (body != null && !body.isEmpty()) {
-            builder.header("Content-Type", "application/x-www-form-urlencoded");
-            builder.method(method, HttpRequest.BodyPublishers.ofString(body));
-        } else {
-            builder.method(method, HttpRequest.BodyPublishers.noBody());
-        }
-        return builder.build();
-    }
-
-    // ==================== 请求/响应日志 ====================
-
-    /** 打印请求信息：方法、URL、请求体 */
-    private void logRequest(HttpRequest request, String requestBody, String endpointName) {
-        String method = request.method();
-        String uri = request.uri().toString();
-        if (requestBody != null && !requestBody.isEmpty()) {
-            log.info("[{}] {} {} | body: {}", endpointName, method, uri, requestBody);
-        } else {
-            log.info("[{}] {} {}", endpointName, method, uri);
-        }
-    }
-
-    /** 打印响应信息：状态码、响应体（仅verbose=true时打印完整响应体） */
-    private void logResponse(HttpResponse<String> response, String endpointName) {
-        if (verbose) {
-            String body = response.body();
-            log.info("[{}] HTTP {} | body: {}", endpointName, response.statusCode(),
-                    body != null ? body : "");
-        }
-    }
-
-    // ==================== 响应解析 ====================
-
-    /** 发送塔吉多API请求并解析响应，自动检查code==0 */
-    private JsonNode executeAndParse(HttpRequest request, String endpointName, String requestBody) {
-        logRequest(request, requestBody, endpointName);
-        HttpResponse<String> response;
-        try {
-            response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-        } catch (Exception e) {
-            throw new TaygedoException(endpointName + " 请求发送失败: " + e.getMessage(), e);
-        }
-        logResponse(response, endpointName);
-        JsonNode root = parseJsonBody(response, endpointName);
-        checkApiCode(root, response, endpointName);
-        return root;
-    }
-
-    /** 发送老虎平台请求并解析响应，自动检查code==0 */
-    private JsonNode executeLaohuAndParse(HttpRequest request, String endpointName, String requestBody) {
-        logRequest(request, requestBody, endpointName);
-        HttpResponse<String> response;
-        try {
-            response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
-        } catch (Exception e) {
-            throw new TaygedoException(endpointName + " 请求发送失败: " + e.getMessage(), e);
-        }
-        logResponse(response, endpointName);
-        JsonNode root = parseJsonBody(response, endpointName);
-        checkLaohuCode(root, response, endpointName);
-        return root;
-    }
-
-    /** 解析HTTP响应体为JSON，失败时给出详细错误信息 */
-    private JsonNode parseJsonBody(HttpResponse<String> response, String endpointName) {
-        String body = response.body();
-        if (body == null || body.isBlank()) {
-            throw new TaygedoException(endpointName + " 返回了无效 JSON（HTTP " + response.statusCode() + "，响应为空）");
-        }
-        try {
-            return MAPPER.readTree(body);
-        } catch (JsonProcessingException e) {
-            throw new TaygedoException(endpointName + " 返回了无效 JSON（HTTP " + response.statusCode()
-                    + "，响应：" + summarize(body) + "）", e);
-        }
-    }
-
-    /** 检查塔吉多API响应code（使用msg字段） */
-    private void checkApiCode(JsonNode root, HttpResponse<String> response, String endpointName) {
-        int code = root.has("code") ? root.get("code").asInt() : -1;
-        if (response.statusCode() >= 200 && response.statusCode() < 300 && code == 0) {
-            return;
-        }
-        String msg = root.has("msg") ? root.get("msg").asText() : "";
-        throw buildError(endpointName, response, code, msg);
-    }
-
-    /** 检查老虎平台响应code（使用message字段，兼容msg） */
-    private void checkLaohuCode(JsonNode root, HttpResponse<String> response, String endpointName) {
-        int code = root.has("code") ? root.get("code").asInt() : -1;
-        if (response.statusCode() >= 200 && response.statusCode() < 300 && code == 0) {
-            return;
-        }
-        String msg = root.has("message") ? root.get("message").asText() :
-                root.has("msg") ? root.get("msg").asText() : "";
-        throw buildError(endpointName, response, code, msg);
-    }
+    // ==================== 私有工具方法 ====================
 
     /** 从老虎登录响应中提取token、userId、nickname等信息 */
     private LoginResult extractLaohuLoginResult(JsonNode root, String endpointName) {
@@ -964,20 +677,5 @@ public class TaygedoApi {
             loginResult.setHeadImg(result.get("headImg").asText());
         }
         return loginResult;
-    }
-
-    /** 构建详细的API错误异常 */
-    private TaygedoException buildError(String endpointName, HttpResponse<String> response, int code, String msg) {
-        TaygedoException taygedoException = new TaygedoException(msg == null ||msg.isEmpty() ? "" : msg);
-        taygedoException.setCode(code);
-        taygedoException.setBody(response.body());
-        return taygedoException;
-    }
-
-    /** 截断长响应文本，用于错误消息和日志中展示 */
-    private static String summarize(String text) {
-        if (text == null) return "";
-        String normalized = text.replaceAll("\\s+", " ").trim();
-        return normalized.length() > 160 ? normalized.substring(0, 157) + "..." : normalized;
     }
 }
