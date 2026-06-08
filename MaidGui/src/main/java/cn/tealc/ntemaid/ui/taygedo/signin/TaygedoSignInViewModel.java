@@ -8,6 +8,9 @@ import cn.tealc.taygedo.TaygedoException;
 import cn.tealc.taygedo.model.SigninReward;
 import cn.tealc.taygedo.model.SigninState;
 import de.saxsys.mvvmfx.ViewModel;
+import de.saxsys.mvvmfx.utils.commands.Action;
+import de.saxsys.mvvmfx.utils.commands.Command;
+import de.saxsys.mvvmfx.utils.commands.DelegateCommand;
 import javafx.application.Platform;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
@@ -27,12 +30,28 @@ public class TaygedoSignInViewModel implements ViewModel {
     private final ObservableList<SigninReward> rewardList = FXCollections.observableArrayList();
     private final ObjectProperty<TaygedoAccount> selectedAccount = new SimpleObjectProperty<>();
     private final IntegerProperty signedDays = new SimpleIntegerProperty(0);
-    private final BooleanProperty loading = new SimpleBooleanProperty(false);
     private final StringProperty statusMessage = new SimpleStringProperty("");
     private final BooleanProperty autoSign;
 
+    private final Command signInCommand;
+    private final Command signInAllCommand;
+
     public TaygedoSignInViewModel() {
         autoSign = Config.setting.taygedoAutoSignProperty();
+
+        signInCommand = new DelegateCommand(() -> new Action() {
+            @Override
+            protected void action() throws Exception {
+                doSignIn();
+            }
+        }, selectedAccount.isNotNull(), true);
+
+        signInAllCommand = new DelegateCommand(() -> new Action() {
+            @Override
+            protected void action() throws Exception {
+                doSignInAll();
+            }
+        }, selectedAccount.isNotNull() ,true);
     }
 
     public void initialize() {
@@ -56,7 +75,6 @@ public class TaygedoSignInViewModel implements ViewModel {
         TaygedoAccount account = selectedAccount.get();
         if (account == null) return;
 
-        loading.set(true);
         Thread.ofVirtual().start(() -> {
             try {
                 List<SigninReward> rewards = signInService.getSigninRewards(account);
@@ -72,79 +90,62 @@ public class TaygedoSignInViewModel implements ViewModel {
                 });
             } catch (Exception e) {
                 LOG.error("加载签到数据失败", e);
-                Platform.runLater(() -> setStatus("加载失败: " + e.getMessage()));
-            } finally {
-                Platform.runLater(() -> loading.set(false));
-            }
-        });
-    }
-
-    public void signIn() {
-        TaygedoAccount account = selectedAccount.get();
-        if (account == null) {
-            setStatus("请先选择账号");
-            return;
-        }
-
-        loading.set(true);
-        setStatus("正在签到...");
-        Thread.ofVirtual().start(() -> {
-            try {
-                signInService.gameSignin(account);
-                Platform.runLater(() -> {
-                    setStatus("签到成功！");
-                    loadSignInData();
-                });
-            } catch (TaygedoException e) {
                 Platform.runLater(() -> setStatus("签到失败: " + e.getMessage()));
-            } finally {
-                Platform.runLater(() -> loading.set(false));
             }
         });
     }
 
-    public void signInAll() {
+    private void doSignIn() throws TaygedoException {
+        TaygedoAccount account = selectedAccount.get();
+        setStatus("正在签到...");
+        try {
+            signInService.gameSignin(account);
+            Platform.runLater(() -> {
+                setStatus("签到成功！");
+                accountService.refreshLastSignTime(account);
+                loadSignInData();
+            });
+        }catch (Exception e) {
+                LOG.error("加载签到数据失败", e);
+                Platform.runLater(() -> setStatus("签到失败: " + e.getMessage()));
+            }
+
+    }
+
+    private void doSignInAll() throws Exception {
         List<TaygedoAccount> accounts = List.copyOf(accountList);
         if (accounts.isEmpty()) {
-            setStatus("没有可签到的账号");
+            Platform.runLater(() -> setStatus("没有可签到的账号"));
             return;
         }
 
-        loading.set(true);
-        Thread.ofVirtual().start(() -> {
-            int success = 0;
-            int fail = 0;
-            for (int i = 0; i < accounts.size(); i++) {
-                TaygedoAccount account = accounts.get(i);
-                try {
-                    signInService.gameSignin(account);
-                    success++;
-                    int finalI = i + 1;
-                    Platform.runLater(() -> setStatus(
-                            String.format("全部签到: [%d/%d] %s 成功", finalI, accounts.size(), account.getPhone())));
-                } catch (TaygedoException e) {
-                    fail++;
-                    int finalI = i + 1;
-                    Platform.runLater(() -> setStatus(
-                            String.format("全部签到: [%d/%d] %s 失败: %s", finalI, accounts.size(), account.getPhone(), e.getMessage())));
-                }
-
-                if (i < accounts.size() - 1) {
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) {
-                        Thread.currentThread().interrupt();
-                        break;
-                    }
-                }
+        int total = accounts.size();
+        int success = 0;
+        int fail = 0;
+        for (int i = 0; i < total; i++) {
+            TaygedoAccount account = accounts.get(i);
+            try {
+                signInService.gameSignin(account);
+                accountService.refreshLastSignTime(account);
+                success++;
+                int finalI = i + 1;
+                Platform.runLater(() -> setStatus(
+                        String.format("全部签到: [%d/%d] %s 成功", finalI, total, account.getPhone())));
+            } catch (TaygedoException e) {
+                fail++;
+                int finalI = i + 1;
+                Platform.runLater(() -> setStatus(
+                        String.format("全部签到: [%d/%d] %s 失败: %s", finalI, total, account.getPhone(), e.getMessage())));
             }
-            int finalSuccess = success;
-            int finalFail = fail;
-            Platform.runLater(() -> {
-                setStatus(String.format("全部签到完成: 成功 %d, 失败 %d", finalSuccess, finalFail));
-                loadSignInData();
-                loading.set(false);
-            });
+            if (i < total - 1) {
+                Thread.sleep(1000);
+            }
+        }
+        int finalSuccess = success;
+        int finalFail = fail;
+        Platform.runLater(() -> {
+            setStatus(String.format("全部签到完成: 成功 %d, 失败 %d", finalSuccess, finalFail));
+            loadSignInData();
         });
     }
 
@@ -158,7 +159,9 @@ public class TaygedoSignInViewModel implements ViewModel {
     public ObservableList<SigninReward> getRewardList() { return rewardList; }
     public ObjectProperty<TaygedoAccount> selectedAccountProperty() { return selectedAccount; }
     public IntegerProperty signedDaysProperty() { return signedDays; }
-    public BooleanProperty loadingProperty() { return loading; }
     public StringProperty statusMessageProperty() { return statusMessage; }
     public BooleanProperty autoSignProperty() { return autoSign; }
+
+    public Command getSignInCommand() { return signInCommand; }
+    public Command getSignInAllCommand() { return signInAllCommand; }
 }

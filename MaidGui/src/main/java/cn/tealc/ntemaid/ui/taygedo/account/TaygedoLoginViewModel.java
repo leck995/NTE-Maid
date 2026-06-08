@@ -3,7 +3,7 @@ package cn.tealc.ntemaid.ui.taygedo.account;
 import cn.tealc.ntemaid.base.notification.NotificationKey;
 import cn.tealc.ntemaid.base.notification.NotificationManager;
 import cn.tealc.ntemaid.model.taygedo.TaygedoAccount;
-import cn.tealc.ntemaid.service.TaygedoService;
+import cn.tealc.ntemaid.service.TaygedoLoginService;
 import cn.tealc.taygedo.TaygedoException;
 import de.saxsys.mvvmfx.SceneLifecycle;
 import de.saxsys.mvvmfx.ViewModel;
@@ -21,7 +21,7 @@ import java.util.TimerTask;
 public class TaygedoLoginViewModel implements ViewModel, SceneLifecycle {
     private static final Logger LOG = LoggerFactory.getLogger(TaygedoLoginViewModel.class);
 
-    private final TaygedoService service = new TaygedoService();
+    private final TaygedoLoginService service = new TaygedoLoginService();
 
     private final StringProperty phone = new SimpleStringProperty("");
     private final StringProperty captcha = new SimpleStringProperty("");

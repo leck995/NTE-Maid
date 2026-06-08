@@ -14,6 +14,7 @@ public class NotificationKey {
     public static final String CHANGE_NAV="CHANGE_NAV";
     public static final String SIGN_USER_DELETE="SIGN_USER_DELETE";
     public static final String TAYGEDO_ACCOUNT_LIST_REFRESH="TAYGEDO_ACCOUNT_LIST_REFRESH";
+    public static final String TAYGEDO_ACCOUNT_TAB="TAYGEDO_ACCOUNT_TAB";
 
     public static final String HOME_GAME_TIME_UPDATE="HOME_GAME_TIME_UPDATE";
     public static final String HOME_ROLE_DATA_REFRESH="HOME_ROLE_DATA_REFRESH";

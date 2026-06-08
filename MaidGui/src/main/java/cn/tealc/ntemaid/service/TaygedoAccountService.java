@@ -6,6 +6,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.SQLException;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -58,6 +60,27 @@ public class TaygedoAccountService {
             LOG.error("保存账号 {} 失败", account.getPhone(), e);
             return false;
         }
+    }
+
+    /** 刷新账号的最后签到时间为当前时间 */
+    public void refreshLastSignTime(TaygedoAccount account) {
+        try {
+            long now = System.currentTimeMillis();
+            dao.updateLastSignTime(account.getPhone(), now);
+            account.setLastSignTime(now);
+        } catch (SQLException e) {
+            LOG.error("更新签到时间失败, phone={}", account.getPhone(), e);
+        }
+    }
+
+    /** 获取今日未签到的账号列表 */
+    public List<TaygedoAccount> getNotSignedTodayList() {
+        long todayStart = ZonedDateTime.now(ZoneId.of("Asia/Shanghai"))
+                .toLocalDate().atStartOfDay(ZoneId.of("Asia/Shanghai"))
+                .toInstant().toEpochMilli();
+        return getAll().stream()
+                .filter(a -> a.getLastSignTime() == null || a.getLastSignTime() < todayStart)
+                .toList();
     }
 
     /** 删除账号，失败返回 false */

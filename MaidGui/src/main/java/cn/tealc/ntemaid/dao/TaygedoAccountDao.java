@@ -39,6 +39,7 @@ public class TaygedoAccountDao {
         mapping.put("server_id", "serverId");
         mapping.put("server_name", "serverName");
         mapping.put("game_id", "gameId");
+        mapping.put("last_sign_time", "lastSignTime");
         mapping.put("token_updated_at", "tokenUpdatedAt");
         mapping.put("created_at", "createdAt");
         mapping.put("updated_at", "updatedAt");
@@ -55,12 +56,12 @@ public class TaygedoAccountDao {
                 phone, name, device_id, openudid, vendorid,
                 laohu_token, laohu_user_id, access_token, refresh_token, uid,
                 role_id, role_name, server_id, server_name, game_id, gender,
-                token_updated_at, created_at, updated_at
+                last_sign_time, token_updated_at, created_at, updated_at
             ) VALUES (
                 ?, ?, ?, ?, ?,
                 ?, ?, ?, ?, ?,
                 ?, ?, ?, ?, ?, ?,
-                ?, ?, ?
+                ?, ?, ?, ?
             ) ON CONFLICT(phone) DO UPDATE SET
                 name = excluded.name,
                 device_id = excluded.device_id,
@@ -77,6 +78,7 @@ public class TaygedoAccountDao {
                 server_name = excluded.server_name,
                 game_id = excluded.game_id,
                 gender = excluded.gender,
+                last_sign_time = excluded.last_sign_time,
                 token_updated_at = excluded.token_updated_at,
                 updated_at = excluded.updated_at
             """;
@@ -100,6 +102,7 @@ public class TaygedoAccountDao {
                     account.getServerName(),
                     account.getGameId(),
                     account.getGender(),
+                    account.getLastSignTime(),
                     account.getTokenUpdatedAt(),
                     now,
                     now
@@ -138,6 +141,16 @@ public class TaygedoAccountDao {
             List<TaygedoAccount> result = qr.query(conn, sql,
                     new BeanListHandler<>(TaygedoAccount.class, getRowProcessor()));
             return result != null ? result : Collections.emptyList();
+        }
+    }
+
+    /**
+     * 更新账号的最后签到时间
+     */
+    public void updateLastSignTime(String phone, long lastSignTime) throws SQLException {
+        String sql = "UPDATE taygedo_account SET last_sign_time = ? WHERE phone = ?";
+        try (Connection conn = JdbcUtils.getConnection()) {
+            qr.update(conn, sql, lastSignTime, phone);
         }
     }
 

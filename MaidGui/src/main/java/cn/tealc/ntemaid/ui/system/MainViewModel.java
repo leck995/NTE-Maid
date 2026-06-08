@@ -7,10 +7,15 @@ import cn.tealc.ntemaid.base.notification.NotificationKey;
 import cn.tealc.ntemaid.base.notification.NotificationManager;
 import cn.tealc.ntemaid.model.system.nav.NavData;
 import cn.tealc.ntemaid.model.system.realease.Release;
+import cn.tealc.ntemaid.model.taygedo.TaygedoAccount;
 import cn.tealc.ntemaid.player.MusicPlayerClient;
+import cn.tealc.ntemaid.service.TaygedoAccountService;
+import cn.tealc.ntemaid.service.TaygedoSignInService;
 import cn.tealc.ntemaid.thread.system.update.CheckAppVersionTask;
 import cn.tealc.ntemaid.thread.system.update.DeleteOldAppVersionTask;
 import cn.tealc.ntemaid.util.LanguageManager;
+import cn.tealc.taygedo.TaygedoException;
+import cn.tealc.taygedo.model.SigninState;
 import cn.tealc.teafx.utils.ResponseBody;
 import cn.tealc.teafx.utils.message.MessageInfo;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -40,6 +45,7 @@ public class MainViewModel implements ViewModel {
         checkVersionAndClean();
         checkGameLogOpen();
         initMusicClient();
+        autoTaygedoSign();
     }
 
     private static void initMusicClient() {
@@ -58,6 +64,54 @@ public class MainViewModel implements ViewModel {
         }
         return list;
     }
+
+
+    public void autoTaygedoSign(){
+        if (Config.setting.isTaygedoAutoSign()){
+            TaygedoSignInService signInService = new TaygedoSignInService();
+            TaygedoAccountService accountService = new TaygedoAccountService();
+            List<TaygedoAccount> accounts = accountService.getNotSignedTodayList();
+            if (accounts.isEmpty()) {
+                return;
+            }
+            Thread.startVirtualThread(() -> {
+                int success = 0;
+                int fail = 0;
+                for (int i = 0; i < accounts.size(); i++) {
+                    TaygedoAccount account = accounts.get(i);
+                    try {
+                        SigninState signinState = signInService.getSigninState(account);
+                        if (signinState.isTodaySign()){
+                            success++;
+                            accountService.refreshLastSignTime(account);
+                            continue;
+                        }
+
+                        signInService.gameSignin(account);
+                        accountService.refreshLastSignTime(account);
+                        success++;
+                    } catch (TaygedoException e) {
+                        fail++;
+                    }
+                    if (i < accounts.size() - 1) {
+                        try {
+                            Thread.sleep(1000);
+                        } catch (InterruptedException e) {
+                            Thread.currentThread().interrupt();
+                            break;
+                        }
+                    }
+                }
+                int finalSuccess = success;
+                int finalFail = fail;
+                Platform.runLater(() -> {
+                    String format = String.format("成功 %d, 失败 %d", finalSuccess, finalFail);
+                    NotificationManager.message(MessageInfo.success("自动签到完成",format));
+                });
+            });
+        }
+    }
+
 
 
     public void checkVersionAndClean() {

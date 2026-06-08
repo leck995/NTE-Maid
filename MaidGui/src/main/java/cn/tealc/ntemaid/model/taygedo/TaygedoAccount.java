@@ -49,6 +49,9 @@ public class TaygedoAccount {
     /** Token更新时间（上海时区） */
     private String tokenUpdatedAt;
 
+    /** 最后签到时间（毫秒时间戳） */
+    private Long lastSignTime;
+
     public TaygedoAccount() {
     }
 
@@ -186,6 +189,14 @@ public class TaygedoAccount {
 
     public void setTokenUpdatedAt(String tokenUpdatedAt) {
         this.tokenUpdatedAt = tokenUpdatedAt;
+    }
+
+    public Long getLastSignTime() {
+        return lastSignTime;
+    }
+
+    public void setLastSignTime(Long lastSignTime) {
+        this.lastSignTime = lastSignTime;
     }
 
     /** 是否已有有效的塔吉多登录凭证 */

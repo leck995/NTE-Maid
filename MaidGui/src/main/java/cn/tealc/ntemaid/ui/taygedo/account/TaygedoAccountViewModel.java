@@ -4,7 +4,6 @@ import cn.tealc.ntemaid.base.notification.NotificationKey;
 import cn.tealc.ntemaid.base.notification.NotificationManager;
 import cn.tealc.ntemaid.model.taygedo.TaygedoAccount;
 import cn.tealc.ntemaid.service.TaygedoAccountService;
-import cn.tealc.ntemaid.service.TaygedoService;
 import cn.tealc.ntemaid.ui.base.BaseViewModel;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;

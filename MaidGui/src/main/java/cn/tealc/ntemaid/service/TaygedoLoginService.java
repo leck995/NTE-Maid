@@ -21,8 +21,8 @@ import java.util.List;
  * 每个账号独立持有 deviceId，新增账号自动生成，已有账号沿用原有 deviceId。
  * 账号数据通过 TaygedoAccountDao 持久化到 SQLite 数据库。
  */
-public class TaygedoService{
-    private static final Logger LOG = LoggerFactory.getLogger(TaygedoService.class);
+public class TaygedoLoginService {
+    private static final Logger LOG = LoggerFactory.getLogger(TaygedoLoginService.class);
     private static final DateTimeFormatter SHANGHAI_FORMAT =
             DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     private static final String DEFAULT_GAME_ID = "1289";
@@ -30,7 +30,7 @@ public class TaygedoService{
     private final TaygedoApi api;
     private final TaygedoAccountDao accountDao;
 
-    public TaygedoService() {
+    public TaygedoLoginService() {
         this.api = new TaygedoApi();
         this.accountDao = new TaygedoAccountDao();
     }

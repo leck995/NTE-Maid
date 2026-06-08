@@ -1,10 +1,14 @@
 package cn.tealc.ntemaid.ui.taygedo.signin;
 
 import atlantafx.base.controls.ToggleSwitch;
+import cn.tealc.ntemaid.base.notification.NotificationKey;
+import cn.tealc.ntemaid.base.notification.NotificationManager;
 import cn.tealc.ntemaid.model.taygedo.TaygedoAccount;
 import cn.tealc.taygedo.model.SigninReward;
 import de.saxsys.mvvmfx.FxmlView;
 import de.saxsys.mvvmfx.InjectViewModel;
+import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -37,6 +41,10 @@ public class TaygedoSignInView implements FxmlView<TaygedoSignInViewModel>, Init
     @FXML
     private ToggleSwitch autoSignSwitch;
     @FXML
+    private VBox contentPane;
+    @FXML
+    private VBox emptyPane;
+    @FXML
     private FlowPane rewardPane;
 
     @Override
@@ -46,16 +54,18 @@ public class TaygedoSignInView implements FxmlView<TaygedoSignInViewModel>, Init
         accountCombo.setButtonCell(new AccountListCell());
         viewModel.selectedAccountProperty().bindBidirectional(accountCombo.valueProperty());
 
-        viewModel.loadingProperty().addListener((obs, old, loading) -> {
-            if (loading) {
-                statusLabel.setStyle("-fx-text-fill: -color-accent-fg;");
-            }
-        });
         statusLabel.textProperty().bind(viewModel.statusMessageProperty());
-        signInBtn.disableProperty().bind(viewModel.loadingProperty());
-        signInAllBtn.disableProperty().bind(viewModel.loadingProperty());
+
+        signInBtn.disableProperty().bind(viewModel.getSignInCommand().executableProperty().not());
+        signInAllBtn.disableProperty().bind(viewModel.getSignInAllCommand().executableProperty().not());
 
         autoSignSwitch.selectedProperty().bindBidirectional(viewModel.autoSignProperty());
+
+        // 无账号时显示空状态提示
+        contentPane.visibleProperty().bind(Bindings.isNotEmpty(viewModel.getAccountList()));
+        contentPane.managedProperty().bind(Bindings.isNotEmpty(viewModel.getAccountList()));
+        emptyPane.visibleProperty().bind(Bindings.isEmpty(viewModel.getAccountList()));
+        emptyPane.managedProperty().bind(Bindings.isEmpty(viewModel.getAccountList()));
 
         viewModel.getRewardList().addListener((javafx.collections.ListChangeListener<SigninReward>) change -> refreshRewards());
         viewModel.signedDaysProperty().addListener((obs, old, val) -> refreshRewards());
@@ -107,12 +117,17 @@ public class TaygedoSignInView implements FxmlView<TaygedoSignInViewModel>, Init
 
     @FXML
     void onSignIn(ActionEvent event) {
-        viewModel.signIn();
+        viewModel.getSignInCommand().execute();
     }
 
     @FXML
     void onSignInAll(ActionEvent event) {
-        viewModel.signInAll();
+        viewModel.getSignInAllCommand().execute();
+    }
+
+    @FXML
+    void onGoToAccount(ActionEvent event) {
+        NotificationManager.publish(NotificationKey.TAYGEDO_ACCOUNT_TAB);
     }
 
     private static class AccountListCell extends ListCell<TaygedoAccount> {

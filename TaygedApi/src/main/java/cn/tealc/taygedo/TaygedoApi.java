@@ -968,12 +968,10 @@ public class TaygedoApi {
 
     /** 构建详细的API错误异常 */
     private TaygedoException buildError(String endpointName, HttpResponse<String> response, int code, String msg) {
-        if (msg != null && !msg.isBlank() && !"ok".equalsIgnoreCase(msg)) {
-            return new TaygedoException(endpointName + ": " + msg);
-        }
-        return new TaygedoException(endpointName + " 请求失败（HTTP " + response.statusCode()
-                + "，code=" + code + (msg.isEmpty() ? "" : "，msg=" + msg)
-                + "，响应：" + summarize(response.body()) + "）");
+        TaygedoException taygedoException = new TaygedoException(msg == null ||msg.isEmpty() ? "" : msg);
+        taygedoException.setCode(code);
+        taygedoException.setBody(response.body());
+        return taygedoException;
     }
 
     /** 截断长响应文本，用于错误消息和日志中展示 */

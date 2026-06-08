@@ -115,6 +115,7 @@ public class JdbcUtils {
                     server_name VARCHAR(100),
                     game_id VARCHAR(32),
                     gender VARCHAR(16),
+                    last_sign_time BIGINT,
                     token_updated_at VARCHAR(32),
                     created_at BIGINT,
                     updated_at BIGINT
@@ -130,7 +131,8 @@ public class JdbcUtils {
                 "ALTER TABLE taygedo_account ADD COLUMN server_id VARCHAR(64)",
                 "ALTER TABLE taygedo_account ADD COLUMN server_name VARCHAR(100)",
                 "ALTER TABLE taygedo_account ADD COLUMN game_id VARCHAR(32)",
-                "ALTER TABLE taygedo_account ADD COLUMN gender VARCHAR(16)"
+                "ALTER TABLE taygedo_account ADD COLUMN gender VARCHAR(16)",
+                "ALTER TABLE taygedo_account ADD COLUMN last_sign_time BIGINT"
             };
             for (String migration : migrations) {
                 try {
