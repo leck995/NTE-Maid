@@ -37,6 +37,15 @@ public class TaygedoAccount {
     /** 上次绑定的角色名称 */
     private String roleName;
 
+    /** 服务器ID */
+    private String serverId;
+    /** 服务器名称 */
+    private String serverName;
+    /** 游戏ID */
+    private String gameId;
+    /** 性别 */
+    private String gender;
+
     /** Token更新时间（上海时区） */
     private String tokenUpdatedAt;
 
@@ -137,6 +146,38 @@ public class TaygedoAccount {
 
     public void setRoleName(String roleName) {
         this.roleName = roleName;
+    }
+
+    public String getServerId() {
+        return serverId;
+    }
+
+    public void setServerId(String serverId) {
+        this.serverId = serverId;
+    }
+
+    public String getServerName() {
+        return serverName;
+    }
+
+    public void setServerName(String serverName) {
+        this.serverName = serverName;
+    }
+
+    public String getGameId() {
+        return gameId;
+    }
+
+    public void setGameId(String gameId) {
+        this.gameId = gameId;
+    }
+
+    public String getGender() {
+        return gender;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
     }
 
     public String getTokenUpdatedAt() {

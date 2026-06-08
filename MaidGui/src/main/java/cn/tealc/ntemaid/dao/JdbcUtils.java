@@ -111,6 +111,10 @@ public class JdbcUtils {
                     uid VARCHAR(64),
                     role_id VARCHAR(64),
                     role_name VARCHAR(100),
+                    server_id VARCHAR(64),
+                    server_name VARCHAR(100),
+                    game_id VARCHAR(32),
+                    gender VARCHAR(16),
                     token_updated_at VARCHAR(32),
                     created_at BIGINT,
                     updated_at BIGINT
@@ -120,6 +124,22 @@ public class JdbcUtils {
             for (String s : sql.split(";")) {
                 if (!s.trim().isEmpty()) st.execute(s);
             }
+
+            // 迁移：为旧数据库添加新列
+            String[] migrations = {
+                "ALTER TABLE taygedo_account ADD COLUMN server_id VARCHAR(64)",
+                "ALTER TABLE taygedo_account ADD COLUMN server_name VARCHAR(100)",
+                "ALTER TABLE taygedo_account ADD COLUMN game_id VARCHAR(32)",
+                "ALTER TABLE taygedo_account ADD COLUMN gender VARCHAR(16)"
+            };
+            for (String migration : migrations) {
+                try {
+                    st.execute(migration);
+                } catch (SQLException ignored) {
+                    // 列已存在时忽略
+                }
+            }
+
             LOG.info("数据库初始化完成，外键级联删除已启用");
         } catch (SQLException e) {
             throw new RuntimeException("数据库初始化失败", e);

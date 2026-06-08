@@ -427,7 +427,7 @@ public class TaygedoApi {
     }
 
     /**
-     * 游戏签到
+     * 异环游戏签到
      * 对指定游戏的指定角色执行每日签到
      *
      * @param accessToken 塔吉多访问令牌
@@ -442,7 +442,7 @@ public class TaygedoApi {
     }
 
     /**
-     * 获取签到状态
+     * 获取异环签到状态
      * 查询当前月份已签到的累计天数
      *
      * @param accessToken 塔吉多访问令牌
@@ -466,7 +466,7 @@ public class TaygedoApi {
     }
 
     /**
-     * 获取签到奖励列表
+     * 获取异环签到奖励列表
      * 返回当月每天的签到奖励配置，通过签到天数-1作为索引获取当天奖励
      *
      * @param accessToken 塔吉多访问令牌

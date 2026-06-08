@@ -26,7 +26,7 @@ public class AppLocked{
             if(file.exists()){
                 boolean delete = file.delete();
                 if(!delete){ //说明被占用了，助手存在,弹窗提示
-                    LOG.info("检测到多开，即将关闭助手");
+                    LOG.info("检测到多开，即将关闭NTEMaid");
                     Alert alert = new Alert(Alert.AlertType.ERROR);
                     alert.initOwner(MainApp.window);
                     alert.setTitle(LanguageManager.getString("ui.app_locked.title"));

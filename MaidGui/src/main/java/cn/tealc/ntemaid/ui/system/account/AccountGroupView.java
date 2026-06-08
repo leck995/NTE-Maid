@@ -1,8 +1,10 @@
 package cn.tealc.ntemaid.ui.system.account;
 
 import atlantafx.base.util.Animations;
-import cn.tealc.ntemaid.ui.taygedo.account.AccountView;
-import cn.tealc.ntemaid.ui.taygedo.account.AccountViewModel;
+import cn.tealc.ntemaid.ui.taygedo.account.TaygedoAccountView;
+import cn.tealc.ntemaid.ui.taygedo.account.TaygedoAccountViewModel;
+import cn.tealc.ntemaid.ui.taygedo.signin.TaygedoSignInView;
+import cn.tealc.ntemaid.ui.taygedo.signin.TaygedoSignInViewModel;
 import de.saxsys.mvvmfx.FluentViewLoader;
 import de.saxsys.mvvmfx.FxmlView;
 import de.saxsys.mvvmfx.InjectViewModel;
@@ -26,15 +28,16 @@ public class AccountGroupView implements FxmlView<AccountGroupViewModel> {
     @FXML
     private HBox headerPane;
 
-    private Node kujiequView;
+    private Node taygedoView;
     private Node appAccountView;
+    private Node signInView;
 
     public void initialize() {
         //createAppAccountView();
-        ViewTuple<AccountView, AccountViewModel> viewTuple = FluentViewLoader.fxmlView(AccountView.class).load();
-        kujiequView = viewTuple.getView();
-        content.getChildren().setAll(kujiequView);
-        Animations.slideInUp(kujiequView, Duration.millis(300)).play();
+        ViewTuple<TaygedoAccountView, TaygedoAccountViewModel> viewTuple = FluentViewLoader.fxmlView(TaygedoAccountView.class).load();
+        taygedoView = viewTuple.getView();
+        content.getChildren().setAll(taygedoView);
+        Animations.slideInUp(taygedoView, Duration.millis(300)).play();
     }
 
 
@@ -53,13 +56,28 @@ public class AccountGroupView implements FxmlView<AccountGroupViewModel> {
     void toTaygedoEvent(ActionEvent event) {
         ToggleButton toggleButton= (ToggleButton) event.getSource();
         if (toggleButton.isSelected()){
-            if (kujiequView == null) {
-                ViewTuple<AccountView, AccountViewModel> viewTuple = FluentViewLoader.fxmlView(AccountView.class).load();
-                kujiequView = viewTuple.getView();
+            if (taygedoView == null) {
+                ViewTuple<TaygedoAccountView, TaygedoAccountViewModel> viewTuple = FluentViewLoader.fxmlView(TaygedoAccountView.class).load();
+                taygedoView = viewTuple.getView();
             }
-            content.getChildren().setAll(kujiequView);
-            Animations.slideInUp(kujiequView, Duration.millis(300)).play();
+            content.getChildren().setAll(taygedoView);
+            Animations.slideInUp(taygedoView, Duration.millis(300)).play();
         }else {
+            toggleButton.setSelected(true);
+        }
+    }
+
+    @FXML
+    void toSignInEvent(ActionEvent event) {
+        ToggleButton toggleButton = (ToggleButton) event.getSource();
+        if (toggleButton.isSelected()) {
+            if (signInView == null) {
+                ViewTuple<TaygedoSignInView, TaygedoSignInViewModel> viewTuple = FluentViewLoader.fxmlView(TaygedoSignInView.class).load();
+                signInView = viewTuple.getView();
+            }
+            content.getChildren().setAll(signInView);
+            Animations.slideInUp(signInView, Duration.millis(300)).play();
+        } else {
             toggleButton.setSelected(true);
         }
     }

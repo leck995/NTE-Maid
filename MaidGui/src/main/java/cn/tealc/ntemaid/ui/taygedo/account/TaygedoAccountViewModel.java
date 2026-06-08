@@ -1,6 +1,9 @@
 package cn.tealc.ntemaid.ui.taygedo.account;
 
+import cn.tealc.ntemaid.base.notification.NotificationKey;
+import cn.tealc.ntemaid.base.notification.NotificationManager;
 import cn.tealc.ntemaid.model.taygedo.TaygedoAccount;
+import cn.tealc.ntemaid.service.TaygedoAccountService;
 import cn.tealc.ntemaid.service.TaygedoService;
 import cn.tealc.ntemaid.ui.base.BaseViewModel;
 import javafx.collections.FXCollections;
@@ -14,21 +17,21 @@ import java.util.List;
  * @author: Leck
  * @create: 2024-08-04 00:26
  */
-public class AccountViewModel extends BaseViewModel {
+public class TaygedoAccountViewModel extends BaseViewModel {
 
 
-    private TaygedoService taygedoService = new TaygedoService();
+    private TaygedoAccountService accountService = new TaygedoAccountService();
 
     private final ObservableList<TaygedoAccount> accountList = FXCollections.observableArrayList();
 
     public void initialize() {
-        refreshUserList();
-        //NotificationManager.subscribe(NotificationKey.ACCOUNT_UPDATE, (s, objects) -> refreshUserList());
+        refreshAccountList();
+        NotificationManager.subscribe(NotificationKey.TAYGEDO_ACCOUNT_LIST_REFRESH, (s, objects) -> refreshAccountList());
     }
 
 
-    private void refreshUserList() {
-        List<TaygedoAccount> allAccount = taygedoService.getAllAccount();
+    private void refreshAccountList() {
+        List<TaygedoAccount> allAccount = accountService.getAll();
         accountList.addAll(allAccount);
 //        List<TaygedoAccount> userInfos = userInfoService.getAllUsers();
 //        accountList.setAll(userInfos);
@@ -38,20 +41,15 @@ public class AccountViewModel extends BaseViewModel {
 
 
 
-/*    public boolean deleteAccount(int index, UserInfo userInfo) {
-        boolean i = userInfoService.deleteUser(userInfo.getId());
+    public boolean deleteAccount(int index, TaygedoAccount account) {
+        boolean i = accountService.delete(account.getPhone());
         if (i) {
             accountList.remove(index);
             return true;
         }
         return false;
-    }*/
+    }
 
-/*    public void getUserInfo(UserInfo userInfo) {
-        PlayerBaseDataTask task = new PlayerBaseDataTask(userInfo);
-        task.setOnSucceeded(event -> {
-        });
-    }*/
 
 
     public ObservableList<TaygedoAccount> getAccountList() {

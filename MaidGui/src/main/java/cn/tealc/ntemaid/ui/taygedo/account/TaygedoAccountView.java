@@ -3,7 +3,6 @@ package cn.tealc.ntemaid.ui.taygedo.account;
 import atlantafx.base.theme.Styles;
 import cn.tealc.ntemaid.base.notification.NotificationKey;
 import cn.tealc.ntemaid.model.taygedo.TaygedoAccount;
-import cn.tealc.ntemaid.ui.taygedo.account.AccountViewModel;
 import com.jfoenixN.controls.JFXDialogLayout;
 import de.saxsys.mvvmfx.*;
 import javafx.event.ActionEvent;
@@ -31,10 +30,10 @@ import java.util.ResourceBundle;
  * @author: Leck
  * @create: 2024-08-04 00:26
  */
-public class AccountView implements FxmlView<AccountViewModel>, Initializable {
-    private static final Logger LOG= LoggerFactory.getLogger(AccountView.class);
+public class TaygedoAccountView implements FxmlView<TaygedoAccountViewModel>, Initializable {
+    private static final Logger LOG= LoggerFactory.getLogger(TaygedoAccountView.class);
     @InjectViewModel
-    private AccountViewModel viewModel;
+    private TaygedoAccountViewModel viewModel;
     @FXML
     private ListView<TaygedoAccount> accountListView;
     @Override
@@ -54,7 +53,6 @@ public class AccountView implements FxmlView<AccountViewModel>, Initializable {
         private final Label roleId=new Label();
         private final Label index=new Label();
         private final Button delete=new Button(null,new FontIcon(Material2AL.DELETE));
-        private final Button update=new Button(null,new FontIcon(Material2AL.EDIT));
 
         public AccountCell() {
             userId.getStyleClass().add("user-label");
@@ -67,18 +65,10 @@ public class AccountView implements FxmlView<AccountViewModel>, Initializable {
                 }
             });
 
-            update.setVisible(false);
-            update.getStyleClass().add("delete-btn");
-            update.setOnAction(event -> {
-                if (getItem() != null){
-                    update();
-                }
-            });
-
             VBox vbox=new VBox(3.0,userId,roleId);
             vbox.setAlignment(Pos.CENTER_LEFT);
 
-            HBox hbox=new HBox(10.0,index,vbox,update,delete);
+            HBox hbox=new HBox(10.0,index,vbox,delete);
             HBox.setHgrow(vbox, Priority.ALWAYS);
             hbox.getStyleClass().add("user");
             hbox.setPadding(new Insets(5.0,5.0,5.0,5.0));
@@ -94,13 +84,11 @@ public class AccountView implements FxmlView<AccountViewModel>, Initializable {
                 userId.setText("手机号: "+ account.getPhone());
                 roleId.setText("昵称: "+ account.getName());
                 delete.setVisible(true);
-                update.setVisible(true);
             }else {
                 index.setText(null);
                 roleId.setText(null);
                 userId.setText(null);
                 delete.setVisible(false);
-                update.setVisible(false);
             }
         }
 
@@ -117,12 +105,10 @@ public class AccountView implements FxmlView<AccountViewModel>, Initializable {
             cancelBtn.setCancelButton(true);
 
             saveBtn.setOnAction(event1 -> {
-                //viewModel.deleteUser(getIndex(),getItem());
-                //cancelBtn.fireEvent(event1); //这里是为了触发cancelBtn的事件，从而关闭窗口，属实另辟途径（自夸）
+                viewModel.deleteAccount(getIndex(),getItem());
             });
             dialogLayout.setActions(saveBtn, cancelBtn);
             MvvmFX.getNotificationCenter().publish(NotificationKey.DIALOG,dialogLayout);
-
         }
 
         private void update(){

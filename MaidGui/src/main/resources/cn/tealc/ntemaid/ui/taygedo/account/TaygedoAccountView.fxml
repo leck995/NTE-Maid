@@ -6,7 +6,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import org.kordamp.ikonli.javafx.FontIcon?>
 
-<AnchorPane prefHeight="600.0" prefWidth="1000.0" styleClass="kujiequ-account" stylesheets="@../../../css/system/Account.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cn.tealc.ntemaid.ui.taygedo.account.AccountView">
+<AnchorPane prefHeight="600.0" prefWidth="1000.0" styleClass="kujiequ-account" stylesheets="@../../../css/system/Account.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cn.tealc.ntemaid.ui.taygedo.account.TaygedoAccountView">
    <children>
       <ListView fx:id="accountListView" prefHeight="200.0" prefWidth="300.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0" />
       <Button mnemonicParsing="false" onAction="#addUser" styleClass="accent" text="添加用户" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">

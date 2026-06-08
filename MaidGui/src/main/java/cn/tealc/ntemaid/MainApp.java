@@ -63,7 +63,7 @@ public class MainApp extends Application {
         });
         try {
             initStage(stage);
-            initKeyHook();
+            //initKeyHook();
             initAppListener();
             initSubscribe();
             createTrayIcon();

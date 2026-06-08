@@ -18,7 +18,7 @@
             <Separator orientation="VERTICAL" />
             <HBox>
                <children>
-                  <ToggleButton fx:id="toTaygedoEvent" contentDisplay="BOTTOM" mnemonicParsing="false" selected="true" styleClass="child-select" text="%ui.account.taygedo">
+                  <ToggleButton contentDisplay="BOTTOM" mnemonicParsing="false" onAction="#toTaygedoEvent" selected="true" styleClass="child-select" text="%ui.account.taygedo">
                      <graphic>
                         <Pane prefHeight="200.0" prefWidth="200.0" />
                      </graphic>
@@ -27,6 +27,11 @@
                      </toggleGroup>
                   </ToggleButton>
                   <ToggleButton contentDisplay="BOTTOM" mnemonicParsing="false" onAction="#toAppAccountEvent" styleClass="child-select" text="%ui.account.app_account" toggleGroup="$childSelectedToggle">
+                     <graphic>
+                        <Pane prefHeight="200.0" prefWidth="200.0" />
+                     </graphic>
+                  </ToggleButton>
+                  <ToggleButton contentDisplay="BOTTOM" mnemonicParsing="false" onAction="#toSignInEvent" styleClass="child-select" text="%ui.account.signin" toggleGroup="$childSelectedToggle">
                      <graphic>
                         <Pane prefHeight="200.0" prefWidth="200.0" />
                      </graphic>

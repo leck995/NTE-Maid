@@ -8,10 +8,13 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class BindRoleInfo {
-    /** 角色ID */
     private String roleId;
-    /** 角色名称 */
     private String roleName;
+    private String serverId;
+    private String serverName;
+    private String gameId;
+    private String gender;
+
 
     public BindRoleInfo() {
     }
@@ -30,5 +33,37 @@ public class BindRoleInfo {
 
     public void setRoleName(String roleName) {
         this.roleName = roleName;
+    }
+
+    public String getServerId() {
+        return serverId;
+    }
+
+    public void setServerId(String serverId) {
+        this.serverId = serverId;
+    }
+
+    public String getServerName() {
+        return serverName;
+    }
+
+    public void setServerName(String serverName) {
+        this.serverName = serverName;
+    }
+
+    public String getGameId() {
+        return gameId;
+    }
+
+    public void setGameId(String gameId) {
+        this.gameId = gameId;
+    }
+
+    public String getGender() {
+        return gender;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
     }
 }

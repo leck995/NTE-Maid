@@ -60,6 +60,7 @@ public class Setting {
     private final SimpleBooleanProperty autoStartGame = new SimpleBooleanProperty(false); //启动时同时启动游戏
     /*=================设置-其他设置===================*/
     private final SimpleBooleanProperty checkNewVersion = new SimpleBooleanProperty(true); //检查更新
+    private final SimpleBooleanProperty taygedoAutoSign = new SimpleBooleanProperty(false); //塔吉多自动签到
 
     /*=============资源库=============*/
     private final SimpleIntegerProperty resourceSource = new SimpleIntegerProperty(getLanguage() == Locale.CHINA ? 1 : 0); //0代表Github，1代表码云或其他
@@ -81,6 +82,9 @@ public class Setting {
     private final SimpleBooleanProperty fishing = new SimpleBooleanProperty(true);//开启钓鱼优化
     private final SimpleBooleanProperty fishingBait = new SimpleBooleanProperty(true);//自动拉杆
     private final SimpleBooleanProperty fishingFinish = new SimpleBooleanProperty(true);//退出结算界面
+
+
+
 
     // 自定义序列化器
     public static class ObservableListSerializer extends JsonSerializer<ObservableList<String>> {
@@ -544,5 +548,17 @@ public class Setting {
 
     public void setAutoKillOfficialLauncher(boolean autoKillOfficialLauncher) {
         this.autoKillOfficialLauncher.set(autoKillOfficialLauncher);
+    }
+
+    public boolean isTaygedoAutoSign() {
+        return taygedoAutoSign.get();
+    }
+
+    public SimpleBooleanProperty taygedoAutoSignProperty() {
+        return taygedoAutoSign;
+    }
+
+    public void setTaygedoAutoSign(boolean taygedoAutoSign) {
+        this.taygedoAutoSign.set(taygedoAutoSign);
     }
 }

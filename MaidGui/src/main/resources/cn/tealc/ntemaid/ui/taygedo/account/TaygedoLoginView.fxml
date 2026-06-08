@@ -2,38 +2,60 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Hyperlink?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane fx:id="root" prefHeight="280.0" prefWidth="400.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cn.tealc.ntemaid.ui.taygedo.account.TaygedoLoginView">
+<AnchorPane fx:id="root" prefHeight="320.0" prefWidth="400.0" styleClass="taygedo-login" stylesheets="@../../../css/system/Account.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cn.tealc.ntemaid.ui.taygedo.account.TaygedoLoginView">
    <children>
       <VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" spacing="12.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
-            <Label text="塔吉多验证码登录" textFill="#1a73e8">
+            <Label fx:id="titleLabel" text="塔吉多验证码登录" textFill="#1a73e8">
                <font><Font name="System Bold" size="20.0" /></font>
                <VBox.margin><Insets bottom="8.0" /></VBox.margin>
             </Label>
 
             <Label text="手机号" />
-            <TextField fx:id="phoneField" promptText="请输入11位手机号" maxWidth="300" />
+            <TextField fx:id="phoneField" maxWidth="300" promptText="请输入11位手机号" />
 
-            <Label text="验证码" />
-            <TextField fx:id="captchaField" promptText="请输入短信验证码" maxWidth="200" />
+            <StackPane fx:id="contentPane">
+               <children>
+                  <!-- 验证码登录 -->
+                  <VBox fx:id="captchaPane" spacing="12.0">
+                     <children>
+                        <Label text="验证码" />
+                        <TextField fx:id="captchaField" maxWidth="200" promptText="请输入短信验证码" />
+                        <Button fx:id="sendCaptchaBtn" maxWidth="120" mnemonicParsing="false" onAction="#onSendCaptcha" text="获取验证码" />
+                        <Button fx:id="captchaLoginBtn" maxWidth="300" mnemonicParsing="false" onAction="#onLogin" text="登录" />
+                     </children>
+                  </VBox>
+                  <!-- 密码登录 -->
+                  <VBox fx:id="passwordPane" spacing="12.0" visible="false">
+                     <children>
+                        <Label text="密码" />
+                        <PasswordField fx:id="passwordField" maxWidth="300" promptText="请输入密码" />
+                        <Button fx:id="passwordLoginBtn" maxWidth="300" mnemonicParsing="false" onAction="#onLogin" text="登录" />
+                     </children>
+                  </VBox>
+               </children>
+            </StackPane>
 
-            <Button fx:id="sendCaptchaBtn" mnemonicParsing="false"
-                    text="获取验证码" maxWidth="120"
-                    onAction="#onSendCaptcha" />
-
-            <Button fx:id="loginBtn" mnemonicParsing="false"
-                    text="登录" maxWidth="300"
-                    onAction="#onLogin" />
+            <HBox alignment="CENTER" spacing="4.0">
+               <children>
+                  <Label text="%ui.account.login_mode_switch" />
+                  <Hyperlink fx:id="modeSwitchLink" onAction="#onToggleMode" text="密码登录" />
+               </children>
+            </HBox>
 
             <Label fx:id="statusLabel" text="" textFill="#666" wrapText="true" />
          </children>
-         <padding><Insets top="28.0" right="28.0" bottom="28.0" left="28.0" /></padding>
+         <padding><Insets bottom="28.0" left="28.0" right="28.0" top="28.0" /></padding>
       </VBox>
    </children>
 </AnchorPane>
