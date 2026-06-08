@@ -1,0 +1,219 @@
+/* ===== 卡池分析页 ===== */
+
+
+
+
+
+
+.gacha {
+    -fx-background-color: transparent;
+}
+
+/* ----- 玩家信息卡片 ----- */
+.gacha .player-info {
+    -fx-background-color: rgba(0, 0, 0, 0.03);
+    -fx-background-radius: 12;
+    -fx-border-color: rgba(0, 0, 0, 0.06);
+    -fx-border-radius: 12;
+    -fx-border-width: 1;
+}
+
+.gacha .player-level {
+    -fx-font-size: 14px;
+    -fx-text-fill: rgba(0, 0, 0, 0.65);
+}
+
+.gacha .player-luck {
+    -fx-font-size: 1.2em;
+    -fx-background-color: linear-gradient(to right, #F8C047, #e6a832);
+    -fx-background-radius: 20;
+    -fx-padding: 4 16 4 16;
+    -fx-alignment: center;
+    -fx-font-weight: bold;
+}
+
+/* ----- 卡池卡片 ----- */
+.gacha .pool-card {
+    -fx-padding: 8px;
+    -fx-background-radius: 10px;
+    -fx-background-color: -color-bg-default-50;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.04), 8, 0, 0, 2);
+}
+
+.gacha .pool-card .separator{
+    -fx-padding: 4 0 8 0;
+}
+.gacha .pool-card .separator > .line{
+    -fx-border-color: linear-gradient(from 0.0% 0.0% to 100.0% 0.0%, #cccbcb70 0.0%,orangered 50.0%, #cccbcb70 100.0%) transparent transparent transparent;
+    -fx-border-insets: 1px 0 0 0;
+    -fx-border-width: 1px;
+    -fx-padding: 0;
+}
+.gacha .pool-card .pool-date{
+    -fx-text-fill: -color-font-subtle;
+    -fx-font-size: 1.0em;
+}
+.gacha .pool-title {
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-text-fill: rgba(0, 0, 0, 0.8);
+}
+
+.gacha .pool-count {
+    -fx-font-size: 28px;
+    -fx-font-weight: bolder;
+    -fx-text-fill: -color-accent-fg;
+}
+
+.gacha .pool-stats  > .label{
+    -fx-text-fill: -color-fg-muted;
+    -fx-font-weight: bold;
+    -fx-font-size: 1.1em;
+}
+
+/* ----- 抽卡列表 ----- */
+.gacha .gacha-list {
+    -fx-background-color: transparent;
+    -fx-padding: 5 0 0 0;
+}
+
+.gacha .gacha-list .list-cell {
+    -fx-padding: 0.15em 0 0.15em 0;
+    -fx-background-radius: 0.571em;  /* 8px */
+}
+
+.gacha .gacha-list .list-cell:filled:hover {
+    -fx-background-color: rgba(0, 0, 0, 0.04);
+    -fx-background-radius: 6;
+}
+
+.gacha .gacha-list .list-cell:filled:selected {
+    -fx-background-color: rgba(0, 0, 0, 0.06);
+    -fx-background-radius: 6;
+}
+
+.gacha .gacha-list > .virtual-flow > .scroll-bar:vertical {
+    -fx-pref-width: 3px;
+}
+.gacha .gacha-list .role-cell{
+    -fx-padding: 0.2em 0.2em 0 0.2em;            /* 10px */
+    -fx-background-radius: 0.571em;  /* 8px */
+    -fx-background-color: -color-bg-default-50;
+}
+.gacha .gacha-list .role-cell .role-name{
+    -fx-font-size: 1.2em;
+    -fx-font-weight: bold;
+}
+.gacha .gacha-list .role-cell .role-name.up{
+    -fx-text-fill: #ca3e3e;
+}
+.gacha .gacha-list .role-cell .role-name.unup{
+    -fx-text-fill: #269578;
+}
+
+
+.gacha .gacha-list .role-cell .role-date{
+    -fx-text-fill: -color-font-subtle;
+    -fx-font-size: 1.0em;
+}
+.gacha .gacha-list .role-cell .role-desc{
+    -fx-font-weight: bold;
+    -fx-font-size: 1.4em;
+    -fx-pref-width: 1.786em;
+    -fx-rotate: 15;
+}
+/*..gacha .gacha-list.role-cell .role-desc.up{
+    -fx-text-fill: #ffbe79;
+}
+..gacha .gacha-list.role-cell .role-desc.unup{
+    -fx-text-fill: #f1305c;
+}
+
+*/
+.gacha .gacha-list .role-cell .progress-bar > .track {
+    -fx-background-color: transparent;
+}
+.gacha .gacha-list .role-cell .progress-bar > .bar {
+    -fx-padding: 2px;
+}
+.gacha .gacha-list .role-cell .progress-bar.up > .bar {
+    -fx-background-color: #ca3e3e;
+}
+.gacha .gacha-list .role-cell .progress-bar.unup > .bar {
+    -fx-background-color: #269578;
+}
+
+
+
+.gacha .gacha-list{
+    -fx-border-color: transparent;
+    -fx-padding: 0;
+}
+.gacha .gacha-list:hover{
+    -fx-padding: 0;
+}
+.gacha .gacha-list .list-cell{
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}
+.gacha .gacha-list .list-cell:hover,
+.gacha .gacha-list .list-cell:selected{
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}
+
+.gacha .gacha-list  > .virtual-flow > .scroll-bar{
+    -fx-background-color: transparent;
+}
+
+.gacha .gacha-list  > .virtual-flow > .scroll-bar:vertical .thumb,
+.gacha .gacha-list  > .virtual-flow > .scroll-bar:vertical .track{
+    -fx-background-color: transparent;
+}
+.gacha .gacha-list  > .virtual-flow > .scroll-bar:vertical .thumb {
+    -fx-background-color: -color-hover-emphasis;
+}
+.gacha .gacha-list > .virtual-flow > .scroll-bar:horizontal .thumb{
+    -fx-background-color: -color-hover-emphasis;
+}
+
+
+
+
+
+
+.gacha .item-image {
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.12), 3, 0, 0, 1);
+}
+
+.gacha .item-pity {
+    -fx-font-size: 12px;
+    -fx-min-width: 60px;
+    -fx-text-fill: rgba(0, 0, 0, 0.65);
+}
+
+.gacha .item-type {
+    -fx-font-size: 12px;
+    -fx-min-width: 48px;
+    -fx-text-fill: rgba(0, 0, 0, 0.55);
+}
+
+.gacha .item-date {
+    -fx-font-size: 11px;
+    -fx-text-fill: rgba(0, 0, 0, 0.35);
+}
+
+/* ----- 分隔线 ----- */
+.gacha .separator {
+    -fx-opacity: 0.3;
+}
+
+.gacha .separator .line {
+    -fx-border-color: rgba(0, 0, 0, 0.08);
+    -fx-border-width: 1 0 0 0;
+}
+
+/* ----- 空状态 ----- */
+.gacha .empty-icon {
+    -fx-fill: rgba(0, 0, 0, 0.2);
+}

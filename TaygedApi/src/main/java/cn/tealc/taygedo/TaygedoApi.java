@@ -375,7 +375,14 @@ public class TaygedoApi {
     }
     // ==================== 抽卡数据 ====================
 
-    public void getGameGacha(String accessToken) {
+    /**
+     * 获取异环抽卡数据
+     *
+     * @param accessToken 塔吉多访问令牌
+     * @return 抽卡数据（玩家信息 + 各卡池抽卡记录）
+     * @throws TaygedoException 请求失败时抛出
+     */
+    public GameGachaResult getGameGacha(String accessToken) {
         String url = http.buildUrl("/apihub/awapi/yh/gacha", Map.of());
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(url))
@@ -383,6 +390,16 @@ public class TaygedoApi {
                 .GET()
                 .build();
 
+        JsonNode root = http.executeAndParse(request, "getGameGacha", null);
+        JsonNode data = root.get("data");
+        if (data == null || !data.isObject()) {
+            throw new TaygedoException("getGameGacha 返回数据为空");
+        }
+        try {
+            return MAPPER.treeToValue(data, GameGachaResult.class);
+        } catch (JsonProcessingException e) {
+            throw new TaygedoException("getGameGacha 解析响应失败: " + e.getMessage(), e);
+        }
     }
 
 
