@@ -30,12 +30,12 @@ public class StartGameTask extends Task<Boolean> {
      * 启动，先删除旧日志，然后判断是否启动参数，并进行启动
      * */
     public void startGame() {
-        String dir = Config.setting.getGameRootDir();
+        String dir = Config.getSetting().getGameRootDir();
         if (dir != null) {
             File exe = null;
             //当自定义启动程序时
-            if (Config.setting.isGameStartAppCustom()) {
-                exe = new File(Config.setting.getGameStarAppPath());
+            if (Config.getSetting().isGameStartAppCustom()) {
+                exe = new File(Config.getSetting().getGameStarAppPath());
                 if (!exe.exists()) {
                     NotificationManager.message(
                             MessageInfo.warning(String.format(
@@ -55,13 +55,13 @@ public class StartGameTask extends Task<Boolean> {
                     return;
                 }
             }
-            List<String> paramsList = new ArrayList<String>(Config.setting.getStartUpParams());
+            List<String> paramsList = new ArrayList<String>(Config.getSetting().getStartUpParams());
             paramsList.addFirst(exe.getAbsolutePath());
             String[] newArray = new String[paramsList.size()];
             paramsList.toArray(newArray);
             runExeByCustom(newArray);
 
-            if (Config.setting.isHideWhenGameStart()) {
+            if (Config.getSetting().isHideWhenGameStart()) {
                 NotificationManager.publish(NotificationKey.APP_HIDE);
             }
 

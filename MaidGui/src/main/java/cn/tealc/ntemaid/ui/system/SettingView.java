@@ -97,11 +97,11 @@ public class SettingView implements FxmlView<SettingViewModel>, Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        SpinnerValueFactory<Integer> valueFactory = new SpinnerValueFactory.IntegerSpinnerValueFactory(75, 125, Config.setting.getUiScale(), 5);
+        SpinnerValueFactory<Integer> valueFactory = new SpinnerValueFactory.IntegerSpinnerValueFactory(75, 125, Config.getSetting().getUiScale(), 5);
         uiScaleSpinner.setValueFactory(valueFactory);
         uiScaleSpinner.valueProperty().addListener((observableValue, integer, t1) -> {
             if (t1 != null) {
-                Config.setting.setUiScale(t1);
+                Config.getSetting().setUiScale(t1);
             }
         });
 
@@ -109,9 +109,9 @@ public class SettingView implements FxmlView<SettingViewModel>, Initializable {
         hideWhenGameStart.setSkin(new ToggleSwitchSkin(hideWhenGameStart));
         hideWhenGameStart.selectedProperty().bindBidirectional(viewModel.hideWhenGameStartProperty());
         exitWhenGameOver.selectedProperty().bindBidirectional(viewModel.exitWhenGameOverProperty());
-        silentStartUp.selectedProperty().bindBidirectional(Config.setting.silentStartupProperty());
-        autoStartGame.selectedProperty().bindBidirectional(Config.setting.autoStartGameProperty());
-        autoKillOfficialLauncher.selectedProperty().bindBidirectional(Config.setting.autoKillOfficialLauncherProperty());
+        silentStartUp.selectedProperty().bindBidirectional(Config.getSetting().silentStartupProperty());
+        autoStartGame.selectedProperty().bindBidirectional(Config.getSetting().autoStartGameProperty());
+        autoKillOfficialLauncher.selectedProperty().bindBidirectional(Config.getSetting().autoKillOfficialLauncherProperty());
 
 
         diyBgField.textProperty().bindBidirectional(viewModel.diyHomeBgNameProperty());
@@ -155,13 +155,13 @@ public class SettingView implements FxmlView<SettingViewModel>, Initializable {
         versionCheckSwitch.selectedProperty().bindBidirectional(viewModel.checkNewVersionProperty());
 
 
-        if (Config.setting.getCloseEvent() >= 0 && Config.setting.getCloseEvent() <= 2)
-            closeEventToggleGroup.selectToggle(closeEventToggleGroup.getToggles().get(Config.setting.getCloseEvent()));
+        if (Config.getSetting().getCloseEvent() >= 0 && Config.getSetting().getCloseEvent() <= 2)
+            closeEventToggleGroup.selectToggle(closeEventToggleGroup.getToggles().get(Config.getSetting().getCloseEvent()));
 
 
         languageBox.setItems(viewModel.getLanguages());
         for (Pair<String, Locale> language : languageBox.getItems()) {
-            if (language.getValue().getLanguage().equals(Config.setting.getLanguage().getLanguage())) {
+            if (language.getValue().getLanguage().equals(Config.getSetting().getLanguage().getLanguage())) {
                 languageBox.getSelectionModel().select(language);
             }
         }
@@ -183,7 +183,7 @@ public class SettingView implements FxmlView<SettingViewModel>, Initializable {
         });
 
 
-        fileSourceType.getToggles().get(Config.setting.getResourceSource()).setSelected(true);
+        fileSourceType.getToggles().get(Config.getSetting().getResourceSource()).setSelected(true);
 
 
     }
@@ -299,9 +299,9 @@ public class SettingView implements FxmlView<SettingViewModel>, Initializable {
         Object source = event.getSource();
         if (source instanceof RadioButton button) {
             switch (button.getAccessibleText()) {
-                case "0" -> Config.setting.setCloseEvent(0);
-                case "1" -> Config.setting.setCloseEvent(1);
-                case "2" -> Config.setting.setCloseEvent(2);
+                case "0" -> Config.getSetting().setCloseEvent(0);
+                case "1" -> Config.getSetting().setCloseEvent(1);
+                case "2" -> Config.getSetting().setCloseEvent(2);
             }
         }
     }
@@ -312,10 +312,10 @@ public class SettingView implements FxmlView<SettingViewModel>, Initializable {
         if (source instanceof RadioButton button) {
             switch (button.getAccessibleText()) {
                 case "0" -> {
-                    Config.setting.setResourceSource(0);
+                    Config.getSetting().setResourceSource(0);
                 }
                 case "1" -> {
-                    Config.setting.setResourceSource(1);
+                    Config.getSetting().setResourceSource(1);
                 }
             }
         }

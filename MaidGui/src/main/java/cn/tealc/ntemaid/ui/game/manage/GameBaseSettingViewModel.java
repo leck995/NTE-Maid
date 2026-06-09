@@ -34,15 +34,15 @@ public class GameBaseSettingViewModel implements ViewModel, SceneLifecycle {
 
 
     public GameBaseSettingViewModel() {
-        startUpParams = Config.setting.getStartUpParams();
+        startUpParams = Config.getSetting().getStartUpParams();
     }
 
 
     public void init() {
-        gameClientType.bindBidirectional(Config.setting.gameRootDirSourceProperty());
-        gameDir.bindBidirectional(Config.setting.gameRootDirProperty());
-        gameAppStartPath.bindBidirectional(Config.setting.gameStarAppPathProperty());
-        gameAppStartCustom.bindBidirectional(Config.setting.gameStartAppCustomProperty());
+        gameClientType.bindBidirectional(Config.getSetting().gameRootDirSourceProperty());
+        gameDir.bindBidirectional(Config.getSetting().gameRootDirProperty());
+        gameAppStartPath.bindBidirectional(Config.getSetting().gameStarAppPathProperty());
+        gameAppStartCustom.bindBidirectional(Config.getSetting().gameStartAppCustomProperty());
 
         if (gameDir.get() == null){
             String gameInstallPath = getGameInstallPath();

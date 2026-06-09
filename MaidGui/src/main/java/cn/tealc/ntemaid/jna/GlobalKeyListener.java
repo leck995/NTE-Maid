@@ -14,7 +14,7 @@ import java.util.Optional;
 public class GlobalKeyListener implements NativeKeyListener {
   private static final String GAME_NAME="异环  ";
   public void nativeKeyPressed(NativeKeyEvent e) {
-    if (!Config.setting.isMusicEnable()){
+    if (!Config.getSetting().isMusicEnable()){
       return;
     }
     boolean isGameActive = getForegroundWindowTitle()

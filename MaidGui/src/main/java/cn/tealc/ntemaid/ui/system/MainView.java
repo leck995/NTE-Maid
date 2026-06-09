@@ -201,7 +201,7 @@ public class MainView implements Initializable, FxmlView<MainViewModel> {
         Button minBtn = new Button(null,new FontIcon(Material2OutlinedMZ.MINUS));
 
         ToggleSwitch musicSwitch = new ToggleSwitch("开启音乐");
-        musicSwitch.selectedProperty().bindBidirectional(Config.setting.musicEnableProperty());
+        musicSwitch.selectedProperty().bindBidirectional(Config.getSetting().musicEnableProperty());
 
 
         closeBtn.setOnAction(event -> close());
@@ -293,8 +293,8 @@ public class MainView implements Initializable, FxmlView<MainViewModel> {
                 supportBtn.getStyleClass().add("icon-only");
             }
         });
-        navBtn.selectedProperty().bindBidirectional(Config.setting.leftBarShowProperty());
-        supportBtn.visibleProperty().bind(Config.setting.supportProperty().not());
+        navBtn.selectedProperty().bindBidirectional(Config.getSetting().leftBarShowProperty());
+        supportBtn.visibleProperty().bind(Config.getSetting().supportProperty().not());
     }
 
     private void initContent() {
@@ -304,17 +304,17 @@ public class MainView implements Initializable, FxmlView<MainViewModel> {
 
     private void updateBg() {
         Image image = null;
-        if (Config.setting.getDiyHomeBgType() == 0) {
+        if (Config.getSetting().getDiyHomeBgType() == 0) {
             image = new Image(FXResourcesLoader.load("image/bg.jpg"));
-        } else if (Config.setting.getDiyHomeBgType() == 1) {
-            image = LocalResourcesManager.getHomeBg(Config.setting.getDiyHomeBgName());
+        } else if (Config.getSetting().getDiyHomeBgType() == 1) {
+            image = LocalResourcesManager.getHomeBg(Config.getSetting().getDiyHomeBgName());
             if (image == null) {
                 image = new Image(FXResourcesLoader.load("image/bg.jpg"));
-                Config.setting.setDiyHomeBg(false);
-                Config.setting.setDiyHomeBgName(null);
+                Config.getSetting().setDiyHomeBg(false);
+                Config.getSetting().setDiyHomeBgName(null);
                 LOG.warn("自定义壁纸出现问题，取消自定义");
             }
-        } else if (Config.setting.getDiyHomeBgType() == 2) {
+        } else if (Config.getSetting().getDiyHomeBgType() == 2) {
             image = getImageFormBgDir();
             if (image == null) {
                 image = new Image(FXResourcesLoader.load("image/bg.jpg"));
@@ -341,7 +341,7 @@ public class MainView implements Initializable, FxmlView<MainViewModel> {
     }
 
     private Image getImageFormBgDir() {
-        File bgDir = new File(Config.setting.getDiyHomeBgDir());
+        File bgDir = new File(Config.getSetting().getDiyHomeBgDir());
         if (bgDir.exists()) {
             File[] bgs = bgDir.listFiles((dir, name) -> name.endsWith(".png") || name.endsWith(".jpg") || name.endsWith(".jpeg") || name.endsWith(".gif"));
             if (bgs != null && bgs.length > 0) {
@@ -432,7 +432,7 @@ public class MainView implements Initializable, FxmlView<MainViewModel> {
 
 
     public void close() {
-        switch (Config.setting.getCloseEvent()) {
+        switch (Config.getSetting().getCloseEvent()) {
             case 0 -> showExitDialog();
             case 1 -> NotificationManager.publish(NotificationKey.APP_EXIT);
             case 2 -> NotificationManager.publish(NotificationKey.APP_HIDE);
@@ -510,7 +510,7 @@ public class MainView implements Initializable, FxmlView<MainViewModel> {
 
         okBtn.setOnAction(actionEvent -> {
             MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE, MessageInfo.success("感谢您的支持，谢谢",true));
-            Config.setting.setSupport(true);
+            Config.getSetting().setSupport(true);
             cancelBtn.fireEvent(actionEvent);
         });
 

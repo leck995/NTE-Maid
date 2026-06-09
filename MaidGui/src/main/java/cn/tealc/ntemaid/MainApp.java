@@ -50,7 +50,7 @@ public class MainApp extends Application {
         MvvmFX.setGlobalResourceBundle(Config.language);
         ch.qos.logback.classic.Logger root = (ch.qos.logback.classic.Logger) org.slf4j.LoggerFactory
                 .getLogger(ch.qos.logback.classic.Logger.ROOT_LOGGER_NAME);
-        root.setLevel(Level.toLevel(Config.setting.getLogLevel()));
+        root.setLevel(Level.toLevel(Config.getSetting().getLogLevel()));
         Platform.setImplicitExit(false);
         appLocked = new AppLocked();
     }
@@ -86,7 +86,7 @@ public class MainApp extends Application {
     }
 
     private void autoStartGame() {
-        if (Config.setting.isAutoStartGame()) {
+        if (Config.getSetting().isAutoStartGame()) {
             Thread.startVirtualThread(new StartGameTask());
         }
     }
@@ -100,16 +100,16 @@ public class MainApp extends Application {
         stage.setScene(scene);
         stage.getIcons().add(new Image(FXResourcesLoader.load("image/icon.png"), 45, 45, true, true));
         stage.setTitle(LanguageManager.getString("app.title"));
-        double width = Math.max(1100, Config.setting.getAppWidth());
-        double height = Math.max(650, Config.setting.getAppHeight());
+        double width = Math.max(1100, Config.getSetting().getAppWidth());
+        double height = Math.max(650, Config.getSetting().getAppHeight());
         stage.setWidth(width);
         stage.setHeight(height);
 
-        Config.setting.appWidthProperty().bind(scene.widthProperty());
-        Config.setting.appHeightProperty().bind(scene.heightProperty());
+        Config.getSetting().appWidthProperty().bind(scene.widthProperty());
+        Config.getSetting().appHeightProperty().bind(scene.heightProperty());
         stage.initStyle(StageStyle.EXTENDED);
         initFont();
-        if (!Config.setting.isSilentStartup()) {
+        if (!Config.getSetting().isSilentStartup()) {
             stage.show();
         }
     }

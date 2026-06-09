@@ -58,7 +58,7 @@ public class FxMediaPlayer extends BaseAudioPlayer {
             }
         });
 
-        volume.bindBidirectional(Config.setting.musicVolumeProperty());
+        volume.bindBidirectional(Config.getSetting().musicVolumeProperty());
         volume.addListener((observable, oldValue, newValue) -> {
             mute.set(newValue.doubleValue() == 0);
         });

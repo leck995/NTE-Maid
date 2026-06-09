@@ -42,7 +42,7 @@ public class TaygedoSignInViewModel implements ViewModel {
                                    TaygedoAccountService accountService) {
         this.signInService = signInService;
         this.accountService = accountService;
-        autoSign = Config.setting.taygedoAutoSignProperty();
+        autoSign = Config.getSetting().taygedoAutoSignProperty();
 
         signInCommand = new DelegateCommand(() -> new Action() {
             @Override

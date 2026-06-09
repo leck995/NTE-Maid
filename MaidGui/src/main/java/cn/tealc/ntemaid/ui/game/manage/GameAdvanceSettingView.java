@@ -55,7 +55,7 @@ public class GameAdvanceSettingView implements FxmlView<GameAdvanceSettingViewMo
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        userAdvanceSettingSwitch.selectedProperty().bindBidirectional(Config.setting.userAdvanceGameSettingsProperty());
+        userAdvanceSettingSwitch.selectedProperty().bindBidirectional(Config.getSetting().userAdvanceGameSettingsProperty());
         content.visibleProperty().bind(userAdvanceSettingSwitch.selectedProperty());
         String fps = viewModel.getFps();
         if (fps != null) {

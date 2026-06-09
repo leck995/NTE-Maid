@@ -63,7 +63,7 @@ public class HomeView implements Initializable, FxmlView<HomeViewModel> {
      * @date: 2025/2/18
      */
     private void setChangeBgEnable() {
-        if (Config.setting.getDiyHomeBgType() == 2) {
+        if (Config.getSetting().getDiyHomeBgType() == 2) {
             root.setOnMouseClicked(event -> {
                 if (event.getClickCount() == 2) {
                     MvvmFX.getNotificationCenter().publish(NotificationKey.CHANGE_BG);

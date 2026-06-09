@@ -18,8 +18,8 @@ public class GameResourcesManager {
     private static final Logger LOG = LoggerFactory.getLogger(GameResourcesManager.class);
 
     public static Optional<File> getGameDir() {
-        if (Config.setting.getGameRootDir() != null) {
-            File dir = new File(Config.setting.getGameRootDir());
+        if (Config.getSetting().getGameRootDir() != null) {
+            File dir = new File(Config.getSetting().getGameRootDir());
             if (!dir.exists()) {
                 return Optional.empty();
             }
@@ -30,7 +30,7 @@ public class GameResourcesManager {
 
 
     public static File getGameExeBase() {
-        String dir = Config.setting.getGameRootDir();
+        String dir = Config.getSetting().getGameRootDir();
         File exe = null;
         if (dir != null) {
             exe = new File(dir + File.separator + "NTELauncher.exe");
@@ -51,7 +51,7 @@ public class GameResourcesManager {
     }
 
     public static Optional<File> getGameScreenShoot() {
-        String dir = Config.setting.getGameRootDir();
+        String dir = Config.getSetting().getGameRootDir();
         if (dir != null) {
             Path path = Paths.get(dir, "Client", "WindowsNoEditor", "Selfie");
             if (Files.exists(path)) {
@@ -90,7 +90,7 @@ public class GameResourcesManager {
      * @date: 2024/11/13
      */
     public static File getGameLogDir() {
-        String dir = Config.setting.getGameRootDir();
+        String dir = Config.getSetting().getGameRootDir();
         File exe = null;
         if (dir != null) {
             exe = new File(dir + File.separator + "Client/Saved/Logs");
@@ -102,7 +102,7 @@ public class GameResourcesManager {
     }
 
     public static File getGameLogFile() {
-        String dir = Config.setting.getGameRootDir();
+        String dir = Config.getSetting().getGameRootDir();
         File file = null;
         if (dir != null) {
             file = new File(dir + File.separator + "Client/Saved/Logs/Client.log");

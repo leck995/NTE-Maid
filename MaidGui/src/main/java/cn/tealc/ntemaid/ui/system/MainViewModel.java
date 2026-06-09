@@ -118,7 +118,7 @@ public class MainViewModel implements ViewModel {
      * @date 2026/06/09
      */
     public void autoTaygedoSign(){
-        if (Config.setting.isTaygedoAutoSign()){
+        if (Config.getSetting().isTaygedoAutoSign()){
             List<TaygedoAccount> accounts = accountService.getNotSignedTodayList();
             if (accounts.isEmpty()) {
                 return;
@@ -162,7 +162,7 @@ public class MainViewModel implements ViewModel {
 
 
     public void checkVersionAndClean() {
-        if (Config.setting.isCheckNewVersion()) {
+        if (Config.getSetting().isCheckNewVersion()) {
             Platform.runLater(() -> {
                 CheckAppVersionTask task = new CheckAppVersionTask(true);
                 task.setOnSucceeded(workerStateEvent -> {

@@ -51,10 +51,10 @@ public class HomeViewModel implements ViewModel, SceneLifecycle {
         };
         NotificationManager.subscribe(NotificationKey.HOME_GAME_TIME_UPDATE, gameTimeObserver);
 
-        if (Config.setting.getGameRootDir() == null){
+        if (Config.getSetting().getGameRootDir() == null){
             String gameInstallPath = getGameInstallPath();
             if (gameInstallPath != null){
-                Config.setting.setGameRootDir(gameInstallPath);
+                Config.getSetting().setGameRootDir(gameInstallPath);
                 Platform.runLater(()->{
                     NotificationManager.message(MessageInfo.info("已识别到安装目录，若错误请手动设置"));
                 });
@@ -140,7 +140,7 @@ public class HomeViewModel implements ViewModel, SceneLifecycle {
 
 
     public void checkIsWeekEnd() {
-/*        if (Config.setting.getGameRootDirSource() == SourceType.GLOBAL) {
+/*        if (Config.getSetting().getGameRootDirSource() == SourceType.GLOBAL) {
             Platform.runLater(() -> {
                 onWeekEnd(true, null);
             });
@@ -152,11 +152,11 @@ public class HomeViewModel implements ViewModel, SceneLifecycle {
 
 
 /*    public void startUpdate() {
-        if (Config.setting.getGameRootDirSource() == SourceType.WE_GAME) {
+        if (Config.getSetting().getGameRootDirSource() == SourceType.WE_GAME) {
             MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
                     new MessageInfo(MessageType.WARNING, LanguageManager.getString("ui.home.message.type02")), false);
         } else {
-            String dir = Config.setting.getGameRootDir();
+            String dir = Config.getSetting().getGameRootDir();
             if (dir != null) {
                 File gameDir = GameResourcesManager.getGameDir();
                 if (gameDir != null) {
@@ -199,12 +199,12 @@ public class HomeViewModel implements ViewModel, SceneLifecycle {
         //删除游戏过去的日志，避免数据污染
         //deleteLogFiles();
 
-        String dir = Config.setting.getGameRootDir();
+        String dir = Config.getSetting().getGameRootDir();
         if (dir != null) {
             File exe = null;
             //当自定义启动程序时
-            if (Config.setting.isGameStartAppCustom()) {
-                exe = new File(Config.setting.getGameStarAppPath());
+            if (Config.getSetting().isGameStartAppCustom()) {
+                exe = new File(Config.getSetting().getGameStarAppPath());
                 if (!exe.exists()) {
                     MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
                             MessageInfo.warning(String.format(
@@ -225,7 +225,7 @@ public class HomeViewModel implements ViewModel, SceneLifecycle {
                 }
             }
 
-            List<String> paramsList = new ArrayList<String>(Config.setting.getStartUpParams());
+            List<String> paramsList = new ArrayList<String>(Config.getSetting().getStartUpParams());
             paramsList.addFirst(exe.getAbsolutePath());
             String[] newArray = new String[paramsList.size()];
             paramsList.toArray(newArray);
@@ -240,7 +240,7 @@ public class HomeViewModel implements ViewModel, SceneLifecycle {
 
     //启动时隐藏窗口
     private void hideMainWindow() {
-        if (Config.setting.isHideWhenGameStart()) {
+        if (Config.getSetting().isHideWhenGameStart()) {
             NotificationManager.publish(NotificationKey.APP_HIDE);
         }
     }

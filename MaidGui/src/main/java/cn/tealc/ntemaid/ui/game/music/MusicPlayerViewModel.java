@@ -91,7 +91,7 @@ public class MusicPlayerViewModel implements ViewModel, SceneLifecycle {
         volume.bindBidirectional(player.volumeProperty());
         playingIndex.bindBidirectional(player.musicIndexProperty());
         musicList = player.getMusics();
-        musicDir.bindBidirectional(Config.setting.musicDirProperty());
+        musicDir.bindBidirectional(Config.getSetting().musicDirProperty());
         lrcSelectedIndex.bindBidirectional(player.lrcSelectedIndexProperty());
     }
 

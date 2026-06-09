@@ -69,9 +69,9 @@ public class GameBaseSettingView implements FxmlView<GameBaseSettingViewModel>, 
     }
 
     private void initFishing() {
-        fishingEnableSwitch.selectedProperty().bindBidirectional(Config.setting.fishingProperty());
-        fishingBaitSwitch.selectedProperty().bindBidirectional(Config.setting.fishingBaitProperty());
-        fishingFinishSwitch.selectedProperty().bindBidirectional(Config.setting.fishingFinishProperty());
+        fishingEnableSwitch.selectedProperty().bindBidirectional(Config.getSetting().fishingProperty());
+        fishingBaitSwitch.selectedProperty().bindBidirectional(Config.getSetting().fishingBaitProperty());
+        fishingFinishSwitch.selectedProperty().bindBidirectional(Config.getSetting().fishingFinishProperty());
         fishingBaitSwitch.disableProperty().bind(fishingEnableSwitch.selectedProperty().not());
         fishingFinishSwitch.disableProperty().bind(fishingEnableSwitch.selectedProperty().not());
     }
@@ -202,7 +202,7 @@ public class GameBaseSettingView implements FxmlView<GameBaseSettingViewModel>, 
         if (source instanceof RadioButton button) {
             switch (button.getAccessibleText()) {
                 case "default" -> {
-                    Config.setting.setGameStartAppCustom(false);
+                    Config.getSetting().setGameStartAppCustom(false);
                     File gameExeClient = GameResourcesManager.getGameExeBase();
                     if (gameExeClient != null) {
                         gameStartAppField.setText(gameExeClient.getAbsolutePath());
@@ -212,7 +212,7 @@ public class GameBaseSettingView implements FxmlView<GameBaseSettingViewModel>, 
                     gameStartAppField.positionCaret(gameStartAppField.getText().length());
                 }
                 case "custom" -> {
-                    Config.setting.setGameStartAppCustom(true);
+                    Config.getSetting().setGameStartAppCustom(true);
                 }
             }
         }

@@ -29,7 +29,7 @@ public class CheckAppVersionTask extends Task<ResponseBody<Release>> {
 
     @Override
     protected ResponseBody<Release> call() throws Exception {
-        if (Config.setting.isDevModel()){
+        if (Config.getSetting().isDevModel()){
             return getLocalReleaseData();
         }else {
             ResponseBody<Release> releaseData = getNetReleaseData();
@@ -56,8 +56,8 @@ public class CheckAppVersionTask extends Task<ResponseBody<Release>> {
                 String version = latestRelease.getVersion();
                 double net = Double.parseDouble(version.replace(".",""));
                 double now = Double.parseDouble(Config.version.replace(".",""));
-                if (checkSkip && Config.setting.getSkipVersion() != null){
-                    double skip = Double.parseDouble(Config.setting.getSkipVersion().replace(".",""));
+                if (checkSkip && Config.getSetting().getSkipVersion() != null){
+                    double skip = Double.parseDouble(Config.getSetting().getSkipVersion().replace(".",""));
                     if (net <= skip){ //网络版本低于跳过版本
                         LOG.info("检测到跳过版本更新");
                         return new ResponseBody<>(1, "无更新");
@@ -95,8 +95,8 @@ public class CheckAppVersionTask extends Task<ResponseBody<Release>> {
                         String version = latestRelease.getVersion();
                         double net = Double.parseDouble(version.replace(".",""));
                         double now = Double.parseDouble(Config.version.replace(".",""));
-                        if (checkSkip && Config.setting.getSkipVersion() != null){
-                            double skip = Double.parseDouble(Config.setting.getSkipVersion().replace(".",""));
+                        if (checkSkip && Config.getSetting().getSkipVersion() != null){
+                            double skip = Double.parseDouble(Config.getSetting().getSkipVersion().replace(".",""));
                             if (net <= skip){ //网络版本低于跳过版本
                                 LOG.info("检测到跳过版本更新");
                                 return new ResponseBody<>(1, "无更新");

@@ -27,8 +27,17 @@ public class Config {
     public static final String URL_GITHUB = "https://github.com/leck995/NTE-Maid";
     public static final String URL_APP_WIKI = "";
     public static final String URL_GITHUB_ISSUES = URL_GITHUB +"/issues";
-    public static Setting setting;
+    private static volatile Setting setting;
     public static ResourceBundle language;
+
+    public static Setting getSetting() {
+        return setting;
+    }
+
+    static void setSetting(Setting s) {
+        setting = s;
+    }
+
     public static String appTitle;
 
     static {

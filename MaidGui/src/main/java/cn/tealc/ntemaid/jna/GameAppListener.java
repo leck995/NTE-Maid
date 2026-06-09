@@ -90,13 +90,13 @@ public class GameAppListener implements WinUser.WinEventProc {
             gameTimeService.saveSession(startGameTime, endTime);
             LOG.info("检测到异环已经结束，记录已保存");
 
-            if (Config.setting.isAutoKillOfficialLauncher()){
+            if (Config.getSetting().isAutoKillOfficialLauncher()){
                 LOG.info("游戏结束，自动退出官方启动器");
                 NativeProcessService service = new NativeProcessService();
                 service.killOfficialLauncher();
             }
 
-            if (Config.setting.isExitWhenGameOver()){
+            if (Config.getSetting().isExitWhenGameOver()){
                 LOG.info("游戏结束，自动退出程序");
                 NotificationManager.publish(NotificationKey.APP_EXIT);
             }

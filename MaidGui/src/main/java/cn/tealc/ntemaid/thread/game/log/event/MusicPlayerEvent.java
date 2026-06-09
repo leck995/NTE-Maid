@@ -28,7 +28,7 @@ public class MusicPlayerEvent implements Consumer<String> {
 
     @Override
     public void accept(String row) {
-        if (!Config.setting.isMusicEnable())
+        if (!Config.getSetting().isMusicEnable())
             return;
         if (row.contains(ONLINE_TEAM_JOIN)){ //如果联机，禁止播放
             stopUserPlayer = true;

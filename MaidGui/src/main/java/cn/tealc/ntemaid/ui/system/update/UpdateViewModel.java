@@ -73,7 +73,7 @@ public class UpdateViewModel implements ViewModel {
 
 
     public void setSkipVersion() {
-        Config.setting.setSkipVersion(release.getVersion());
+        Config.getSetting().setSkipVersion(release.getVersion());
     }
 
     public String getVersion() {

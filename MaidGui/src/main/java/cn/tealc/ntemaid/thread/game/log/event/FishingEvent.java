@@ -22,18 +22,18 @@ public class FishingEvent implements Consumer<String> {
 
     @Override
     public void accept(String row) {
-        if (!Config.setting.isFishing())
+        if (!Config.getSetting().isFishing())
             return;
         win32KeySender.reGetHwnd();
         if (row.contains(FISHING_START)){
             fishing = true;
             finished = 0;
         }else if (row.contains(FISHING_BAIT)){
-            if (Config.setting.isFishingBait()) {
+            if (Config.getSetting().isFishingBait()) {
                 win32KeySender.clickKey(Win32KeySender.VirtualKey.F,Duration.millis(500));
             }
         }else if (row.contains(FISHING_FINISH)){
-            if (Config.setting.isFishingFinish() && fishing) {
+            if (Config.getSetting().isFishingFinish() && fishing) {
                 if (finished == 0) {
                     finished += 1;
                 } else if (finished == 1) {
