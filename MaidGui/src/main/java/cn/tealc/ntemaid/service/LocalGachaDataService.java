@@ -6,6 +6,7 @@ import cn.tealc.ntemaid.model.game.gacha.LocalGachaType;
 import cn.tealc.taygedo.model.GameGachaItem;
 import cn.tealc.taygedo.model.GameGachaPool;
 import cn.tealc.taygedo.model.GameGachaResult;
+import com.google.inject.Inject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,7 +18,12 @@ import java.util.Optional;
 
 public class LocalGachaDataService {
     private static final Logger LOG = LoggerFactory.getLogger(LocalGachaDataService.class);
-    private final LocalGachaDataDao dao = new LocalGachaDataDao();
+    private final LocalGachaDataDao dao;
+
+    @Inject
+    public LocalGachaDataService(LocalGachaDataDao dao) {
+        this.dao = dao;
+    }
 
     public boolean save(LocalGachaData data) {
         try {

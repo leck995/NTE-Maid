@@ -1,26 +1,47 @@
 package cn.tealc.ntemaid.base;
 
+import cn.tealc.ntemaid.dao.*;
+import cn.tealc.ntemaid.service.*;
+import cn.tealc.ntemaid.service.impl.ConfigServiceImpl;
+import cn.tealc.ntemaid.service.impl.GameTimeServiceImpl;
+import cn.tealc.taygedo.TaygedoApi;
 import com.google.inject.AbstractModule;
+import com.google.inject.Provides;
+import com.google.inject.Singleton;
+
+import java.net.http.HttpClient;
 
 public class AppModule extends AbstractModule {
 
     @Override
     protected void configure() {
-//        bind(GameTimeDao.class).in(Singleton.class);
-//        bind(GameRecordDao.class).in(Singleton.class);
-//        bind(GameRoleDataDao.class).in(Singleton.class);
-//        bind(GameTowerDataDao.class).in(Singleton.class);
-//        bind(GameSlashDataDao.class).in(Singleton.class);
-//        bind(SignHistoryDao.class).in(Singleton.class);
-//        bind(ConfigDao.class).in(Singleton.class);
-//        bind(GameSettingDao.class).in(Singleton.class);
-//        bind(LocalCachePlayerDataDao.class).in(Singleton.class);
-//        bind(LocalCachePlayerDataService.class).in(Singleton.class);
-//        bind(ConfigService.class).in(Singleton.class);
-//        bind(TaskManageService.class).in(Singleton.class);
-//        bind(AutoSignService.class).in(Singleton.class);
-//        bind(GameWindowMonitorService.class).in(Singleton.class);
-//        bind(TrayIconManager.class).in(Singleton.class);
+        // DAO 层
+        bind(GameTimeDao.class).in(Singleton.class);
+        bind(ConfigDao.class).in(Singleton.class);
+        bind(PlayingListDao.class).in(Singleton.class);
+        bind(TaygedoAccountDao.class).in(Singleton.class);
+        bind(LocalGachaDataDao.class).in(Singleton.class);
+        bind(PlaylistDao.class).in(Singleton.class);
+        bind(MusicDao.class).in(Singleton.class);
 
+        // Service 层 — 接口到实现
+        bind(GameTimeService.class).to(GameTimeServiceImpl.class).in(Singleton.class);
+        bind(ConfigService.class).to(ConfigServiceImpl.class).in(Singleton.class);
+
+        // Service 层 — 具体类
+        bind(PlayingListService.class).in(Singleton.class);
+        bind(TaygedoSignInService.class).in(Singleton.class);
+        bind(TaygedoAccountService.class).in(Singleton.class);
+        bind(TaygedoLoginService.class).in(Singleton.class);
+        bind(LocalGachaDataService.class).in(Singleton.class);
+        bind(PlaylistService.class).in(Singleton.class);
+        bind(MusicService.class).in(Singleton.class);
+        bind(NativeProcessService.class).in(Singleton.class);
+    }
+
+    @Provides
+    @Singleton
+    TaygedoApi provideTaygedoApi(HttpClient httpClient) {
+        return new TaygedoApi(httpClient);
     }
 }

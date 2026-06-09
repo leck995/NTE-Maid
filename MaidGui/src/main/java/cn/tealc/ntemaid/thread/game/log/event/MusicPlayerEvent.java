@@ -1,11 +1,9 @@
 package cn.tealc.ntemaid.thread.game.log.event;
 
 import cn.tealc.ntemaid.base.Config;
+import cn.tealc.ntemaid.jna.Win32KeySender;
 import cn.tealc.ntemaid.player.BaseAudioPlayer;
 import cn.tealc.ntemaid.player.MusicPlayerClient;
-import cn.tealc.ntemaid.service.RobotService;
-import cn.tealc.ntemaid.thread.game.log.LogMonitorForMusicTask;
-import javafx.animation.PauseTransition;
 import javafx.util.Duration;
 
 import java.util.function.Consumer;
@@ -53,12 +51,10 @@ public class MusicPlayerEvent implements Consumer<String> {
      * @date 2026/05/09
      */
     public void stopGameFirstMusic() {
-        PauseTransition pause = new PauseTransition(Duration.millis(1500));
-        pause.setOnFinished(e -> {
-            RobotService robotService = new RobotService();
-            robotService.clickKeyCodeDigit2();
-        });
-        pause.play();
+        Win32KeySender win32KeySender = new Win32KeySender();
+        win32KeySender.clickKey(Win32KeySender.VirtualKey.F,Duration.millis(1500));
+
+
 
     }
 }

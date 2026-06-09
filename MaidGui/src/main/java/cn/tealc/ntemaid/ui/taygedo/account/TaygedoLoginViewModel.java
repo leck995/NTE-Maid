@@ -5,6 +5,7 @@ import cn.tealc.ntemaid.base.notification.NotificationManager;
 import cn.tealc.ntemaid.model.taygedo.TaygedoAccount;
 import cn.tealc.ntemaid.service.TaygedoLoginService;
 import cn.tealc.taygedo.TaygedoException;
+import com.google.inject.Inject;
 import de.saxsys.mvvmfx.SceneLifecycle;
 import de.saxsys.mvvmfx.ViewModel;
 import javafx.application.Platform;
@@ -21,7 +22,12 @@ import java.util.TimerTask;
 public class TaygedoLoginViewModel implements ViewModel, SceneLifecycle {
     private static final Logger LOG = LoggerFactory.getLogger(TaygedoLoginViewModel.class);
 
-    private final TaygedoLoginService service = new TaygedoLoginService();
+    private final TaygedoLoginService service;
+
+    @Inject
+    public TaygedoLoginViewModel(TaygedoLoginService service) {
+        this.service = service;
+    }
 
     private final StringProperty phone = new SimpleStringProperty("");
     private final StringProperty captcha = new SimpleStringProperty("");

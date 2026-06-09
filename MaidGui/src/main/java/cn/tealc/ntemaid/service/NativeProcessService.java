@@ -1,8 +1,13 @@
 package cn.tealc.ntemaid.service;
 
+import com.google.inject.Inject;
+
 import java.util.Optional;
 
 public class NativeProcessService {
+    @Inject
+    public NativeProcessService() {}
+
     public void killOfficialLauncher(){
         killProcessByName("NTEGame.exe",false);
     }

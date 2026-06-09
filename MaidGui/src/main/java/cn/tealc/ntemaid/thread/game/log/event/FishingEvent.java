@@ -2,9 +2,6 @@ package cn.tealc.ntemaid.thread.game.log.event;
 
 import cn.tealc.ntemaid.base.Config;
 import cn.tealc.ntemaid.jna.Win32KeySender;
-import cn.tealc.ntemaid.service.RobotService;
-import cn.tealc.ntemaid.thread.game.log.LogMonitorForMusicTask;
-import javafx.animation.PauseTransition;
 import javafx.util.Duration;
 
 import java.util.function.Consumer;

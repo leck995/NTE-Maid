@@ -8,6 +8,7 @@ import cn.tealc.taygedo.TaygedoException;
 import cn.tealc.taygedo.model.BindRoleInfo;
 import cn.tealc.taygedo.model.LoginResult;
 import cn.tealc.taygedo.model.UserCenterLoginResult;
+import com.google.inject.Inject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,9 +32,10 @@ public class TaygedoLoginService {
     private final TaygedoApi api;
     private final TaygedoAccountDao accountDao;
 
-    public TaygedoLoginService() {
-        this.api = new TaygedoApi();
-        this.accountDao = new TaygedoAccountDao();
+    @Inject
+    public TaygedoLoginService(TaygedoApi api, TaygedoAccountDao accountDao) {
+        this.api = api;
+        this.accountDao = accountDao;
     }
 
 

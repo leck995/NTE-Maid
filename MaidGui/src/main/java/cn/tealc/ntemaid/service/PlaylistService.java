@@ -3,6 +3,7 @@ package cn.tealc.ntemaid.service;
 import cn.tealc.ntemaid.dao.PlaylistDao;
 import cn.tealc.ntemaid.model.game.music.Music;
 import cn.tealc.ntemaid.model.game.music.Playlist;
+import com.google.inject.Inject;
 
 import java.util.List;
 import java.util.Objects;
@@ -11,7 +12,12 @@ import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 public class PlaylistService {
-    private final PlaylistDao playlistDao = new PlaylistDao();
+    private final PlaylistDao playlistDao;
+
+    @Inject
+    public PlaylistService(PlaylistDao playlistDao) {
+        this.playlistDao = playlistDao;
+    }
 
     /**
      * 创建新歌单

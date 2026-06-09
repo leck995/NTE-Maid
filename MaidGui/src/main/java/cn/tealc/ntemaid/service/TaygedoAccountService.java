@@ -2,6 +2,7 @@ package cn.tealc.ntemaid.service;
 
 import cn.tealc.ntemaid.dao.TaygedoAccountDao;
 import cn.tealc.ntemaid.model.taygedo.TaygedoAccount;
+import com.google.inject.Inject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,7 +19,12 @@ import java.util.Optional;
  */
 public class TaygedoAccountService {
     private static final Logger LOG = LoggerFactory.getLogger(TaygedoAccountService.class);
-    private final TaygedoAccountDao dao = new TaygedoAccountDao();
+    private final TaygedoAccountDao dao;
+
+    @Inject
+    public TaygedoAccountService(TaygedoAccountDao dao) {
+        this.dao = dao;
+    }
 
     /** 查询所有账号，异常时返回空列表 */
     public List<TaygedoAccount> getAll() {

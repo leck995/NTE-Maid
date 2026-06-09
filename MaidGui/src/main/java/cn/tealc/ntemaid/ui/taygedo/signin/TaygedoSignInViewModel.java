@@ -7,6 +7,7 @@ import cn.tealc.ntemaid.service.TaygedoSignInService;
 import cn.tealc.taygedo.TaygedoException;
 import cn.tealc.taygedo.model.SigninReward;
 import cn.tealc.taygedo.model.SigninState;
+import com.google.inject.Inject;
 import de.saxsys.mvvmfx.ViewModel;
 import de.saxsys.mvvmfx.utils.commands.Action;
 import de.saxsys.mvvmfx.utils.commands.Command;
@@ -23,8 +24,8 @@ import java.util.List;
 public class TaygedoSignInViewModel implements ViewModel {
     private static final Logger LOG = LoggerFactory.getLogger(TaygedoSignInViewModel.class);
 
-    private final TaygedoSignInService signInService = new TaygedoSignInService();
-    private final TaygedoAccountService accountService = new TaygedoAccountService();
+    private final TaygedoSignInService signInService;
+    private final TaygedoAccountService accountService;
 
     private final ObservableList<TaygedoAccount> accountList = FXCollections.observableArrayList();
     private final ObservableList<SigninReward> rewardList = FXCollections.observableArrayList();
@@ -36,7 +37,11 @@ public class TaygedoSignInViewModel implements ViewModel {
     private final Command signInCommand;
     private final Command signInAllCommand;
 
-    public TaygedoSignInViewModel() {
+    @Inject
+    public TaygedoSignInViewModel(TaygedoSignInService signInService,
+                                   TaygedoAccountService accountService) {
+        this.signInService = signInService;
+        this.accountService = accountService;
         autoSign = Config.setting.taygedoAutoSignProperty();
 
         signInCommand = new DelegateCommand(() -> new Action() {

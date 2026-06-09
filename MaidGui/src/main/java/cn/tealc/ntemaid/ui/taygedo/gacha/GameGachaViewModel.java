@@ -13,6 +13,7 @@ import cn.tealc.taygedo.model.GameGachaPool;
 import cn.tealc.taygedo.model.GameGachaResult;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.inject.Inject;
 import de.saxsys.mvvmfx.ViewModel;
 import javafx.application.Platform;
 import javafx.beans.property.*;
@@ -39,8 +40,8 @@ import java.util.Optional;
 public class GameGachaViewModel implements ViewModel {
     private static final Logger LOG = LoggerFactory.getLogger(GameGachaViewModel.class);
 
-    private final TaygedoAccountService accountService = new TaygedoAccountService();
-    private final TaygedoApi api = new TaygedoApi();
+    private final TaygedoAccountService accountService;
+    private final TaygedoApi api;
 
     private final ObservableList<TaygedoAccount> accountList = FXCollections.observableArrayList();
     private final ObjectProperty<TaygedoAccount> selectedAccount = new SimpleObjectProperty<>();
@@ -50,7 +51,7 @@ public class GameGachaViewModel implements ViewModel {
     private Map<String, Weapon> weaponMap;
     private Map<String, Character> characterMap;
     private final ObjectMapper mapper = new ObjectMapper();
-    private final LocalGachaDataService localGachaDataService = new LocalGachaDataService();
+    private final LocalGachaDataService localGachaDataService;
 
     /** 卡池 tab 名称到枚举的映射 */
     private static final Map<String, LocalGachaType> TAB_TYPE_MAP = Map.of(
@@ -59,7 +60,13 @@ public class GameGachaViewModel implements ViewModel {
             "弧盘池", LocalGachaType.WEAPON_POOL
     );
 
-    public GameGachaViewModel() {
+    @Inject
+    public GameGachaViewModel(TaygedoAccountService accountService,
+                               TaygedoApi api,
+                               LocalGachaDataService localGachaDataService) {
+        this.accountService = accountService;
+        this.api = api;
+        this.localGachaDataService = localGachaDataService;
         selectedAccount.addListener((obs, old, val) -> {
             if (val != null) loadGachaData();
         });

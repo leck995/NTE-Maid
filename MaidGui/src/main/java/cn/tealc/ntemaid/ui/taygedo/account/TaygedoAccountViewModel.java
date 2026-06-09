@@ -5,6 +5,7 @@ import cn.tealc.ntemaid.base.notification.NotificationManager;
 import cn.tealc.ntemaid.model.taygedo.TaygedoAccount;
 import cn.tealc.ntemaid.service.TaygedoAccountService;
 import cn.tealc.ntemaid.ui.base.BaseViewModel;
+import com.google.inject.Inject;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -19,7 +20,12 @@ import java.util.List;
 public class TaygedoAccountViewModel extends BaseViewModel {
 
 
-    private TaygedoAccountService accountService = new TaygedoAccountService();
+    private final TaygedoAccountService accountService;
+
+    @Inject
+    public TaygedoAccountViewModel(TaygedoAccountService accountService) {
+        this.accountService = accountService;
+    }
 
     private final ObservableList<TaygedoAccount> accountList = FXCollections.observableArrayList();
 

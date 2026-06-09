@@ -21,6 +21,7 @@ import com.github.kwhat.jnativehook.NativeHookException;
 import de.saxsys.mvvmfx.FluentViewLoader;
 import de.saxsys.mvvmfx.MvvmFX;
 import de.saxsys.mvvmfx.ViewTuple;
+import de.saxsys.mvvmfx.internal.viewloader.DependencyInjector;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.embed.swing.SwingFXUtils;
@@ -57,6 +58,8 @@ public class MainApp extends Application {
     @Override
     public void start(Stage stage) throws IOException {
         AppInjector.getInjector();
+        DependencyInjector.getInstance().setCustomInjector(
+                clazz -> AppInjector.getInjector().getInstance(clazz));
         window = stage;
         Thread.setDefaultUncaughtExceptionHandler((thread, throwable) -> {
             LOG.error("检测到未捕获的异常: ", throwable);

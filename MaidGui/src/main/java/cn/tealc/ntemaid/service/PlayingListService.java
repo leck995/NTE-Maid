@@ -2,6 +2,7 @@ package cn.tealc.ntemaid.service;
 
 import cn.tealc.ntemaid.dao.PlayingListDao;
 import cn.tealc.ntemaid.model.game.music.Music;
+import com.google.inject.Inject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -10,7 +11,12 @@ import java.util.concurrent.CompletableFuture;
 
 public class PlayingListService {
     private static final Logger LOG = LoggerFactory.getLogger(PlayingListService.class);
-    private final PlayingListDao playingListDao = new PlayingListDao();
+    private final PlayingListDao playingListDao;
+
+    @Inject
+    public PlayingListService(PlayingListDao playingListDao) {
+        this.playingListDao = playingListDao;
+    }
 
     /**
      * 异步添加单首歌曲到队列

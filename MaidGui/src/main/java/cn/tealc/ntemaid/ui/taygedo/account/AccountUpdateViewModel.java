@@ -1,7 +1,6 @@
 package cn.tealc.ntemaid.ui.taygedo.account;
 
 import cn.tealc.ntemaid.ui.base.BaseViewModel;
-import com.google.inject.Inject;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 

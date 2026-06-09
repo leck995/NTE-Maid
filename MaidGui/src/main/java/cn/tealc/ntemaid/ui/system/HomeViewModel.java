@@ -6,8 +6,8 @@ import cn.tealc.ntemaid.base.notification.NotificationKey;
 import cn.tealc.ntemaid.base.notification.NotificationManager;
 import cn.tealc.ntemaid.jna.GameAppListener;
 import cn.tealc.ntemaid.service.GameTimeService;
-import cn.tealc.ntemaid.service.impl.GameTimeServiceImpl;
 import cn.tealc.ntemaid.util.LanguageManager;
+import com.google.inject.Inject;
 import cn.tealc.teafx.utils.message.MessageInfo;
 import de.saxsys.mvvmfx.MvvmFX;
 import de.saxsys.mvvmfx.SceneLifecycle;
@@ -33,13 +33,16 @@ import java.util.stream.Stream;
 
 public class HomeViewModel implements ViewModel, SceneLifecycle {
     private static final Logger LOG = LoggerFactory.getLogger(HomeViewModel.class);
-    private final GameTimeService gameTimeService = new GameTimeServiceImpl();
+    private final GameTimeService gameTimeService;
 
     private final SimpleStringProperty gameTimeText = new SimpleStringProperty();
     private final SimpleStringProperty gameTimeTipText = new SimpleStringProperty();
     private final SimpleBooleanProperty startGameBtnDisabled = new SimpleBooleanProperty(false);
     private final NotificationObserver gameTimeObserver;
-    public HomeViewModel() {
+
+    @Inject
+    public HomeViewModel(GameTimeService gameTimeService) {
+        this.gameTimeService = gameTimeService;
         updateGameTime(GameAppListener.getInstance().getDuration());
 
         gameTimeObserver = (s, objects) -> {

@@ -6,6 +6,7 @@ import cn.tealc.taygedo.TaygedoApi;
 import cn.tealc.taygedo.TaygedoException;
 import cn.tealc.taygedo.model.SigninReward;
 import cn.tealc.taygedo.model.SigninState;
+import com.google.inject.Inject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,7 +21,12 @@ public class TaygedoSignInService {
     private static final Logger LOG = LoggerFactory.getLogger(TaygedoSignInService.class);
     private static final String DEFAULT_GAME_ID = "1289";
 
-    private final TaygedoApi api = new TaygedoApi();
+    private final TaygedoApi api;
+
+    @Inject
+    public TaygedoSignInService(TaygedoApi api) {
+        this.api = api;
+    }
 
     public List<SigninReward> getSigninRewards(TaygedoAccount account) {
         try {

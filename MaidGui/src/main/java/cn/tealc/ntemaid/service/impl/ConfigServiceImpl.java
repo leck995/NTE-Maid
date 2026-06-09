@@ -2,12 +2,18 @@ package cn.tealc.ntemaid.service.impl;
 
 import cn.tealc.ntemaid.dao.ConfigDao;
 import cn.tealc.ntemaid.service.ConfigService;
+import com.google.inject.Inject;
 import javafx.util.Pair;
 
 import java.util.*;
 
 public class ConfigServiceImpl implements ConfigService {
-    private final ConfigDao configDao = new ConfigDao();
+    private final ConfigDao configDao;
+
+    @Inject
+    public ConfigServiceImpl(ConfigDao configDao) {
+        this.configDao = configDao;
+    }
 
     @Override
     public Optional<String> getConfig(String key) {

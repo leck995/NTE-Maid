@@ -2,6 +2,7 @@ package cn.tealc.ntemaid.service;
 
 import cn.tealc.ntemaid.dao.MusicDao;
 import cn.tealc.ntemaid.model.game.music.Music;
+import com.google.inject.Inject;
 import org.jaudiotagger.audio.AudioFile;
 import org.jaudiotagger.audio.AudioFileIO;
 import org.jaudiotagger.tag.FieldKey;
@@ -20,7 +21,12 @@ import java.util.stream.Stream;
 
 public class MusicService {
     private static final Logger log = LoggerFactory.getLogger(MusicService.class);
-    private final MusicDao musicDao = new MusicDao();
+    private final MusicDao musicDao;
+
+    @Inject
+    public MusicService(MusicDao musicDao) {
+        this.musicDao = musicDao;
+    }
 
     /**
      * 递归扫描目录及子目录下的所有音乐文件

@@ -3,6 +3,7 @@ package cn.tealc.ntemaid.service.impl;
 import cn.tealc.ntemaid.dao.GameTimeDao;
 import cn.tealc.ntemaid.model.game.GameTime;
 import cn.tealc.ntemaid.service.GameTimeService;
+import com.google.inject.Inject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,7 +18,12 @@ import java.util.stream.Collectors;
 
 public class GameTimeServiceImpl implements GameTimeService {
     private static final Logger LOG = LoggerFactory.getLogger(GameTimeServiceImpl.class);
-    private final GameTimeDao gameTimeDao = new GameTimeDao();
+    private final GameTimeDao gameTimeDao;
+
+    @Inject
+    public GameTimeServiceImpl(GameTimeDao gameTimeDao) {
+        this.gameTimeDao = gameTimeDao;
+    }
 
     @Override
     public boolean addRecord(GameTime gameTime) {

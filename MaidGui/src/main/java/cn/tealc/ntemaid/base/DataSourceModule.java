@@ -81,6 +81,7 @@ public class DataSourceModule extends AbstractModule {
         if (setting == null) {
             setting = new Setting();
         }
+        Config.setting = setting;
         return setting;
     }
 }

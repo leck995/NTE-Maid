@@ -1,11 +1,11 @@
 package cn.tealc.ntemaid.jna;
 
+import cn.tealc.ntemaid.base.AppInjector;
 import cn.tealc.ntemaid.base.Config;
 import cn.tealc.ntemaid.base.notification.NotificationKey;
 import cn.tealc.ntemaid.base.notification.NotificationManager;
 import cn.tealc.ntemaid.service.GameTimeService;
 import cn.tealc.ntemaid.service.NativeProcessService;
-import cn.tealc.ntemaid.service.impl.GameTimeServiceImpl;
 import com.sun.jna.Native;
 import com.sun.jna.platform.win32.User32;
 import com.sun.jna.platform.win32.WinDef;
@@ -25,7 +25,7 @@ import java.time.LocalDateTime;
 public class GameAppListener implements WinUser.WinEventProc {
     private final Logger LOG = LoggerFactory.getLogger(GameAppListener.class);
     private static GameAppListener gameAppListener;
-    private final GameTimeService gameTimeService = new GameTimeServiceImpl(); // 引入 Service
+    private final GameTimeService gameTimeService = AppInjector.getInstance(GameTimeService.class);
     private WinDef.HWND game;
     private WinNT.HANDLE hKey;
     private boolean start = false;

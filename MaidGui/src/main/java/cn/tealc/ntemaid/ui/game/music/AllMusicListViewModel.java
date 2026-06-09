@@ -7,6 +7,7 @@ import cn.tealc.ntemaid.player.MusicPlayerClient;
 import cn.tealc.ntemaid.service.MusicService;
 import cn.tealc.ntemaid.service.PlaylistService;
 import cn.tealc.teafx.utils.message.MessageInfo;
+import com.google.inject.Inject;
 import de.saxsys.mvvmfx.ViewModel;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -24,10 +25,11 @@ public class AllMusicListViewModel implements ViewModel {
     private final PlaylistService playlistService;
     private final ObservableList<Music> allMusicList;
 
-
-    public AllMusicListViewModel() {
-        musicService = new MusicService();
-        playlistService = new PlaylistService();
+    @Inject
+    public AllMusicListViewModel(MusicService musicService,
+                                  PlaylistService playlistService) {
+        this.musicService = musicService;
+        this.playlistService = playlistService;
         allMusicList = FXCollections.observableArrayList();
         refreshMusicList();
     }

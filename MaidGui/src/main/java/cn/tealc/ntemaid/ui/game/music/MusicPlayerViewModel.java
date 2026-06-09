@@ -9,6 +9,7 @@ import cn.tealc.ntemaid.player.MusicPlayerClient;
 import cn.tealc.ntemaid.service.MusicService;
 import cn.tealc.ntemaid.service.PlayingListService;
 import cn.tealc.teafx.utils.message.MessageInfo;
+import com.google.inject.Inject;
 import de.saxsys.mvvmfx.SceneLifecycle;
 import de.saxsys.mvvmfx.ViewModel;
 import javafx.beans.property.*;
@@ -51,9 +52,11 @@ public class MusicPlayerViewModel implements ViewModel, SceneLifecycle {
     private final MusicService musicService;
     private final PlayingListService playingListService;
 
-
-
-    public MusicPlayerViewModel() {
+    @Inject
+    public MusicPlayerViewModel(MusicService musicService,
+                                 PlayingListService playingListService) {
+        this.musicService = musicService;
+        this.playingListService = playingListService;
         desktopLrc = new SimpleBooleanProperty();
         disorder = new SimpleBooleanProperty();
         loop = new SimpleBooleanProperty();
@@ -90,9 +93,6 @@ public class MusicPlayerViewModel implements ViewModel, SceneLifecycle {
         musicList = player.getMusics();
         musicDir.bindBidirectional(Config.setting.musicDirProperty());
         lrcSelectedIndex.bindBidirectional(player.lrcSelectedIndexProperty());
-        musicService = new MusicService();
-        playingListService = new PlayingListService();
-
     }
 
 

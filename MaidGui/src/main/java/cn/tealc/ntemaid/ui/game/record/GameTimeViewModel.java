@@ -1,10 +1,9 @@
 package cn.tealc.ntemaid.ui.game.record;
 
-import cn.tealc.ntemaid.dao.GameTimeDao;
 import cn.tealc.ntemaid.model.game.GameTime;
 import cn.tealc.ntemaid.service.GameTimeService;
-import cn.tealc.ntemaid.service.impl.GameTimeServiceImpl;
 import cn.tealc.ntemaid.util.LanguageManager;
+import com.google.inject.Inject;
 import de.saxsys.mvvmfx.ViewModel;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -33,8 +32,11 @@ public class GameTimeViewModel implements ViewModel {
     private final SimpleStringProperty currentUserName=new SimpleStringProperty();
     private final SimpleDoubleProperty currentProgressValue=new SimpleDoubleProperty();
     private final SimpleDoubleProperty totalProgressValue=new SimpleDoubleProperty();
-    private final GameTimeService gameTimeService = new GameTimeServiceImpl();
-    public GameTimeViewModel() {
+    private final GameTimeService gameTimeService;
+
+    @Inject
+    public GameTimeViewModel(GameTimeService gameTimeService) {
+        this.gameTimeService = gameTimeService;
         freshTotalData();
     }
 

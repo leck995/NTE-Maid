@@ -1,13 +1,9 @@
 package cn.tealc.ntemaid.player;
 
+import cn.tealc.ntemaid.base.AppInjector;
 import cn.tealc.ntemaid.model.game.music.Music;
 import cn.tealc.ntemaid.service.ConfigService;
 import cn.tealc.ntemaid.service.PlayingListService;
-import cn.tealc.ntemaid.service.RobotService;
-import cn.tealc.ntemaid.service.impl.ConfigServiceImpl;
-import cn.tealc.ntemaid.thread.game.log.LogMonitorForMusicTask;
-import cn.tealc.ntemaid.thread.game.log.LogMonitorManager;
-import javafx.animation.PauseTransition;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.util.Duration;
@@ -21,7 +17,7 @@ public class MusicPlayerClient {
     private static volatile MusicPlayerClient client;
     private final BaseAudioPlayer player;
     private static final String CONFIG_KEY = "last_music";
-    private final ConfigService configService = new ConfigServiceImpl();
+    private final ConfigService configService = AppInjector.getInstance(ConfigService.class);
 
     private MusicPlayerClient() {
         player = new FxMediaPlayer();
@@ -40,7 +36,7 @@ public class MusicPlayerClient {
      * @date 2026/05/08
      */
     private void addMusicListChangListener() {
-        PlayingListService playingListService = new PlayingListService();
+        PlayingListService playingListService = AppInjector.getInstance(PlayingListService.class);
         player.musics.addListener((ListChangeListener<? super Music>) change -> {
             @SuppressWarnings("unchecked")
             List<Music> musicList = (List<Music>) change.getList();
@@ -76,7 +72,7 @@ public class MusicPlayerClient {
     }
 
     private void initPlayList() {
-        PlayingListService service = new PlayingListService();
+        PlayingListService service = AppInjector.getInstance(PlayingListService.class);
         List<Music> playinglist = service.getSavedPlayingList();
         if (!playinglist.isEmpty()) {
             player.init(playinglist, 0);

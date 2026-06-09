@@ -21,6 +21,7 @@ import cn.tealc.teafx.utils.ResponseBody;
 import cn.tealc.teafx.utils.message.MessageInfo;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.inject.Inject;
 import de.saxsys.mvvmfx.ViewModel;
 import javafx.application.Platform;
 import org.slf4j.Logger;
@@ -42,7 +43,20 @@ public class MainViewModel implements ViewModel {
     private final AtomicBoolean warningTower = new AtomicBoolean(false);
     private final AtomicBoolean warningSlash = new AtomicBoolean(false);
 
-    public MainViewModel() {
+    private final TaygedoAccountService accountService;
+    private final TaygedoLoginService loginService;
+    private final TaygedoSignInService signInService;
+    private final ObjectMapper objectMapper;
+
+    @Inject
+    public MainViewModel(TaygedoAccountService accountService,
+                         TaygedoLoginService loginService,
+                         TaygedoSignInService signInService,
+                         ObjectMapper objectMapper) {
+        this.accountService = accountService;
+        this.loginService = loginService;
+        this.signInService = signInService;
+        this.objectMapper = objectMapper;
         checkVersionAndClean();
         checkGameLogOpen();
         initMusicClient();
@@ -55,10 +69,9 @@ public class MainViewModel implements ViewModel {
 
     public List<NavData> getNavList(){
         InputStream inputStream = FXResourcesLoader.loadStream("/cn/tealc/ntemaid/data/nav.json");
-        ObjectMapper mapper = new ObjectMapper();
         List<NavData> list = null;
         try {
-            list = mapper.readValue(inputStream, new TypeReference<List<NavData>>() {
+            list = objectMapper.readValue(inputStream, new TypeReference<List<NavData>>() {
             });
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -82,8 +95,6 @@ public class MainViewModel implements ViewModel {
      * @date 2026/06/09
      */
     private void taygedoRefrshToken(){
-        TaygedoAccountService accountService = new TaygedoAccountService();
-        TaygedoLoginService loginService = new TaygedoLoginService();
         List<TaygedoAccount> accounts = accountService.getAll();
         for (TaygedoAccount account : accounts) {
             try {
@@ -108,8 +119,6 @@ public class MainViewModel implements ViewModel {
      */
     public void autoTaygedoSign(){
         if (Config.setting.isTaygedoAutoSign()){
-            TaygedoSignInService signInService = new TaygedoSignInService();
-            TaygedoAccountService accountService = new TaygedoAccountService();
             List<TaygedoAccount> accounts = accountService.getNotSignedTodayList();
             if (accounts.isEmpty()) {
                 return;
