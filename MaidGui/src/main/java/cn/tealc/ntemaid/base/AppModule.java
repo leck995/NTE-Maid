@@ -1,6 +1,7 @@
 package cn.tealc.ntemaid.base;
 
 import cn.tealc.ntemaid.dao.*;
+import cn.tealc.ntemaid.repository.NavRepository;
 import cn.tealc.ntemaid.service.*;
 import cn.tealc.ntemaid.service.impl.ConfigServiceImpl;
 import cn.tealc.ntemaid.service.impl.GameTimeServiceImpl;
@@ -37,6 +38,8 @@ public class AppModule extends AbstractModule {
         bind(PlaylistService.class).in(Singleton.class);
         bind(MusicService.class).in(Singleton.class);
         bind(NativeProcessService.class).in(Singleton.class);
+        bind(AsyncRunner.class).in(Singleton.class);
+        bind(NavRepository.class).in(Singleton.class);
     }
 
     @Provides
