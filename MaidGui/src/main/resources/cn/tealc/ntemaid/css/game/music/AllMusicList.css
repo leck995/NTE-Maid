@@ -27,11 +27,13 @@ table-view .column-header .label {
 }
 /* 表格行悬停效果（可选的悬停效果） */
 .table-row-cell:hover {
-    -fx-background-color: rgba(200, 200, 200, 0.3);
+    -fx-background-color:  -color-bg-default-30;
 }
-/* 选中行半透明效果 */
-.table-row-cell:selected {
-    -fx-background-color: rgba(200, 200, 200, 0.3);
+.table-row-cell:filled:selected {
+    -fx-background-color:  -color-bg-default-50;
+}
+.table-row-cell:selected .table-cell {
+    -fx-text-fill: -color-accent-fg;
 }
 /* 单元格透明 */
 .table-cell {
@@ -43,8 +45,7 @@ table-view .column-header .label {
 .scroll-bar:horizontal {
     -fx-background-color: transparent;
 }
-.table-row-cell:hover .table-cell,
-.table-row-cell:selected:hover .table-cell{
+.table-row-cell:hover .table-cell {
     -fx-text-fill: -color-accent-fg;
 }
 

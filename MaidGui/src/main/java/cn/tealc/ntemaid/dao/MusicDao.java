@@ -120,4 +120,29 @@ public class MusicDao {
             return false;
         }
     }
+
+    public int deleteMusicBatch(List<Integer> ids) {
+        if (ids == null || ids.isEmpty()) return 0;
+
+        String sql = "DELETE FROM music WHERE id = ?";
+        Object[][] params = new Object[ids.size()][1];
+        for (int i = 0; i < ids.size(); i++) {
+            params[i][0] = ids.get(i);
+        }
+
+        try (Connection conn = JdbcUtils.getConnection()) {
+            conn.setAutoCommit(false);
+            try {
+                int[] results = qr.batch(conn, sql, params);
+                conn.commit();
+                return (int) Arrays.stream(results).filter(r -> r > 0).count();
+            } catch (SQLException e) {
+                conn.rollback();
+                throw e;
+            }
+        } catch (SQLException e) {
+            LOG.error("批量删除歌曲失败", e);
+            return 0;
+        }
+    }
 }

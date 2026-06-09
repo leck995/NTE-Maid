@@ -3,16 +3,19 @@
 <?import atlantafx.base.controls.Spacer?>
 <?import java.lang.String?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.MenuButton?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.text.Font?>
 <?import org.kordamp.ikonli.javafx.FontIcon?>
 
 <BorderPane prefHeight="800.0" prefWidth="1000.0" styleClass="all-music" stylesheets="@../../../css/game/music/AllMusicList.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cn.tealc.ntemaid.ui.game.music.AllMusicListView">
    <top>
-      <HBox prefHeight="50.0" prefWidth="200.0" spacing="15.0" BorderPane.alignment="CENTER">
+      <HBox alignment="CENTER_LEFT" prefHeight="50.0" prefWidth="200.0" spacing="15.0" BorderPane.alignment="CENTER">
          <children>
             <Button mnemonicParsing="false" onAction="#importMusicEvent" text="导入音乐">
                <graphic>
@@ -23,13 +26,36 @@
                   <String fx:value="rounded" />
                </styleClass>
             </Button>
+            <Label styleClass="text-subtle" text="使用Ctrl多选">
+               <font>
+                  <Font size="10.0" />
+               </font>
+            </Label>
             <Spacer />
             <Button mnemonicParsing="false" onAction="#refreshMusicListEvent" styleClass="flat">
                <graphic>
                   <FontIcon iconLiteral="mdrmz-refresh" />
                </graphic>
             </Button>
-            <Button mnemonicParsing="false" onAction="#playAllEvent" text="播放全部">
+            <MenuButton fx:id="addToPlaylistMenuBtn" managed="false" mnemonicParsing="false" text="添加到歌单" visible="false">
+               <graphic>
+                  <FontIcon iconLiteral="mdrmz-playlist_add" />
+               </graphic>
+               <styleClass>
+                  <String fx:value="accent" />
+                  <String fx:value="rounded" />
+               </styleClass>
+            </MenuButton>
+            <Button fx:id="deleteSelectedBtn" managed="false" mnemonicParsing="false" onAction="#deleteSelectedEvent" text="删除所选" visible="false">
+               <graphic>
+                  <FontIcon iconLiteral="mdral-delete_outline" />
+               </graphic>
+               <styleClass>
+                  <String fx:value="danger" />
+                  <String fx:value="rounded" />
+               </styleClass>
+            </Button>
+            <Button fx:id="playAllBtn" mnemonicParsing="false" onAction="#playAllEvent" text="播放全部">
                <graphic>
                   <FontIcon iconLiteral="mdmz-play_arrow" />
                </graphic>
@@ -38,7 +64,7 @@
                   <String fx:value="rounded" />
                </styleClass>
             </Button>
-            <Button layoutX="129.0" layoutY="10.0" mnemonicParsing="false" onAction="#deleteAllMusicEvent" text="清空">
+            <Button fx:id="clearAllBtn" layoutX="129.0" layoutY="10.0" mnemonicParsing="false" onAction="#deleteAllMusicEvent" text="清空">
                <graphic>
                   <FontIcon iconLiteral="mdral-delete_outline" />
                </graphic>

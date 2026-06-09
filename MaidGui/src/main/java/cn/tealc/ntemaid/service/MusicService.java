@@ -112,6 +112,10 @@ public class MusicService {
         return musicDao.deleteMusic(id);
     }
 
+    public int deleteMusicBatch(List<Integer> ids) {
+        return musicDao.deleteMusicBatch(ids);
+    }
+
     public boolean deleteAllMusic() {
         return musicDao.deleteAllMusic();
     }

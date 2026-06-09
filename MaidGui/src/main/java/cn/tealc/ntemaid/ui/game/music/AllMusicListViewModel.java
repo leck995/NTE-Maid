@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class AllMusicListViewModel implements ViewModel {
     private static final Logger log = LoggerFactory.getLogger(AllMusicListViewModel.class);
@@ -119,5 +120,35 @@ public class AllMusicListViewModel implements ViewModel {
         }
     }
 
-   
+    public void addMusicToPlaylist(List<Music> musicList, Playlist playlist) {
+        if (musicList == null || musicList.isEmpty()) return;
+        int added = playlistService.addSongsToPlaylist(playlist.getId(), musicList);
+        if (added > 0) {
+            NotificationManager.message(MessageInfo.success(
+                    String.format("成功添加 %d 首到歌单「%s」", added, playlist.getName())));
+        } else {
+            NotificationManager.message(MessageInfo.error("无法添加到歌单"));
+        }
+    }
+
+    public void deleteMusicFromLibrary(List<Music> musicList) {
+        if (musicList == null || musicList.isEmpty()) return;
+
+        List<Integer> ids = musicList.stream()
+                .map(Music::getId)
+                .collect(Collectors.toList());
+        int deleted = musicService.deleteMusicBatch(ids);
+
+        if (deleted > 0) {
+            for (Music music : musicList) {
+                MusicPlayerClient.getInstance().getPlayer().removeMusic(music);
+            }
+            allMusicList.removeAll(musicList);
+            NotificationManager.message(MessageInfo.success(
+                    String.format("成功删除 %d 首歌曲", deleted)));
+        } else {
+            NotificationManager.message(MessageInfo.error("删除歌曲失败"));
+        }
+    }
+
 }
