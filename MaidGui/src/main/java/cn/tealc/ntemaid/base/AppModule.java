@@ -1,10 +1,12 @@
 package cn.tealc.ntemaid.base;
 
+import cn.tealc.ntemaid.StageInitializer;
 import cn.tealc.ntemaid.dao.*;
 import cn.tealc.ntemaid.repository.NavRepository;
 import cn.tealc.ntemaid.service.*;
 import cn.tealc.ntemaid.service.impl.ConfigServiceImpl;
 import cn.tealc.ntemaid.service.impl.GameTimeServiceImpl;
+import cn.tealc.ntemaid.ui.tray.TrayIconManager;
 import cn.tealc.taygedo.TaygedoApi;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
@@ -40,6 +42,9 @@ public class AppModule extends AbstractModule {
         bind(NativeProcessService.class).in(Singleton.class);
         bind(AsyncRunner.class).in(Singleton.class);
         bind(NavRepository.class).in(Singleton.class);
+        bind(ShutdownManager.class).in(Singleton.class);
+        bind(TrayIconManager.class).in(Singleton.class);
+        bind(StageInitializer.class).in(Singleton.class);
     }
 
     @Provides
