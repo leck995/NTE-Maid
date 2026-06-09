@@ -10,6 +10,7 @@ import cn.tealc.ntemaid.model.system.realease.Release;
 import cn.tealc.ntemaid.model.taygedo.TaygedoAccount;
 import cn.tealc.ntemaid.player.MusicPlayerClient;
 import cn.tealc.ntemaid.service.TaygedoAccountService;
+import cn.tealc.ntemaid.service.TaygedoLoginService;
 import cn.tealc.ntemaid.service.TaygedoSignInService;
 import cn.tealc.ntemaid.thread.system.update.CheckAppVersionTask;
 import cn.tealc.ntemaid.thread.system.update.DeleteOldAppVersionTask;
@@ -45,7 +46,7 @@ public class MainViewModel implements ViewModel {
         checkVersionAndClean();
         checkGameLogOpen();
         initMusicClient();
-        autoTaygedoSign();
+        startTaygedoTask();
     }
 
     private static void initMusicClient() {
@@ -66,6 +67,45 @@ public class MainViewModel implements ViewModel {
     }
 
 
+    public void startTaygedoTask(){
+        Thread.startVirtualThread(()->{
+            taygedoRefrshToken();
+            autoTaygedoSign();
+        });
+    }
+
+    /**
+     * 刷新塔吉多账号令牌
+     *
+     *
+     * @author leck
+     * @date 2026/06/09
+     */
+    private void taygedoRefrshToken(){
+        TaygedoAccountService accountService = new TaygedoAccountService();
+        TaygedoLoginService loginService = new TaygedoLoginService();
+        List<TaygedoAccount> accounts = accountService.getAll();
+        for (TaygedoAccount account : accounts) {
+            try {
+                loginService.refreshToken(account);
+            }catch (Exception e){
+                LOG.error("刷新令牌错误",e);
+                Platform.runLater(()->
+                        NotificationManager.message(MessageInfo.warning("塔吉多账号登录失效",e.getMessage()))
+                );
+            }
+        }
+
+    }
+
+
+    /**
+     * 塔吉多签到
+     *
+     *
+     * @author leck
+     * @date 2026/06/09
+     */
     public void autoTaygedoSign(){
         if (Config.setting.isTaygedoAutoSign()){
             TaygedoSignInService signInService = new TaygedoSignInService();
@@ -74,40 +114,38 @@ public class MainViewModel implements ViewModel {
             if (accounts.isEmpty()) {
                 return;
             }
-            Thread.startVirtualThread(() -> {
-                int success = 0;
-                int fail = 0;
-                for (int i = 0; i < accounts.size(); i++) {
-                    TaygedoAccount account = accounts.get(i);
-                    try {
-                        SigninState signinState = signInService.getSigninState(account);
-                        if (signinState.isTodaySign()){
-                            success++;
-                            accountService.refreshLastSignTime(account);
-                            continue;
-                        }
-
-                        signInService.gameSignin(account);
-                        accountService.refreshLastSignTime(account);
+            int success = 0;
+            int fail = 0;
+            for (int i = 0; i < accounts.size(); i++) {
+                TaygedoAccount account = accounts.get(i);
+                try {
+                    SigninState signinState = signInService.getSigninState(account);
+                    if (signinState.isTodaySign()){
                         success++;
-                    } catch (TaygedoException e) {
-                        fail++;
+                        accountService.refreshLastSignTime(account);
+                        continue;
                     }
-                    if (i < accounts.size() - 1) {
-                        try {
-                            Thread.sleep(1000);
-                        } catch (InterruptedException e) {
-                            Thread.currentThread().interrupt();
-                            break;
-                        }
+
+                    signInService.gameSignin(account);
+                    accountService.refreshLastSignTime(account);
+                    success++;
+                } catch (TaygedoException e) {
+                    fail++;
+                }
+                if (i < accounts.size() - 1) {
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                        break;
                     }
                 }
-                int finalSuccess = success;
-                int finalFail = fail;
-                Platform.runLater(() -> {
-                    String format = String.format("成功 %d, 失败 %d", finalSuccess, finalFail);
-                    NotificationManager.message(MessageInfo.success("自动签到完成",format));
-                });
+            }
+            int finalSuccess = success;
+            int finalFail = fail;
+            Platform.runLater(() -> {
+                String format = String.format("成功 %d, 失败 %d", finalSuccess, finalFail);
+                NotificationManager.message(MessageInfo.success("自动签到完成",format));
             });
         }
     }

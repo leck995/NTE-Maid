@@ -7,13 +7,13 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ProgressIndicator?>
 <?import javafx.scene.control.Separator?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 <?import org.kordamp.ikonli.javafx.FontIcon?>
 
-<?import javafx.scene.image.ImageView?>
 <AnchorPane prefHeight="600.0" prefWidth="1000.0" styleClass="gacha" stylesheets="@../../../css/system/Account.css,@../../../css/system/gacha.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cn.tealc.ntemaid.ui.taygedo.gacha.GameGachaView">
 
     <StackPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
@@ -32,6 +32,8 @@
                                     <FontIcon iconLiteral="mdmz-refresh" />
                                 </graphic>
                             </Button>
+                     <Spacer />
+                     <Label styleClass="text-subtle" text="抽卡数据每小时更新，可能存在延迟" />
                         </children>
                     </HBox>
 

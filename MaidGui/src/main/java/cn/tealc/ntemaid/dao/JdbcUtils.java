@@ -98,6 +98,17 @@ public class JdbcUtils {
                     FOREIGN KEY (music_id) REFERENCES music(id) ON DELETE CASCADE
                 );
 
+                CREATE TABLE IF NOT EXISTS game_gacha (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    role_id VARCHAR(64) NOT NULL,
+                    gacha_type INTEGER NOT NULL DEFAULT 1,
+                    charid VARCHAR(64),
+                    lucky_type INTEGER DEFAULT 0,
+                    rare_count INTEGER DEFAULT 0,
+                    time VARCHAR(32),
+                    time_stamp BIGINT
+                );
+
                 CREATE TABLE IF NOT EXISTS taygedo_account (
                     phone VARCHAR(20) PRIMARY KEY,
                     name VARCHAR(100),

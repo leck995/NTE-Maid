@@ -1,6 +1,8 @@
 package cn.tealc.ntemaid.ui.taygedo.gacha;
 
 import atlantafx.base.controls.Spacer;
+import cn.tealc.ntemaid.model.game.Character;
+import cn.tealc.ntemaid.model.game.Weapon;
 import cn.tealc.ntemaid.model.taygedo.TaygedoAccount;
 import cn.tealc.taygedo.model.GameGachaItem;
 import cn.tealc.taygedo.model.GameGachaPool;
@@ -23,6 +25,7 @@ import java.net.URL;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -140,6 +143,16 @@ public class GameGachaView implements FxmlView<GameGachaViewModel>, Initializabl
 
 
         VBox center = new VBox(5);
+
+        int sum = pool.getDetails().stream().mapToInt(GameGachaItem::getRareCount).sum();
+
+/*        int nossrCount =pool.getDrawCount() - sum;
+        Label nossrLabel = new Label("已抽取");
+        Label nossrCountLabel = new Label(String.format("%d",nossrCount));
+        HBox nossrHbox = new HBox(nossrLabel,new Spacer(),nossrCountLabel);
+        nossrHbox.getStyleClass().add("pool-stats");*/
+
+
         float ssrPercent = (float) pool.getRareCount() /(float) pool.getDrawCount();
         Label ssrLabel = new Label("S级统计");
         Label ssrCountLabel = new Label(String.format("%d[%.2f]",pool.getRareCount(),ssrPercent));
@@ -165,7 +178,7 @@ public class GameGachaView implements FxmlView<GameGachaViewModel>, Initializabl
         if (pool.getDetails() != null) {
             listView.setItems(FXCollections.observableArrayList(pool.getDetails()));
         }
-        listView.setCellFactory(param -> new GachaItemListCell());
+        listView.setCellFactory(param -> new GachaItemListCell(pool));
         listView.setPrefHeight(200);
         VBox.setVgrow(listView, Priority.ALWAYS);
         Separator sep = new Separator();
@@ -191,8 +204,10 @@ public class GameGachaView implements FxmlView<GameGachaViewModel>, Initializabl
         private final Label count;
         private final ProgressBar progressBar;
         private final Label desc;
+        private final GameGachaPool pool;
 
-        public GachaItemListCell() {
+        public GachaItemListCell(GameGachaPool pool) {
+            this.pool = pool;
             root = new BorderPane();
 
             iv = new ImageView();
@@ -237,10 +252,16 @@ public class GameGachaView implements FxmlView<GameGachaViewModel>, Initializabl
             super.updateItem(item, b);
             if (!b) {
                 iv.setImage(getCharacterImage(item.getCharid()));
-                name.setText("角色");
+                if (pool.getTab().contains("卡池")){
+                    Optional<Character> characterOpt = viewModel.getCharacter(item.getCharid());
+                    characterOpt.ifPresent(character -> name.setText(character.getZh()));
+                }else {
+                    Optional<Weapon> weaponOpt = viewModel.getWeapon(item.getCharid());
+                    weaponOpt.ifPresent(weapon -> name.setText(weapon.getZh()));
+                }
                 date.setText(DATE_FMT.format(Instant.ofEpochMilli(item.getTimeStamp())));
                 count.setText(String.format("%02d", item.getRareCount()));
-                progressBar.setProgress(item.getRareCount()/ 90.0);
+                progressBar.setProgress((double) item.getRareCount() / pool.getM());
                 count.getStyleClass().add("up");
                 progressBar.getStyleClass().add("unup");
 

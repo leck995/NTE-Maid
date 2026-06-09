@@ -11,6 +11,7 @@ import cn.tealc.taygedo.model.UserCenterLoginResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.sql.SQLException;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -97,16 +98,15 @@ public class TaygedoLoginService {
 
     // ==================== Token 刷新 ====================
 
-    public UserCenterLoginResult refreshToken(TaygedoAccount account) throws TaygedoException {
+    public void refreshToken(TaygedoAccount account) throws TaygedoException, SQLException {
         String deviceId = ensureDeviceId(account);
         var result = api.refreshToken(account.getRefreshToken(), deviceId);
-        UserCenterLoginResult loginResult = new UserCenterLoginResult();
-        loginResult.setAccessToken(result.getAccessToken());
-        loginResult.setRefreshToken(result.getRefreshToken());
-        if (result.getUid() != null) {
-            loginResult.setUid(result.getUid());
-        }
-        return loginResult;
+
+        account.setAccessToken(result.getAccessToken());
+        account.setRefreshToken(result.getRefreshToken());
+        account.setTokenUpdatedAt(
+                ZonedDateTime.now(ZoneId.of("Asia/Shanghai")).format(SHANGHAI_FORMAT));
+        accountDao.saveOrUpdate(account);
     }
 
     // ==================== 一键登录 ====================
