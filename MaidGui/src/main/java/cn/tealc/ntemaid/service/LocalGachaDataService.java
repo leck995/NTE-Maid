@@ -44,33 +44,26 @@ public class LocalGachaDataService {
         if (result == null || result.getGachaDetails() == null) return;
 
         String roleId = result.getRoleid();
-        long latestTimeStamp;
-        try {
-            latestTimeStamp = dao.findLatestTimeStampByRoleId(roleId);
-        } catch (SQLException e) {
-            LOG.error("查询roleId={}最新timeStamp失败", roleId, e);
-            return;
-        }
-
         List<LocalGachaData> toSave = new ArrayList<>();
         for (GameGachaPool pool : result.getGachaDetails()) {
             if (pool.getDetails() == null) continue;
 
-            //识别卡池类型
-            LocalGachaType type = switch (pool.getTab()){
-                case "限定卡池" -> LocalGachaType.UP_ROLE_POOL;
-                case "常驻卡池" -> LocalGachaType.DEFAULT_ROLE_POOL;
-                case "弧盘池" -> LocalGachaType.WEAPON_POOL;
-                default -> LocalGachaType.UNKNOWN;
-            };
-            //无法识别，跳过
+            LocalGachaType type = LocalGachaType.fromName(pool.getTab());
             if (type == LocalGachaType.UNKNOWN)
                 continue;
+
+            long latestTimeStamp;
+            try {
+                latestTimeStamp = dao.findLatestTimeStampByRoleIdAndType(roleId, type.getCode());
+            } catch (SQLException e) {
+                LOG.error("查询roleId={}, type={}最新timeStamp失败", roleId, type, e);
+                continue;
+            }
 
             for (int i = pool.getDetails().size() - 1; i >= 0; i--) {
                 GameGachaItem item = pool.getDetails().get(i);
                 if (item.getTimeStamp() > latestTimeStamp) {
-                    toSave.add(fromGameGachaItem(roleId,type, item));
+                    toSave.add(fromGameGachaItem(roleId, type, item));
                 }
             }
         }
@@ -104,6 +97,33 @@ public class LocalGachaDataService {
             return dao.findByRoleId(roleId);
         } catch (SQLException e) {
             LOG.error("根据roleId查询抽卡数据失败, roleId={}", roleId, e);
+            return Collections.emptyList();
+        }
+    }
+
+    public List<LocalGachaData> getAfterTimeByRoleId(String roleId, long timeStamp) {
+        try {
+            return dao.findByRoleIdAfterTimeStamp(roleId, timeStamp);
+        } catch (SQLException e) {
+            LOG.error("根据roleId和timeStamp查询抽卡数据失败, roleId={}, timeStamp={}", roleId, timeStamp, e);
+            return Collections.emptyList();
+        }
+    }
+
+    /**
+     * 注意返回列表从晚到早排序
+     * @param roleId
+     * @param type
+     * @param timeStamp
+     * @return {@link List }<{@link LocalGachaData }>
+     * @author leck
+     * @date 2026/06/09
+     */
+    public List<LocalGachaData> getAfterTimeDescByRoleIdAndPoolType(String roleId, LocalGachaType type, long timeStamp) {
+        try {
+            return dao.findByRoleIdAndTypeAfterTimeStamp(roleId, type.getCode(), timeStamp);
+        } catch (SQLException e) {
+            LOG.error("根据roleId、卡池类型和timeStamp查询抽卡数据失败, roleId={}, type={}, timeStamp={}", roleId, type, timeStamp, e);
             return Collections.emptyList();
         }
     }

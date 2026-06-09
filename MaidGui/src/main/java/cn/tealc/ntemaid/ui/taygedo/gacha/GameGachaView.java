@@ -155,7 +155,7 @@ public class GameGachaView implements FxmlView<GameGachaViewModel>, Initializabl
 
         float ssrPercent = (float) pool.getRareCount() /(float) pool.getDrawCount();
         Label ssrLabel = new Label("S级统计");
-        Label ssrCountLabel = new Label(String.format("%d[%.2f]",pool.getRareCount(),ssrPercent));
+        Label ssrCountLabel = new Label(String.format("%d[%.2f]",pool.getDetails().size(),ssrPercent));
         HBox ssrHbox = new HBox(ssrLabel,new Spacer(),ssrCountLabel);
         ssrHbox.getStyleClass().add("pool-stats");
 

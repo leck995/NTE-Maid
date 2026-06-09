@@ -116,4 +116,30 @@ public class LocalGachaDataDao {
             return result != null ? result.longValue() : 0L;
         }
     }
+
+    public long findLatestTimeStampByRoleIdAndType(String roleId, int gachaType) throws SQLException {
+        String sql = "SELECT COALESCE(MAX(time_stamp), 0) FROM game_gacha WHERE role_id = ? AND gacha_type = ?";
+        try (Connection conn = JdbcUtils.getConnection()) {
+            Number result = qr.query(conn, sql, new ScalarHandler<>(), roleId, gachaType);
+            return result != null ? result.longValue() : 0L;
+        }
+    }
+
+    public List<LocalGachaData> findByRoleIdAfterTimeStamp(String roleId, long timeStamp) throws SQLException {
+        String sql = "SELECT * FROM game_gacha WHERE role_id = ? AND time_stamp > ? ORDER BY time_stamp DESC";
+        try (Connection conn = JdbcUtils.getConnection()) {
+            List<LocalGachaData> result = qr.query(conn, sql,
+                    new BeanListHandler<>(LocalGachaData.class, getRowProcessor()), roleId, timeStamp);
+            return result != null ? result : Collections.emptyList();
+        }
+    }
+
+    public List<LocalGachaData> findByRoleIdAndTypeAfterTimeStamp(String roleId, int gachaType, long timeStamp) throws SQLException {
+        String sql = "SELECT * FROM game_gacha WHERE role_id = ? AND gacha_type = ? AND time_stamp > ? ORDER BY time_stamp DESC";
+        try (Connection conn = JdbcUtils.getConnection()) {
+            List<LocalGachaData> result = qr.query(conn, sql,
+                    new BeanListHandler<>(LocalGachaData.class, getRowProcessor()), roleId, gachaType, timeStamp);
+            return result != null ? result : Collections.emptyList();
+        }
+    }
 }

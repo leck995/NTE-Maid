@@ -9,11 +9,11 @@ import java.util.List;
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class GameGachaPool {
-    private String tab;
-    private int drawCount;
-    private int m;
-    private String average;
-    private int rareCount;
+    private String tab; //卡池名称
+    private int drawCount; //总抽数
+    private int m; //保底抽数
+    private String average; //出货平均抽数
+    private int rareCount;//出货数量
     private String playerOver;
     private List<GameGachaItem> details;
 

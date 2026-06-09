@@ -2,11 +2,14 @@ package cn.tealc.ntemaid.ui.taygedo.gacha;
 
 import cn.tealc.ntemaid.model.game.Character;
 import cn.tealc.ntemaid.model.game.Weapon;
+import cn.tealc.ntemaid.model.game.gacha.LocalGachaData;
+import cn.tealc.ntemaid.model.game.gacha.LocalGachaType;
 import cn.tealc.ntemaid.model.taygedo.TaygedoAccount;
 import cn.tealc.ntemaid.service.LocalGachaDataService;
 import cn.tealc.ntemaid.service.TaygedoAccountService;
 import cn.tealc.taygedo.TaygedoApi;
 import cn.tealc.taygedo.TaygedoException;
+import cn.tealc.taygedo.model.GameGachaPool;
 import cn.tealc.taygedo.model.GameGachaResult;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -19,10 +22,20 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+/**
+ * 塔吉多抽卡分析页 ViewModel
+ * <p>
+ * 负责加载账号列表、获取抽卡数据、将新数据持久化到本地数据库，
+ * 并用数据库中的全量数据重新计算卡池统计信息（稀有总次数、抽卡总数、平均出率）。
+ *
+ * @author leck
+ * @date 2026/06/09
+ */
 public class GameGachaViewModel implements ViewModel {
     private static final Logger LOG = LoggerFactory.getLogger(GameGachaViewModel.class);
 
@@ -36,10 +49,15 @@ public class GameGachaViewModel implements ViewModel {
     private final BooleanProperty loading = new SimpleBooleanProperty(false);
     private Map<String, Weapon> weaponMap;
     private Map<String, Character> characterMap;
-    private ObjectMapper mapper = new ObjectMapper();
-    private LocalGachaDataService localGachaDataService = new LocalGachaDataService();
+    private final ObjectMapper mapper = new ObjectMapper();
+    private final LocalGachaDataService localGachaDataService = new LocalGachaDataService();
 
-
+    /** 卡池 tab 名称到枚举的映射 */
+    private static final Map<String, LocalGachaType> TAB_TYPE_MAP = Map.of(
+            "限定卡池", LocalGachaType.UP_ROLE_POOL,
+            "常驻卡池", LocalGachaType.DEFAULT_ROLE_POOL,
+            "弧盘池", LocalGachaType.WEAPON_POOL
+    );
 
     public GameGachaViewModel() {
         selectedAccount.addListener((obs, old, val) -> {
@@ -47,59 +65,51 @@ public class GameGachaViewModel implements ViewModel {
         });
     }
 
+    /** 初始化：加载本地基础数据并刷新账号列表 */
     public void initialize() {
         loadBaseData();
         refreshAccountList();
     }
 
-    /**
-     * 加载角色武器数据
-     *
-     *
-     * @author leck
-     * @date 2026/06/09
-     */
-    private void loadBaseData(){
+    /** 加载武器和角色的本地 JSON 数据，key 统一转小写 */
+    private void loadBaseData() {
         File weaponFile = new File("resource/data/weapon.json");
         File characterFile = new File("resource/data/character.json");
         try {
-            if (weaponFile.exists()){
+            if (weaponFile.exists()) {
                 Map<String, Weapon> rawWeaponMap = mapper.readValue(weaponFile, new TypeReference<Map<String, Weapon>>() {});
                 weaponMap = new java.util.HashMap<>();
                 for (Map.Entry<String, Weapon> entry : rawWeaponMap.entrySet()) {
                     weaponMap.put(entry.getKey().toLowerCase(), entry.getValue());
                 }
             }
-            if (characterFile.exists()){
+            if (characterFile.exists()) {
                 Map<String, Character> rawCharacterMap = mapper.readValue(characterFile, new TypeReference<Map<String, Character>>() {});
                 characterMap = new java.util.HashMap<>();
                 for (Map.Entry<String, Character> entry : rawCharacterMap.entrySet()) {
                     characterMap.put(entry.getKey().toLowerCase(), entry.getValue());
                 }
             }
-        }catch (Exception e){
-            LOG.info("加载角色武器数据失败",e);
+        } catch (Exception e) {
+            LOG.info("加载角色武器数据失败", e);
         }
     }
 
-    public Optional<Weapon> getWeapon(String key){
+    /** 忽略大小写查询武器 */
+    public Optional<Weapon> getWeapon(String key) {
         if (weaponMap != null)
             return Optional.ofNullable(weaponMap.get(key.toLowerCase()));
-        else
-            return Optional.empty();
+        return Optional.empty();
     }
 
-    public Optional<Character> getCharacter(String key){
+    /** 忽略大小写查询角色 */
+    public Optional<Character> getCharacter(String key) {
         if (characterMap != null)
             return Optional.ofNullable(characterMap.get(key.toLowerCase()));
-        else
-            return Optional.empty();
+        return Optional.empty();
     }
 
-
-
-
-
+    /** 刷新账号下拉列表，无选中时自动选第一个 */
     private void refreshAccountList() {
         List<TaygedoAccount> accounts = accountService.getAll();
         accountList.setAll(accounts);
@@ -108,6 +118,7 @@ public class GameGachaViewModel implements ViewModel {
         }
     }
 
+    /** 根据选中账号异步加载抽卡数据 */
     private void loadGachaData() {
         TaygedoAccount account = selectedAccount.get();
         if (account == null || account.getAccessToken() == null) {
@@ -122,9 +133,7 @@ public class GameGachaViewModel implements ViewModel {
         Thread.ofVirtual().start(() -> {
             try {
                 GameGachaResult result = api.getGameGacha(account.getAccessToken());
-                localGachaDataService.saveAll(result);
-
-
+                addAndUpdateLocalData(result);
                 Platform.runLater(() -> {
                     gachaResult.set(result);
                     loading.set(false);
@@ -145,6 +154,38 @@ public class GameGachaViewModel implements ViewModel {
         });
     }
 
+    /**
+     * 将 API 返回的新数据持久化到数据库，再用数据库全量数据覆盖卡池详情并重新计算统计。
+     * <p>
+     * 步骤：
+     * <ol>
+     *     <li>按卡池类型分别写入增量数据</li>
+     *     <li>从 DB 取出该角色该卡池的全量数据，替换 details</li>
+     *     <li>重新计算稀有总次数、抽卡次数、平均出率</li>
+     * </ol>
+     */
+    private void addAndUpdateLocalData(GameGachaResult result) {
+        localGachaDataService.saveAll(result);
+
+        for (GameGachaPool pool : result.getGachaDetails()) {
+            LocalGachaType type = LocalGachaType.fromName(pool.getTab());
+            if (type == LocalGachaType.UNKNOWN)
+                continue;
+            List<LocalGachaData> gachaDataList = localGachaDataService
+                    .getAfterTimeDescByRoleIdAndPoolType(result.getRoleid(), type, 0);
+            pool.setDetails(new ArrayList<>(gachaDataList));
+
+            int sum = gachaDataList.stream().mapToInt(LocalGachaData::getRareCount).sum();
+            int count = gachaDataList.size();
+            pool.setDrawCount(sum);
+            pool.setRareCount(count);
+            if (count > 0) {
+                pool.setAverage(String.format("%.2f", (float) sum / count));
+            }
+        }
+    }
+
+    /** 刷新按钮事件 */
     public void onRefresh() {
         loadGachaData();
     }
@@ -156,5 +197,4 @@ public class GameGachaViewModel implements ViewModel {
     public ObjectProperty<GameGachaResult> gachaResultProperty() { return gachaResult; }
     public StringProperty statusMessageProperty() { return statusMessage; }
     public BooleanProperty loadingProperty() { return loading; }
-
 }
