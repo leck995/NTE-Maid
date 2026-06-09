@@ -13,12 +13,14 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.function.Consumer;
 
-public class OtherEvent implements Consumer<LogMonitorForMusicTask.Event> {
+public class OtherEvent implements Consumer<String> {
     private static final Logger log = LoggerFactory.getLogger(OtherEvent.class);
-
+    private static final String OPEN_ADVENTURE_MANUAL = "OnUIOpened ResetbIgnoreInputing UIName:AdventureManual";
+    private static final String OPEN_ADVENTURE_MANUAL_FROM_MONSTER = "LogHTMonsterManual: Warning: IsMonsterAllKilled, Guid";
     private final Win32KeySender win32KeySender;
     private final Map<String, Point2D> screenMap = new HashMap<>();
 
+    private boolean skip = false; //标志是否跳过此次自动跳转，默认false
 
     public OtherEvent() {
         win32KeySender = new Win32KeySender();
@@ -31,8 +33,14 @@ public class OtherEvent implements Consumer<LogMonitorForMusicTask.Event> {
     }
 
     @Override
-    public void accept(LogMonitorForMusicTask.Event event) {
-        if (Objects.requireNonNull(event) == LogMonitorForMusicTask.Event.OPEN_ADVENTURE_MANUAL) {
+    public void accept(String row) {
+        if (row.contains(OPEN_ADVENTURE_MANUAL_FROM_MONSTER)){
+            skip = true;
+        } else if (row.contains(OPEN_ADVENTURE_MANUAL)){
+            if (skip){
+                skip = false;
+                return;
+            }
             win32KeySender.reGetHwnd();
             Point2D size = WindowClientSizeUtil.getSize(win32KeySender.getGameHwnd());
             int width = (int) size.getX();

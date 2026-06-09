@@ -20,26 +20,15 @@ public class LogMonitorForMusicTask extends ScheduledService<LogMonitorForMusicT
     private final Path logPath;
     private RandomAccessFile raf;
     private long lastKnownPosition = 0;
-    private boolean firstRun = true; // 引入标志位，默认为第一次执行
-    private static final String ON_VEHICLE = "End Get On Vehicle";
-    private static final String Off_VEHICLE = "Start Get Off Vehicle";
-    private static final String MUSIC_PLAYING = "UHTSoundSubsystem UHTUI_Vehicle::OnPlayOrPauseBtnCallBack ScrollMusicTitle.isValid = [1], bChecked = [1]";
-    private static final String MUSIC_PAUSE = "UHTSoundSubsystem UHTUI_Vehicle::OnPlayOrPauseBtnCallBack ScrollMusicTitle.isValid = [1], bChecked = [0]";
-    private static final String BEGIN_TRANSFER = "LevelTransferState BeginTransfer";
-    private static final String ENDPLAY_RACING = "EndPlay_Racing LEVEL_TYPE_RACING_PVP";
-    private static final String FISHING_START = "CurrFishingState = FISHING_TYPE_THROWROD";
-    private static final String FISHING_BAIT = "CurrFishingState = FISHING_TYPE_BAIT";
-    private static final String FISHING_FINISH = "CurrFishingState = FISHING_TYPE_SELECTPOINT";
-    private static final String OPEN_ADVENTURE_MANUAL = "OnUIOpened ResetbIgnoreInputing UIName:AdventureManual";
-
-
+    private boolean firstRun = true;
+    private String partialLine = null; // 缓冲区：上一次读取被截断的不完整行
 
     public LogMonitorForMusicTask(Path logPath) {
         this.logPath = logPath;
         setPeriod(Duration.seconds(1));
     }
-    private Consumer<Event> onEventDetected;
-    public void setOnEventDetected(Consumer<Event> handler) { this.onEventDetected = handler; }
+    private Consumer<String> onEventDetected;
+    public void setOnEventDetected(Consumer<String> handler) { this.onEventDetected = handler; }
 
     @Override
     protected Task<LogMonitorForMusicTask.Event> createTask() {
@@ -58,10 +47,10 @@ public class LogMonitorForMusicTask extends ScheduledService<LogMonitorForMusicT
                 if (logPath == null || !Files.exists(logPath)) return;
                 long currentSize = Files.size(logPath);
                 if (firstRun) {
-                    lastKnownPosition = currentSize; // 第一次检测到文件时，直接把位置移到末尾
-                    firstRun = false;               // 标记已跳过历史记录
+                    lastKnownPosition = currentSize;
+                    firstRun = false;
                     System.out.println("[初始化] 已跳过历史内容，从位置 " + lastKnownPosition + " 开始监听");
-                    return; // 结束本次任务，等待下一秒的新增内容
+                    return;
                 }
                 // 文件轮转检测：新文件尺寸小于上次读取位置
                 if (currentSize < lastKnownPosition) {
@@ -76,19 +65,19 @@ public class LogMonitorForMusicTask extends ScheduledService<LogMonitorForMusicT
                 }
                 if (raf == null) return;
 
-                long len = raf.length();
-                if (len > lastKnownPosition) {
+                // 统一使用 currentSize 而非 raf.length()，避免 handle 缓存导致的不一致
+                if (currentSize > lastKnownPosition) {
                     raf.seek(lastKnownPosition);
-                    byte[] buffer = new byte[(int) (len - lastKnownPosition)];
+                    byte[] buffer = new byte[(int) (currentSize - lastKnownPosition)];
                     raf.readFully(buffer);
                     String newChunk = new String(buffer, StandardCharsets.UTF_8);
-                    lastKnownPosition = len;
-                    // 处理并发送内容
+                    lastKnownPosition = currentSize;
                     processChunk(newChunk);
                 }
             }
 
             private void reopenFile() throws IOException {
+                partialLine = null; // 文件轮转后旧缓冲区失效
                 if (raf != null) {
                     try { raf.close(); } catch (IOException ignored) {}
                 }
@@ -98,8 +87,18 @@ public class LogMonitorForMusicTask extends ScheduledService<LogMonitorForMusicT
             }
 
             private void processChunk(String chunk) {
+                // 拼接上一次被截断的不完整行
+                if (partialLine != null) {
+                    chunk = partialLine + chunk;
+                    partialLine = null;
+                }
+
+                boolean endsWithNewline = chunk.endsWith("\n") || chunk.endsWith("\r");
                 String[] lines = chunk.split("\r?\n", -1);
-                for (String line : lines) {
+                int endIndex = endsWithNewline ? lines.length : lines.length - 1;
+
+                for (int i = 0; i < endIndex; i++) {
+                    String line = lines[i];
                     String trimmed = line.trim();
                     if (trimmed.isEmpty()) {
                         continue;
@@ -107,63 +106,13 @@ public class LogMonitorForMusicTask extends ScheduledService<LogMonitorForMusicT
                     var result = HTCryptoUtils.HTCipher.tryDecryptBase64Line(trimmed);
                     if (result != null) {
                         String decrypted = result.text();
-                        //System.out.println(decrypted);
-                        if (decrypted.contains(MUSIC_PAUSE)) {
-                            log.debug("检测到游戏内置播放器暂停音乐");
-                            //player.play();
-                            Platform.runLater(() -> {
-                                if(onEventDetected != null) onEventDetected.accept(Event.MUSIC_PAUSE);
-                            });
-                        }else if (decrypted.contains(MUSIC_PLAYING)) {
-                            log.debug("检测到游戏内置播放器播放音乐");
-                            //player.pause();
-                            Platform.runLater(() -> {
-                                if(onEventDetected != null) onEventDetected.accept(Event.MUSIC_PLAYING);
-                            });
-                        } else if (decrypted.contains(Off_VEHICLE)) {
-                            log.debug("检测到玩家下车");
-                            Platform.runLater(() -> {
-                                if(onEventDetected != null) onEventDetected.accept(Event.Off_VEHICLE);
-                            });
-                        } else if (decrypted.contains(BEGIN_TRANSFER)) {
-                            log.debug("检测到玩家传送");
-                            Platform.runLater(() -> {
-                                if(onEventDetected != null) onEventDetected.accept(Event.BEGIN_TRANSFER);
-                            });
-                        } else if (decrypted.contains(ENDPLAY_RACING)) {
-                            log.debug("检测到玩家结束赛车比赛");
-                            Platform.runLater(() -> {
-                                if(onEventDetected != null) onEventDetected.accept(Event.ENDPLAY_RACING);
-                            });
-                        } else if (decrypted.contains(ON_VEHICLE)) {
-                            log.debug("检测到玩家上车");
-                            Platform.runLater(() -> {
-                                if(onEventDetected != null) onEventDetected.accept(Event.ON_VEHICLE);
-                            });
-                        } else if (decrypted.contains(FISHING_FINISH)) {
-                            log.debug("检测到玩家钓鱼结束");
-                            Platform.runLater(() -> {
-                                if(onEventDetected != null) onEventDetected.accept(Event.FISHING_FINISH);
-                            });
-                        } else if (decrypted.contains(FISHING_BAIT)) {
-                            log.debug("检测到玩家钓鱼上钩");
-                            Platform.runLater(() -> {
-                                if(onEventDetected != null) onEventDetected.accept(Event.FISHING_BAIT);
-                            });
-                        }
-                        else if (decrypted.contains(FISHING_START)) {
-                            log.debug("检测到玩家开始钓鱼");
-                            Platform.runLater(() -> {
-                                if(onEventDetected != null) onEventDetected.accept(Event.FISHING_START);
-                            });
-                        }
-                        else if (decrypted.contains(OPEN_ADVENTURE_MANUAL)) {
-                            log.debug("检测到玩家打开探索指南");
-                            Platform.runLater(() -> {
-                                if(onEventDetected != null) onEventDetected.accept(Event.OPEN_ADVENTURE_MANUAL);
-                            });
-                        }
+                        if(onEventDetected != null) onEventDetected.accept(decrypted);
                     }
+                }
+
+                // 保存不完整的最后一行，等待下次拼接
+                if (!endsWithNewline && lines.length > 0) {
+                    partialLine = lines[lines.length - 1];
                 }
             }
         };
@@ -206,6 +155,8 @@ public class LogMonitorForMusicTask extends ScheduledService<LogMonitorForMusicT
         FISHING_START,
         FISHING_BAIT,
         FISHING_FINISH,
-        OPEN_ADVENTURE_MANUAL
+        OPEN_ADVENTURE_MANUAL,
+        ONLINE_TEAM_QUITE,
+        ONLINE_TEAM_JOIN
     }
 }

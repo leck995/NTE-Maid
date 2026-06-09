@@ -1,7 +1,8 @@
 package log;
 
-import cn.tealc.ntemaid.thread.game.log.LogMonitorTask;
+import cn.tealc.ntemaid.thread.game.log.LogMonitorWatchService;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -17,12 +18,13 @@ import java.nio.file.Paths;
 
 public class LogMonitorApp extends Application {
 
-    private LogMonitorTask logService;
+    private LogMonitorWatchService logService;
+    private Thread monitorThread;
     private final Path TARGET_LOG_PATH = Paths.get(System.getenv("LOCALAPPDATA"), "HT", "Saved", "Logs", "HT.log");
 
     @Override
     public void start(Stage primaryStage) {
-        // --- 1. UI 组件初始化 ---
+        // --- 1. UI ---
         TextArea textArea = new TextArea();
         textArea.setEditable(false);
         textArea.setWrapText(true);
@@ -30,7 +32,6 @@ public class LogMonitorApp extends Application {
                 "-fx-control-inner-background: #1e1e1e; " +
                 "-fx-text-fill: #dcdcdc;");
 
-        // 按钮栏
         Button pauseBtn = new Button("暂停");
         Button clearBtn = new Button("清空日志");
 
@@ -41,53 +42,43 @@ public class LogMonitorApp extends Application {
         VBox root = new VBox(controls, textArea);
         VBox.setVgrow(textArea, Priority.ALWAYS);
 
-        // --- 2. 日志服务逻辑 ---
-        logService = new LogMonitorTask(TARGET_LOG_PATH);
+        // --- 2. 启动日志监控 ---
+        startMonitor(textArea);
 
-        // 监听消息并追加
-        logService.messageProperty().addListener((obs, oldVal, newVal) -> {
-            if (newVal != null && !newVal.isEmpty()) {
-                textArea.appendText(newVal);
-            }
-        });
+        // --- 3. 按钮事件 ---
 
-        // --- 3. 按钮事件处理 ---
-
-        // 暂停/恢复切换
         pauseBtn.setOnAction(e -> {
-            // ScheduledService 的状态管理
-            if (logService.isRunning()) {
-                logService.cancel(); // 停止调度
+            if (logService != null && logService.isRunning()) {
+                logService.stop();
                 pauseBtn.setText("恢复");
                 textArea.appendText("[系统] 监控已暂停...\n");
             } else {
-                logService.restart(); // 重新启动调度
+                startMonitor(textArea);
                 pauseBtn.setText("暂停");
                 textArea.appendText("[系统] 监控已恢复...\n");
             }
         });
 
-        // 清空按钮
-        clearBtn.setOnAction(e -> {
-            textArea.clear();
-        });
+        clearBtn.setOnAction(e -> textArea.clear());
 
-        // --- 4. 启动与关闭 ---
-        logService.start();
-
+        // --- 4. 关闭 ---
         primaryStage.setTitle("Log Monitor - NteMaid Thread");
         primaryStage.setScene(new Scene(root, 900, 500));
 
         primaryStage.setOnCloseRequest(event -> {
             if (logService != null) {
-                logService.cancel();
+                logService.stop();
             }
         });
 
         primaryStage.show();
     }
 
-    public static void main(String[] args) {
-        launch(args);
+    private void startMonitor(TextArea textArea) {
+        logService = new LogMonitorWatchService(TARGET_LOG_PATH,
+                decrypted -> Platform.runLater(() -> textArea.appendText(decrypted + "\n")));
+        monitorThread = new Thread(logService);
+        monitorThread.setDaemon(true);
+        monitorThread.start();
     }
 }

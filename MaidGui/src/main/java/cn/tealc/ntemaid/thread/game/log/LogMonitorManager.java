@@ -12,37 +12,32 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Consumer;
 
-/**
- * 日志监控单例管理器
- * 用于协调多个 ViewModel 对游戏日志事件的监听
- */
 public class LogMonitorManager {
-
     private static final Logger log = LoggerFactory.getLogger(LogMonitorManager.class);
     private static volatile LogMonitorManager instance;
-    private final LogMonitorForMusicTask service;
+
+    private final LogMonitorWatchService service;
     private final Path LOG_PATH = Paths.get(System.getenv("LOCALAPPDATA"), "HT/Saved/Logs/HT.log");
-    
-    // 使用线程安全的 List 存储所有订阅者
-    private final List<Consumer<LogMonitorForMusicTask.Event>> listeners = new CopyOnWriteArrayList<>();
+    private final List<Consumer<String>> listeners = new CopyOnWriteArrayList<>();
 
     private LogMonitorManager() {
-        this.service = new LogMonitorForMusicTask(LOG_PATH);
-        // 核心：在 Service 内部检测到事件时，广播给所有订阅者
-        this.service.setOnEventDetected(event -> {
-            for (Consumer<LogMonitorForMusicTask.Event> listener : listeners) {
+        this.service = new LogMonitorWatchService(LOG_PATH, event -> {
+            for (Consumer<String> listener : listeners) {
                 try {
                     listener.accept(event);
                 } catch (Exception e) {
-                    // 防止某个监听器报错导致后续监听器失效
-                    log.error("LogMonitorManager",e);
+                    log.error("监听器处理事件时发生异常", e);
                 }
             }
         });
+
+        // 初始化内置的基础事件订阅者
         addListener(new MusicPlayerEvent());
         addListener(new FishingEvent());
         addListener(new OtherEvent());
 
+        // 默认不启动，或者根据需求选择在这里调用 start();
+        start();
     }
 
     public static LogMonitorManager getInstance() {
@@ -56,41 +51,41 @@ public class LogMonitorManager {
         return instance;
     }
 
-    /**
-     * 添加订阅者
-     */
-    public void addListener(Consumer<LogMonitorForMusicTask.Event> listener) {
+    public void addListener(Consumer<String> listener) {
         if (!listeners.contains(listener)) {
             listeners.add(listener);
         }
     }
 
-    /**
-     * 移除订阅者（防止内存泄漏）
-     */
-    public void removeListener(Consumer<LogMonitorForMusicTask.Event> listener) {
+    public void removeListener(Consumer<String> listener) {
         listeners.remove(listener);
     }
 
-    public void start() {
-        if (!service.isRunning()) {
-            service.restart();
+    /**
+     * 开启/恢复 监听
+     */
+    public synchronized void start() {
+        if (service.isRunning()) {
+            log.warn("日志监听服务已经在运行中，请勿重复启动。");
+            return;
+        }
+        log.info("正在启动日志监控虚拟线程...");
+        // 关键点：每次启动，都为 Service 创建并开启一个新的虚拟线程
+        Thread.startVirtualThread(this.service);
+    }
+
+    /**
+     * 暂停/停止 监听
+     */
+    public synchronized void stop() {
+        if (service.isRunning()) {
+            service.stop();
+        } else {
+            log.warn("日志监听服务未运行，无需停止。");
         }
     }
 
-    public void stop() {
-        service.cancel();
-    }
-    
     public boolean isRunning() {
         return service.isRunning();
     }
-
-
-
-
-
-
-
-
 }

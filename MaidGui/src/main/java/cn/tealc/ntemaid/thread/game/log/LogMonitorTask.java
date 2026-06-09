@@ -15,7 +15,8 @@ public class LogMonitorTask extends ScheduledService<Void> {
     private final Path logPath;
     private RandomAccessFile raf;
     private long lastKnownPosition = 0;
-    private boolean firstRun = true; // 引入标志位，默认为第一次执行
+    private boolean firstRun = true;
+    private String partialLine = null; // 缓冲区：上一次读取被截断的不完整行
     public LogMonitorTask(Path logPath) {
         this.logPath = logPath;
         setPeriod(Duration.seconds(1));
@@ -40,10 +41,10 @@ public class LogMonitorTask extends ScheduledService<Void> {
 
                 long currentSize = Files.size(logPath);
                 if (firstRun) {
-                    lastKnownPosition = currentSize; // 第一次检测到文件时，直接把位置移到末尾
-                    firstRun = false;               // 标记已跳过历史记录
+                    lastKnownPosition = currentSize;
+                    firstRun = false;
                     System.out.println("[初始化] 已跳过历史内容，从位置 " + lastKnownPosition + " 开始监听");
-                    return; // 结束本次任务，等待下一秒的新增内容
+                    return;
                 }
 
                 // 文件轮转检测：新文件尺寸小于上次读取位置
@@ -59,20 +60,20 @@ public class LogMonitorTask extends ScheduledService<Void> {
                 }
                 if (raf == null) return;
 
-                long len = raf.length();
-                if (len > lastKnownPosition) {
+                // 统一使用 currentSize 而非 raf.length()，避免 handle 缓存导致的不一致
+                if (currentSize > lastKnownPosition) {
                     raf.seek(lastKnownPosition);
-                    byte[] buffer = new byte[(int) (len - lastKnownPosition)];
+                    byte[] buffer = new byte[(int) (currentSize - lastKnownPosition)];
                     raf.readFully(buffer);
                     String newChunk = new String(buffer, StandardCharsets.UTF_8);
-                    lastKnownPosition = len;
-
-                    // 处理并发送内容
+                    lastKnownPosition = currentSize;
+                    System.out.println(newChunk);
                     processChunk(newChunk);
                 }
             }
 
             private void reopenFile() throws IOException {
+                partialLine = null; // 文件轮转后旧缓冲区失效
                 if (raf != null) {
                     try { raf.close(); } catch (IOException ignored) {}
                 }
@@ -82,8 +83,18 @@ public class LogMonitorTask extends ScheduledService<Void> {
             }
 
             private void processChunk(String chunk) {
+                // 拼接上一次被截断的不完整行
+                if (partialLine != null) {
+                    chunk = partialLine + chunk;
+                    partialLine = null;
+                }
+
+                boolean endsWithNewline = chunk.endsWith("\n") || chunk.endsWith("\r");
                 String[] lines = chunk.split("\r?\n", -1);
-                for (String line : lines) {
+                int endIndex = endsWithNewline ? lines.length : lines.length - 1;
+
+                for (int i = 0; i < endIndex; i++) {
+                    String line = lines[i];
                     String trimmed = line.trim();
                     if (trimmed.isEmpty()) {
                         continue;
@@ -91,7 +102,6 @@ public class LogMonitorTask extends ScheduledService<Void> {
                     var result = HTCryptoUtils.HTCipher.tryDecryptBase64Line(trimmed);
                     if (result != null) {
                         String decrypted = result.text();
-                        // 解密后的文本可能包含换行，需拆开逐行发送
                         String[] subLines = decrypted.split("\n", -1);
                         for (String subLine : subLines) {
                             updateMessage(subLine + "\n");
@@ -99,6 +109,11 @@ public class LogMonitorTask extends ScheduledService<Void> {
                     } else {
                         updateMessage(line + "\n");
                     }
+                }
+
+                // 保存不完整的最后一行，等待下次拼接
+                if (!endsWithNewline && lines.length > 0) {
+                    partialLine = lines[lines.length - 1];
                 }
             }
         };
