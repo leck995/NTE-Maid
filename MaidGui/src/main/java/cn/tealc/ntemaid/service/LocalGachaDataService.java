@@ -1,7 +1,7 @@
 package cn.tealc.ntemaid.service;
 
 import cn.tealc.ntemaid.dao.LocalGachaDataDao;
-import cn.tealc.ntemaid.model.game.gacha.LocalGachaData;
+import cn.tealc.ntemaid.model.game.gacha.LocalGachaItem;
 import cn.tealc.ntemaid.model.game.gacha.LocalGachaType;
 import cn.tealc.taygedo.model.GameGachaItem;
 import cn.tealc.taygedo.model.GameGachaPool;
@@ -25,7 +25,7 @@ public class LocalGachaDataService {
         this.dao = dao;
     }
 
-    public boolean save(LocalGachaData data) {
+    public boolean save(LocalGachaItem data) {
         try {
             return dao.save(data) > 0;
         } catch (SQLException e) {
@@ -34,7 +34,7 @@ public class LocalGachaDataService {
         }
     }
 
-    public void saveAll(List<LocalGachaData> list) {
+    public void saveAll(List<LocalGachaItem> list) {
         try {
             dao.saveAll(list);
             LOG.info("批量保存抽卡数据 {} 条成功", list.size());
@@ -50,7 +50,7 @@ public class LocalGachaDataService {
         if (result == null || result.getGachaDetails() == null) return;
 
         String roleId = result.getRoleid();
-        List<LocalGachaData> toSave = new ArrayList<>();
+        List<LocalGachaItem> toSave = new ArrayList<>();
         for (GameGachaPool pool : result.getGachaDetails()) {
             if (pool.getDetails() == null) continue;
 
@@ -79,8 +79,8 @@ public class LocalGachaDataService {
         }
     }
 
-    private LocalGachaData fromGameGachaItem(String roleId, LocalGachaType type, GameGachaItem item) {
-        LocalGachaData data = new LocalGachaData(roleId, type);
+    private LocalGachaItem fromGameGachaItem(String roleId, LocalGachaType type, GameGachaItem item) {
+        LocalGachaItem data = new LocalGachaItem(roleId, type);
         data.setCharid(item.getCharid());
         data.setLuckyType(item.getLuckyType());
         data.setRareCount(item.getRareCount());
@@ -89,7 +89,7 @@ public class LocalGachaDataService {
         return data;
     }
 
-    public Optional<LocalGachaData> getById(long id) {
+    public Optional<LocalGachaItem> getById(long id) {
         try {
             return dao.findById(id);
         } catch (SQLException e) {
@@ -98,7 +98,7 @@ public class LocalGachaDataService {
         }
     }
 
-    public List<LocalGachaData> getByRoleId(String roleId) {
+    public List<LocalGachaItem> getByRoleId(String roleId) {
         try {
             return dao.findByRoleId(roleId);
         } catch (SQLException e) {
@@ -107,7 +107,10 @@ public class LocalGachaDataService {
         }
     }
 
-    public List<LocalGachaData> getAfterTimeByRoleId(String roleId, long timeStamp) {
+
+
+
+    public List<LocalGachaItem> getAfterTimeByRoleId(String roleId, long timeStamp) {
         try {
             return dao.findByRoleIdAfterTimeStamp(roleId, timeStamp);
         } catch (SQLException e) {
@@ -121,11 +124,11 @@ public class LocalGachaDataService {
      * @param roleId
      * @param type
      * @param timeStamp
-     * @return {@link List }<{@link LocalGachaData }>
+     * @return {@link List }<{@link LocalGachaItem }>
      * @author leck
      * @date 2026/06/09
      */
-    public List<LocalGachaData> getAfterTimeDescByRoleIdAndPoolType(String roleId, LocalGachaType type, long timeStamp) {
+    public List<LocalGachaItem> getAfterTimeDescByRoleIdAndPoolType(String roleId, LocalGachaType type, long timeStamp) {
         try {
             return dao.findByRoleIdAndTypeAfterTimeStamp(roleId, type.getCode(), timeStamp);
         } catch (SQLException e) {
@@ -134,7 +137,7 @@ public class LocalGachaDataService {
         }
     }
 
-    public List<LocalGachaData> getAll() {
+    public List<LocalGachaItem> getAll() {
         try {
             return dao.findAll();
         } catch (SQLException e) {

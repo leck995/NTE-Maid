@@ -1,4 +1,4 @@
-package cn.tealc.ntemaid.ui.taygedo.gacha;
+package cn.tealc.ntemaid.ui.game.gacha;
 
 import cn.tealc.ntemaid.model.game.Character;
 import cn.tealc.ntemaid.model.game.Weapon;

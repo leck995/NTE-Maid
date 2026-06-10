@@ -1,4 +1,4 @@
-package cn.tealc.ntemaid.ui.taygedo.gacha;
+package cn.tealc.ntemaid.ui.game.gacha;
 
 import atlantafx.base.controls.Spacer;
 import cn.tealc.ntemaid.model.game.Character;
@@ -123,7 +123,7 @@ public class GameGachaView implements FxmlView<GameGachaViewModel>, Initializabl
     private VBox createPoolCard(GameGachaPool pool) {
         VBox card = new VBox(5);
         card.getStyleClass().add("pool-card");
-        card.setPadding(new javafx.geometry.Insets(12));
+        card.setPadding(new Insets(12));
         HBox.setHgrow(card, Priority.ALWAYS);
 
         VBox header = new VBox(2);

@@ -48,7 +48,7 @@
     "visible": true,
     "order": 4,
     "kujiequ": false,
-    "viewClass": "cn.tealc.ntemaid.ui.taygedo.gacha.GameGachaView",
+    "viewClass": "cn.tealc.ntemaid.ui.game.gacha.GameGachaView",
     "viewModelClass": null,
     "bottom": false,
     "fxml": true,

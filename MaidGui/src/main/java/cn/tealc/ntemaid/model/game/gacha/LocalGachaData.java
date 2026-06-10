@@ -1,25 +1,51 @@
 package cn.tealc.ntemaid.model.game.gacha;
 
-import cn.tealc.taygedo.model.GameGachaItem;
+import java.util.List;
 
-public class LocalGachaData extends GameGachaItem {
-    private long id;
+public class LocalGachaData {
     private String roleId;
-    private int gachaType; // DB存储int, getGachaType()转枚举
+    private String version;
+    private long time;
+    private int luckyType;//抽卡运气
+    private List<LocalGachaPool> pools;
 
-    public LocalGachaData() {}
-
-    public LocalGachaData(String roleId, LocalGachaType gachaType) {
-        this.roleId = roleId;
-        this.gachaType = gachaType.getCode();
+    public String getRoleId() {
+        return roleId;
     }
 
-    public long getId() { return id; }
-    public void setId(long id) { this.id = id; }
+    public void setRoleId(String roleId) {
+        this.roleId = roleId;
+    }
 
-    public String getRoleId() { return roleId; }
-    public void setRoleId(String roleId) { this.roleId = roleId; }
+    public String getVersion() {
+        return version;
+    }
 
-    public void setGachaType(int gachaType) { this.gachaType = gachaType; }
-    public LocalGachaType getGachaType() { return LocalGachaType.fromCode(gachaType); }
+    public void setVersion(String version) {
+        this.version = version;
+    }
+
+    public long getTime() {
+        return time;
+    }
+
+    public void setTime(long time) {
+        this.time = time;
+    }
+
+    public List<LocalGachaPool> getPools() {
+        return pools;
+    }
+
+    public void setPools(List<LocalGachaPool> pools) {
+        this.pools = pools;
+    }
+
+    public int getLuckyType() {
+        return luckyType;
+    }
+
+    public void setLuckyType(int luckyType) {
+        this.luckyType = luckyType;
+    }
 }

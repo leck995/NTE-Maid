@@ -1,6 +1,6 @@
 package cn.tealc.ntemaid.dao;
 
-import cn.tealc.ntemaid.model.game.gacha.LocalGachaData;
+import cn.tealc.ntemaid.model.game.gacha.LocalGachaItem;
 import org.apache.commons.dbutils.BasicRowProcessor;
 import org.apache.commons.dbutils.BeanProcessor;
 import org.apache.commons.dbutils.QueryRunner;
@@ -31,7 +31,7 @@ public class LocalGachaDataDao {
         return new BasicRowProcessor(new BeanProcessor(mapping));
     }
 
-    public long save(LocalGachaData data) throws SQLException {
+    public long save(LocalGachaItem data) throws SQLException {
         String sql = """
             INSERT INTO game_gacha (role_id, gacha_type, charid, lucky_type, rare_count, time, time_stamp)
             VALUES (?, ?, ?, ?, ?, ?, ?)
@@ -48,7 +48,7 @@ public class LocalGachaDataDao {
         }
     }
 
-    public void saveAll(List<LocalGachaData> list) throws SQLException {
+    public void saveAll(List<LocalGachaItem> list) throws SQLException {
         String sql = """
             INSERT INTO game_gacha (role_id, gacha_type, charid, lucky_type, rare_count, time, time_stamp)
             VALUES (?, ?, ?, ?, ?, ?, ?)
@@ -56,7 +56,7 @@ public class LocalGachaDataDao {
         try (Connection conn = JdbcUtils.getConnection()) {
             Object[][] params = new Object[list.size()][];
             for (int i = 0; i < list.size(); i++) {
-                LocalGachaData d = list.get(i);
+                LocalGachaItem d = list.get(i);
                 params[i] = new Object[]{
                         d.getRoleId(), d.getGachaType().getCode(), d.getCharid(),
                         d.getLuckyType(), d.getRareCount(), d.getTime(), d.getTimeStamp()
@@ -66,28 +66,28 @@ public class LocalGachaDataDao {
         }
     }
 
-    public Optional<LocalGachaData> findById(long id) throws SQLException {
+    public Optional<LocalGachaItem> findById(long id) throws SQLException {
         String sql = "SELECT * FROM game_gacha WHERE id = ?";
         try (Connection conn = JdbcUtils.getConnection()) {
             return Optional.ofNullable(
-                    qr.query(conn, sql, new BeanHandler<>(LocalGachaData.class, getRowProcessor()), id));
+                    qr.query(conn, sql, new BeanHandler<>(LocalGachaItem.class, getRowProcessor()), id));
         }
     }
 
-    public List<LocalGachaData> findByRoleId(String roleId) throws SQLException {
+    public List<LocalGachaItem> findByRoleId(String roleId) throws SQLException {
         String sql = "SELECT * FROM game_gacha WHERE role_id = ? ORDER BY id DESC";
         try (Connection conn = JdbcUtils.getConnection()) {
-            List<LocalGachaData> result = qr.query(conn, sql,
-                    new BeanListHandler<>(LocalGachaData.class, getRowProcessor()), roleId);
+            List<LocalGachaItem> result = qr.query(conn, sql,
+                    new BeanListHandler<>(LocalGachaItem.class, getRowProcessor()), roleId);
             return result != null ? result : Collections.emptyList();
         }
     }
 
-    public List<LocalGachaData> findAll() throws SQLException {
+    public List<LocalGachaItem> findAll() throws SQLException {
         String sql = "SELECT * FROM game_gacha ORDER BY id DESC";
         try (Connection conn = JdbcUtils.getConnection()) {
-            List<LocalGachaData> result = qr.query(conn, sql,
-                    new BeanListHandler<>(LocalGachaData.class, getRowProcessor()));
+            List<LocalGachaItem> result = qr.query(conn, sql,
+                    new BeanListHandler<>(LocalGachaItem.class, getRowProcessor()));
             return result != null ? result : Collections.emptyList();
         }
     }
@@ -125,20 +125,20 @@ public class LocalGachaDataDao {
         }
     }
 
-    public List<LocalGachaData> findByRoleIdAfterTimeStamp(String roleId, long timeStamp) throws SQLException {
+    public List<LocalGachaItem> findByRoleIdAfterTimeStamp(String roleId, long timeStamp) throws SQLException {
         String sql = "SELECT * FROM game_gacha WHERE role_id = ? AND time_stamp > ? ORDER BY time_stamp DESC";
         try (Connection conn = JdbcUtils.getConnection()) {
-            List<LocalGachaData> result = qr.query(conn, sql,
-                    new BeanListHandler<>(LocalGachaData.class, getRowProcessor()), roleId, timeStamp);
+            List<LocalGachaItem> result = qr.query(conn, sql,
+                    new BeanListHandler<>(LocalGachaItem.class, getRowProcessor()), roleId, timeStamp);
             return result != null ? result : Collections.emptyList();
         }
     }
 
-    public List<LocalGachaData> findByRoleIdAndTypeAfterTimeStamp(String roleId, int gachaType, long timeStamp) throws SQLException {
+    public List<LocalGachaItem> findByRoleIdAndTypeAfterTimeStamp(String roleId, int gachaType, long timeStamp) throws SQLException {
         String sql = "SELECT * FROM game_gacha WHERE role_id = ? AND gacha_type = ? AND time_stamp > ? ORDER BY time_stamp DESC";
         try (Connection conn = JdbcUtils.getConnection()) {
-            List<LocalGachaData> result = qr.query(conn, sql,
-                    new BeanListHandler<>(LocalGachaData.class, getRowProcessor()), roleId, gachaType, timeStamp);
+            List<LocalGachaItem> result = qr.query(conn, sql,
+                    new BeanListHandler<>(LocalGachaItem.class, getRowProcessor()), roleId, gachaType, timeStamp);
             return result != null ? result : Collections.emptyList();
         }
     }

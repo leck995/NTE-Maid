@@ -1,10 +1,4 @@
 /* ===== 卡池分析页 ===== */
-
-
-
-
-
-
 .gacha {
     -fx-background-color: transparent;
 }
@@ -101,7 +95,7 @@
     -fx-background-color: -color-bg-default-50;
 }
 .gacha .gacha-list .role-cell .role-name{
-    -fx-font-size: 1.2em;
+    -fx-font-size: 1.1em;
     -fx-font-weight: bold;
 }
 .gacha .gacha-list .role-cell .role-name.up{
