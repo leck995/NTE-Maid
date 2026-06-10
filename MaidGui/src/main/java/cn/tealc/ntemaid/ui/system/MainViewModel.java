@@ -97,7 +97,7 @@ public class MainViewModel implements ViewModel, SceneLifecycle {
             } catch (Exception e) {
                 LOG.error("刷新令牌错误", e);
                 asyncRunner.runOnUI(() ->
-                        NotificationManager.message(MessageInfo.warning("塔吉多账号登录失效", e.getMessage()))
+                        NotificationManager.message(MessageInfo.warning(account.getName() + " 自动登录失败","原因：" + e.getMessage()))
                 );
             }
         }
