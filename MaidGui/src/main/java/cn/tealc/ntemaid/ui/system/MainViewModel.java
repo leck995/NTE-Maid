@@ -1,6 +1,7 @@
 package cn.tealc.ntemaid.ui.system;
 
 
+import cn.tealc.ntemaid.base.AppInjector;
 import cn.tealc.ntemaid.base.Config;
 import cn.tealc.ntemaid.base.notification.NotificationKey;
 import cn.tealc.ntemaid.base.notification.NotificationManager;
@@ -13,6 +14,7 @@ import cn.tealc.ntemaid.service.AsyncRunner;
 import cn.tealc.ntemaid.service.TaygedoAccountService;
 import cn.tealc.ntemaid.service.TaygedoLoginService;
 import cn.tealc.ntemaid.service.TaygedoSignInService;
+import cn.tealc.ntemaid.thread.system.resources.AppResourcesSyncTask;
 import cn.tealc.ntemaid.thread.system.update.CheckAppVersionTask;
 import cn.tealc.ntemaid.thread.system.update.DeleteOldAppVersionTask;
 import cn.tealc.ntemaid.util.LanguageManager;
@@ -20,7 +22,9 @@ import cn.tealc.taygedo.TaygedoException;
 import cn.tealc.taygedo.model.SigninState;
 import cn.tealc.teafx.utils.ResponseBody;
 import cn.tealc.teafx.utils.message.MessageInfo;
+import cn.tealc.teafx.utils.message.MessageType;
 import com.google.inject.Inject;
+import de.saxsys.mvvmfx.MvvmFX;
 import de.saxsys.mvvmfx.SceneLifecycle;
 import de.saxsys.mvvmfx.ViewModel;
 import javafx.application.Platform;
@@ -72,6 +76,7 @@ public class MainViewModel implements ViewModel, SceneLifecycle {
         checkVersionAndClean();
         initMusicClient();
         startTaygedoTask();
+        syncAppResources();
     }
 
     private static void initMusicClient() {
@@ -81,6 +86,30 @@ public class MainViewModel implements ViewModel, SceneLifecycle {
     public List<NavData> getNavList() {
         return navRepo.load();
     }
+
+
+    private void syncAppResources() {
+        AppResourcesSyncTask task = new AppResourcesSyncTask();
+        task.messageProperty().addListener((observableValue, s, t1) -> {
+            if (t1 != null) {
+                String title = LanguageManager.getString("ui.main.sync.title");
+                switch (t1) {
+                    case "success" -> MvvmFX.getNotificationCenter().publish(
+                            NotificationKey.MESSAGE,
+                            MessageInfo.success(title,LanguageManager.getString("ui.main.sync.message.success")));
+                    case "error" -> MvvmFX.getNotificationCenter().publish(
+                            NotificationKey.MESSAGE,
+                            MessageInfo.error(title,LanguageManager.getString("ui.main.sync.message.error")));
+                    case "start" -> MvvmFX.getNotificationCenter().publish(
+                            NotificationKey.MESSAGE,
+                            MessageInfo.info(title,LanguageManager.getString("ui.main.sync.message.start")));
+                }
+            }
+        });
+        asyncRunner.runBackground(task);
+    }
+
+
 
     public void startTaygedoTask() {
         asyncRunner.runBackground(() -> {
