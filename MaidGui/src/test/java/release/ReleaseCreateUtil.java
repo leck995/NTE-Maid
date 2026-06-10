@@ -17,7 +17,7 @@ import java.util.Date;
  * @create: 2024-12-22 15:20
  */
 public class ReleaseCreateUtil {
-    private static final String JAR_PATH = "D:\\Code\\Reposities\\JavaFX\\NTEMaid\\target\\NTEMaid-1.0.0.jar";
+    private static final String JAR_PATH = "D:\\Code\\Reposities\\JavaFX\\NTEMaid\\MaidGui\\target\\MaidGui-1.1.0-shaded.jar";
     private static final String RELEASE_FILE="release/release.json";
     public static void main(String[] args) throws IOException {
         Release latestRelease = latestRelease();
@@ -31,15 +31,17 @@ public class ReleaseCreateUtil {
     }
 
     private static Release latestRelease() throws IOException {
-        String latestVersion = "1.0.0";
-        String latestName = "正式版1.0.0";
+        String latestVersion = "1.1.0";
+        String latestName = "正式版";
         String latestDescription = """
                 若无法自动更新，请前往发布页或者群手动下载最新版程序。
                 
                 更新日志：
-                1. 新增游戏钓鱼优化功能，减少钓鱼的繁琐度
-                2. 新增自动关闭官方启动器功能
-                3. 优化播放器功能
+                1. 新增抽卡分析
+                2. 新增塔吉多签到
+                3. 播放器歌曲添加到歌单支持多选
+                4. 新增探索指南自动跳转到每日任务
+                5. 修复播放器在联机状态下的BUG
                 
                 """;
         boolean latestForce = false; //是否是强制更新
@@ -50,7 +52,7 @@ public class ReleaseCreateUtil {
         String latestMd5 = DigestUtils.md5Hex(new FileInputStream(latestFile));
         //https://api.github.com/repos/leck995/WutheringWavesTool/releases/latest
         //如果有github,则第一个放github下载链接
-        String[] latestUrls = {"https://nte-update.999758.xyz/NTEMaid-1.0.0.jar"};
+        String[] latestUrls = {"https://nte-update.999758.xyz/NTEMaid-1.1.0.jar"};
         String warning = "更新警告";//强制更新警告
         boolean isPre = false;
         Release latestRelease = new Release(latestName, latestVersion, latestDescription, dateTime, latestForce, latestUrls, latestMd5, warning, isPre);

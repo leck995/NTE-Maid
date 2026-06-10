@@ -88,6 +88,8 @@ public class MainApp extends Application {
                 ((s, objects) -> shutdownManager.shutdown()));
         NotificationManager.subscribe(NotificationKey.APP_HIDE,
                 ((s, objects) -> window.hide()));
+        NotificationManager.subscribe(NotificationKey.APP_SHOW,
+                ((s, objects) -> window.show()));
     }
 
     private void initKeyHook() {

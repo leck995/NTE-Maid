@@ -26,6 +26,7 @@ public class NotificationKey {
 
     public static final String APP_EXIT="APP_EXIT"; //程序退出
     public static final String APP_HIDE="APP_HIDE"; //程序退出
+    public static final String APP_SHOW="APP_SHOW"; //程序显示
 
 
 

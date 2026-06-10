@@ -183,6 +183,7 @@ public class MainViewModel implements ViewModel, SceneLifecycle {
                     if (value.getCode() == 200) {
                         asyncRunner.runOnUI(() -> {
                             NotificationManager.publish(NotificationKey.NOTIFICATION_SHOW_UPDATE, value.getData());
+                            NotificationManager.publish(NotificationKey.APP_SHOW);
                         });
                     } else if (value.getCode() == -1) {
                         NotificationManager.publish(NotificationKey.NOTIFICATION_SHOW_UPDATE, value.getData());
