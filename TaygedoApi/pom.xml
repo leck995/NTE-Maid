@@ -10,7 +10,7 @@
         <version>1.0.0</version>
     </parent>
 
-    <artifactId>TaygedApi</artifactId>
+    <artifactId>TaygedoApi</artifactId>
     <name>TaygedApi</name>
 
     <dependencies>

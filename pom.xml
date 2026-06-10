@@ -11,7 +11,7 @@
     <name>NTEMaid</name>
 
     <modules>
-        <module>TaygedApi</module>
+        <module>TaygedoApi</module>
         <module>MaidGui</module>
     </modules>
 
@@ -217,7 +217,7 @@
             <!-- TaygedApi (inter-module) -->
             <dependency>
                 <groupId>cn.tealc</groupId>
-                <artifactId>TaygedApi</artifactId>
+                <artifactId>TaygedoApi</artifactId>
                 <version>${project.version}</version>
             </dependency>
         </dependencies>
