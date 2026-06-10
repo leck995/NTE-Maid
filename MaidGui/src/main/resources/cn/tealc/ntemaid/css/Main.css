@@ -179,5 +179,11 @@
     -fx-font-weight: bold;
 }
 
-
+/* === Glassmorphism Message Notifications (Structural) === */
+.glass-message > .container {
+    -fx-background-radius: 12;
+    -fx-border-radius: 12;
+    -fx-border-width: 1;
+    -fx-padding: 10 14 10 14;
+}
 

@@ -47,6 +47,7 @@ import javafx.util.Duration;
 import org.kordamp.ikonli.javafx.FontIcon;
 import org.kordamp.ikonli.material2.Material2AL;
 import org.kordamp.ikonli.material2.Material2OutlinedAL;
+import org.kordamp.ikonli.material2.Material2MZ;
 import org.kordamp.ikonli.material2.Material2OutlinedMZ;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -551,36 +552,36 @@ public class MainView implements Initializable, FxmlView<MainViewModel> {
         switch (messageInfo.getType()) {
             case SUCCESS -> {
                 message = new Message(
-                        null,
+                        messageInfo.getTitle().equals(MessageInfo.SUCCESS) ? null : messageInfo.getTitle(),
                         messageInfo.getMessage(),
-                        new FontIcon(Material2OutlinedAL.CHECK_CIRCLE_OUTLINE)
+                        new FontIcon(Material2AL.CHECK_CIRCLE)
                 );
-                message.getStyleClass().add(Styles.SUCCESS);
+                message.getStyleClass().addAll(Styles.SUCCESS, "glass-message");
             }
             case WARNING -> {
                 message = new Message(
-                        null,
+                        messageInfo.getTitle().equals(MessageInfo.WARNING) ? null : messageInfo.getTitle(),
                         messageInfo.getMessage(),
-                        new FontIcon(Material2OutlinedMZ.OUTLINED_FLAG)
+                        new FontIcon(Material2MZ.WARNING)
                 );
-                message.getStyleClass().add(Styles.WARNING);
+                message.getStyleClass().addAll(Styles.WARNING, "glass-message");
             }
             case INFO -> {
                 message = new Message(
-                        null,
+                        messageInfo.getTitle().equals(MessageInfo.INFO) ? null : messageInfo.getTitle(),
                         messageInfo.getMessage(),
 
-                        new FontIcon(Material2OutlinedMZ.TURNED_IN_NOT)
+                        new FontIcon(Material2AL.INFO)
                 );
-                message.getStyleClass().add(Styles.ACCENT);
+                message.getStyleClass().addAll(Styles.ACCENT, "glass-message");
             }
             case ERROR -> {
                 message = new Message(
-                        null,
+                        messageInfo.getTitle().equals(MessageInfo.ERROR) ? null : messageInfo.getTitle(),
                         messageInfo.getMessage(),
-                        new FontIcon(Material2OutlinedAL.ERROR_OUTLINE)
+                        new FontIcon(Material2AL.HIGHLIGHT_OFF)
                 );
-                message.getStyleClass().add(Styles.DANGER);
+                message.getStyleClass().addAll(Styles.DANGER, "glass-message");
             }
         }
 

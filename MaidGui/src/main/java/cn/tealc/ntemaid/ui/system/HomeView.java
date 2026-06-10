@@ -102,13 +102,6 @@ public class HomeView implements Initializable, FxmlView<HomeViewModel> {
         } else {
             NotificationManager.publish(NotificationKey.MESSAGE, MessageInfo.warning(LanguageManager.getString("ui.home.message.type06")));
         }
-
-    /*    WinDef.HWND hwnd = GameAppListener.getInstance().getGameHWND();
-        Rectangle roi = MapRegionConfig.getMinimapRegion(1280, 720);
-        RouteDetector detector = new RouteDetector(hwnd, roi);
-        RouteResult result = detector.analyze();
-        System.out.println(result.getTurn());
-        System.out.println(result);*/
     }
 
     @FXML

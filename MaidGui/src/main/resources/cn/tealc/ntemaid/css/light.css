@@ -3236,6 +3236,39 @@ Add support for NO_HEADER tweak in tables .table-view.no-header > .column-header
   -fx-padding: 0 1.5em 0 0;
 }
 
+/* === Glassmorphism Message Notifications (Light Theme) === */
+.glass-message > .container {
+  -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.08), 16, 0, 0, 6);
+}
+
+.glass-message.success > .container {
+  -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, rgba(218,251,225,0.75), rgba(200,240,210,0.9));
+  -fx-border-color: rgba(74,194,107,0.28);
+}
+
+.glass-message.warning > .container {
+  -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, rgba(255,248,197,0.75), rgba(245,235,180,0.9));
+  -fx-border-color: rgba(212,167,44,0.28);
+}
+
+.glass-message.accent > .container {
+  -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, rgba(221,244,255,0.75), rgba(200,230,245,0.9));
+  -fx-border-color: rgba(84,174,255,0.28);
+}
+
+.glass-message.danger > .container {
+  -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, rgba(255,235,233,0.75), rgba(245,220,218,0.9));
+  -fx-border-color: rgba(255,129,130,0.28);
+}
+
+.glass-message > .container > .header > .title {
+  -fx-text-fill: #1a1a1a;
+}
+
+.glass-message > .container > .header > .description Text {
+  -fx-fill: #6e6e6e;
+}
+
 .modal-pane {
   -color-modal-pane-overlay: rgba(0, 0, 0, 0.32);
 }
