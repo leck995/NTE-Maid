@@ -12,31 +12,18 @@ public class TaygedoAccount {
     private String phone;
     /** 账号名称（用于多账号管理） */
     private String name;
-
     /** 设备唯一标识（32位十六进制） */
     private String deviceId;
-    /** OpenUDID */
-    private String openudid;
-    /** Vendor ID */
-    private String vendorid;
-
-    /** 老虎平台token */
-    private String laohuToken;
-    /** 老虎平台userId */
-    private String laohuUserId;
-
     /** 塔吉多访问令牌 */
     private String accessToken;
     /** 塔吉多刷新令牌 */
     private String refreshToken;
     /** 塔吉多用户UID */
     private String uid;
-
     /** 上次绑定的角色ID */
     private String roleId;
     /** 上次绑定的角色名称 */
     private String roleName;
-
     /** 服务器ID */
     private String serverId;
     /** 服务器名称 */
@@ -45,10 +32,8 @@ public class TaygedoAccount {
     private String gameId;
     /** 性别 */
     private String gender;
-
     /** Token更新时间（上海时区） */
     private String tokenUpdatedAt;
-
     /** 最后签到时间（毫秒时间戳） */
     private Long lastSignTime;
 
@@ -77,38 +62,6 @@ public class TaygedoAccount {
 
     public void setDeviceId(String deviceId) {
         this.deviceId = deviceId;
-    }
-
-    public String getOpenudid() {
-        return openudid;
-    }
-
-    public void setOpenudid(String openudid) {
-        this.openudid = openudid;
-    }
-
-    public String getVendorid() {
-        return vendorid;
-    }
-
-    public void setVendorid(String vendorid) {
-        this.vendorid = vendorid;
-    }
-
-    public String getLaohuToken() {
-        return laohuToken;
-    }
-
-    public void setLaohuToken(String laohuToken) {
-        this.laohuToken = laohuToken;
-    }
-
-    public String getLaohuUserId() {
-        return laohuUserId;
-    }
-
-    public void setLaohuUserId(String laohuUserId) {
-        this.laohuUserId = laohuUserId;
     }
 
     public String getAccessToken() {

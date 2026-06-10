@@ -1,6 +1,5 @@
 package cn.tealc.ntemaid.service;
 
-import cn.tealc.ntemaid.dao.TaygedoAccountDao;
 import cn.tealc.ntemaid.model.taygedo.TaygedoAccount;
 import cn.tealc.taygedo.DeviceIdentity;
 import cn.tealc.taygedo.TaygedoApi;
@@ -12,7 +11,6 @@ import com.google.inject.Inject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.sql.SQLException;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -21,7 +19,7 @@ import java.util.List;
 /**
  * 塔吉多业务服务实现
  * 每个账号独立持有 deviceId，新增账号自动生成，已有账号沿用原有 deviceId。
- * 账号数据通过 TaygedoAccountDao 持久化到 SQLite 数据库。
+ * 账号持久化委托给 TaygedoAccountService。
  */
 public class TaygedoLoginService {
     private static final Logger LOG = LoggerFactory.getLogger(TaygedoLoginService.class);
@@ -30,58 +28,30 @@ public class TaygedoLoginService {
     private static final String DEFAULT_GAME_ID = "1289";
 
     private final TaygedoApi api;
-    private final TaygedoAccountDao accountDao;
+    private final TaygedoAccountService accountService;
 
     @Inject
-    public TaygedoLoginService(TaygedoApi api, TaygedoAccountDao accountDao) {
+    public TaygedoLoginService(TaygedoApi api, TaygedoAccountService accountService) {
         this.api = api;
-        this.accountDao = accountDao;
+        this.accountService = accountService;
     }
 
+    // ==================== 账号持久化（委托给 TaygedoAccountService） ====================
 
-    public boolean deleteAccountByPhone(String phone) {
-        try {
-            return accountDao.delete(phone);
-        } catch (Exception e) {
-            LOG.error("删除账号 {} 失败", phone, e);
-            return false;
-        }
-    }
-
-    // ==================== 账号持久化 ====================
     public List<TaygedoAccount> getAllAccount() {
-        try {
-            return accountDao.findAll();
-        } catch (Exception e) {
-            LOG.error("查询所有账号失败", e);
-            return List.of();
-        }
+        return accountService.getAll();
     }
 
     public TaygedoAccount loadAccount() {
-        try {
-            return accountDao.findFirst().orElse(null);
-        } catch (Exception e) {
-            LOG.error("加载账号失败", e);
-            return null;
-        }
+        return accountService.getFirst().orElse(null);
     }
 
     public void saveAccount(TaygedoAccount account) {
-        try {
-            accountDao.saveOrUpdate(account);
-        } catch (Exception e) {
-            LOG.error("保存账号 {} 失败", account.getPhone(), e);
-        }
+        accountService.save(account);
     }
 
     public boolean deleteAccount(String phone) {
-        try {
-            return accountDao.delete(phone);
-        } catch (Exception e) {
-            LOG.error("删除账号 {} 失败", phone, e);
-            return false;
-        }
+        return accountService.delete(phone);
     }
 
     // ==================== 分步登录流程 ====================
@@ -100,7 +70,7 @@ public class TaygedoLoginService {
 
     // ==================== Token 刷新 ====================
 
-    public void refreshToken(TaygedoAccount account) throws TaygedoException, SQLException {
+    public void refreshToken(TaygedoAccount account) throws TaygedoException {
         String deviceId = ensureDeviceId(account);
         var result = api.refreshToken(account.getRefreshToken(), deviceId);
 
@@ -108,7 +78,7 @@ public class TaygedoLoginService {
         account.setRefreshToken(result.getRefreshToken());
         account.setTokenUpdatedAt(
                 ZonedDateTime.now(ZoneId.of("Asia/Shanghai")).format(SHANGHAI_FORMAT));
-        accountDao.saveOrUpdate(account);
+        accountService.save(account);
     }
 
     // ==================== 一键登录 ====================
@@ -116,8 +86,11 @@ public class TaygedoLoginService {
     public TaygedoAccount login(String phone, String captcha) throws TaygedoException {
         TaygedoAccount account = new TaygedoAccount();
         account.setPhone(phone);
-        ensureDeviceId(account);
+        return login(phone, captcha, account);
+    }
 
+    public TaygedoAccount login(String phone, String captcha, TaygedoAccount account) throws TaygedoException {
+        ensureDeviceId(account);
         LoginResult laohuResult = api.loginWithCaptcha(phone, captcha, account.getDeviceId());
         return completeLogin(account, laohuResult);
     }
@@ -125,8 +98,11 @@ public class TaygedoLoginService {
     public TaygedoAccount loginWithPassword(String phone, String password) throws TaygedoException {
         TaygedoAccount account = new TaygedoAccount();
         account.setPhone(phone);
-        ensureDeviceId(account);
+        return loginWithPassword(phone, password, account);
+    }
 
+    public TaygedoAccount loginWithPassword(String phone, String password, TaygedoAccount account) throws TaygedoException {
+        ensureDeviceId(account);
         LoginResult laohuResult = api.loginWithPassword(phone, password, account.getDeviceId());
         return completeLogin(account, laohuResult);
     }
@@ -136,8 +112,6 @@ public class TaygedoLoginService {
                 laohuResult.getToken(), laohuResult.getUserId(), account.getDeviceId());
 
         account.setName(laohuResult.getNickname());
-        account.setLaohuToken(laohuResult.getToken());
-        account.setLaohuUserId(laohuResult.getUserId());
         account.setAccessToken(tajiduoResult.getAccessToken());
         account.setRefreshToken(tajiduoResult.getRefreshToken());
         account.setUid(tajiduoResult.getUid());
@@ -172,8 +146,6 @@ public class TaygedoLoginService {
         if (account.getDeviceId() == null || account.getDeviceId().isBlank()) {
             DeviceIdentity device = DeviceIdentity.generate();
             account.setDeviceId(device.getDeviceId());
-            account.setOpenudid(device.getOpenudid());
-            account.setVendorid(device.getVendorid());
             LOG.info("为账号 {} 生成新 deviceId: {}", account.getPhone(), device.getDeviceId());
         }
         return account.getDeviceId();

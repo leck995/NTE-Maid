@@ -6,6 +6,7 @@ import javafx.beans.property.SimpleStringProperty;
 
 import java.util.List;
 
+@Deprecated
 public class AccountUpdateViewModel extends BaseViewModel {
     public static final String EVENT_CLOSE = "EVENT_CLOSE";
     public static final String EVENT_SELECT_ROLE = "EVENT_SELECT_ROLE";

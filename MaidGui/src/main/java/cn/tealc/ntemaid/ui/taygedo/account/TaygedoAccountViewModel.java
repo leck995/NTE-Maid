@@ -29,9 +29,7 @@ public class TaygedoAccountViewModel extends BaseViewModel {
 
     private void refreshAccountList() {
         List<TaygedoAccount> allAccount = accountService.getAll();
-        accountList.addAll(allAccount);
-//        List<TaygedoAccount> userInfos = userInfoService.getAllUsers();
-//        accountList.setAll(userInfos);
+        accountList.setAll(allAccount);
     }
 
 

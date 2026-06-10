@@ -43,29 +43,29 @@ public class TaygedoAccountView implements FxmlView<TaygedoAccountViewModel>, In
     }
 
     class AccountCell extends ListCell<TaygedoAccount> {
-        private final Label userId=new Label();
-        private final Label roleId=new Label();
-        private final Label index=new Label();
-        private final Button delete=new Button(null,new FontIcon(Material2AL.DELETE));
+        private final Label phoneLabel = new Label();
+        private final Label nameLabel = new Label();
+        private final Label index = new Label();
+        private final Button delete = new Button(null, new FontIcon(Material2AL.DELETE));
 
         public AccountCell() {
-            userId.getStyleClass().add("user-label");
-            roleId.getStyleClass().add("role-label");
+            phoneLabel.getStyleClass().add("user-label");
+            nameLabel.getStyleClass().add("role-label");
             delete.setVisible(false);
             delete.getStyleClass().add("delete-btn");
             delete.setOnAction(event -> {
-                if (getItem() != null){
+                if (getItem() != null) {
                     delete();
                 }
             });
 
-            VBox vbox=new VBox(3.0,userId,roleId);
+            VBox vbox = new VBox(3.0, phoneLabel, nameLabel);
             vbox.setAlignment(Pos.CENTER_LEFT);
 
-            HBox hbox=new HBox(10.0,index,vbox,delete);
+            HBox hbox = new HBox(10.0, index, vbox, delete);
             HBox.setHgrow(vbox, Priority.ALWAYS);
             hbox.getStyleClass().add("user");
-            hbox.setPadding(new Insets(5.0,5.0,5.0,5.0));
+            hbox.setPadding(new Insets(5.0, 5.0, 5.0, 5.0));
             hbox.setAlignment(Pos.CENTER_LEFT);
             setGraphic(hbox);
         }
@@ -73,44 +73,37 @@ public class TaygedoAccountView implements FxmlView<TaygedoAccountViewModel>, In
         @Override
         protected void updateItem(TaygedoAccount account, boolean b) {
             super.updateItem(account, b);
-            if (!b){
-                index.setText(String.valueOf(getIndex()+1));
-                userId.setText("手机号: "+ account.getPhone());
-                roleId.setText("昵称: "+ account.getName());
+            if (!b) {
+                index.setText(String.valueOf(getIndex() + 1));
+                phoneLabel.setText("手机号: " + account.getPhone());
+                nameLabel.setText("昵称: " + account.getName());
                 delete.setVisible(true);
-            }else {
+            } else {
                 index.setText(null);
-                roleId.setText(null);
-                userId.setText(null);
+                phoneLabel.setText(null);
+                nameLabel.setText(null);
                 delete.setVisible(false);
             }
         }
 
-        private void delete(){
+        private void delete() {
             JFXDialogLayout dialogLayout = new JFXDialogLayout();
-            Label title=new Label("确认");
+            Label title = new Label("确认");
             title.getStyleClass().add(Styles.TITLE_2);
             dialogLayout.setHeading(title);
-            Label content=new Label(String.format("确认删除用户ID: %s 的数据吗",getItem().getRoleId()));
+            Label content = new Label(String.format("确认删除账号 %s 的数据吗", getItem().getPhone()));
             dialogLayout.setBody(content);
-            Button saveBtn=new Button("确认");
+            Button saveBtn = new Button("确认");
             saveBtn.getStyleClass().add(Styles.ACCENT);
-            Button cancelBtn=new Button("取消");
+            Button cancelBtn = new Button("取消");
             cancelBtn.setCancelButton(true);
 
             saveBtn.setOnAction(event1 -> {
-                viewModel.deleteAccount(getIndex(),getItem());
+                viewModel.deleteAccount(getIndex(), getItem());
             });
             dialogLayout.setActions(saveBtn, cancelBtn);
-            MvvmFX.getNotificationCenter().publish(NotificationKey.DIALOG,dialogLayout);
+            MvvmFX.getNotificationCenter().publish(NotificationKey.DIALOG, dialogLayout);
         }
-
-        private void update(){
-//            ViewTuple<AccountUpdateView, AccountUpdateViewModel> viewTuple = FluentViewLoader.fxmlView(AccountUpdateView.class).viewModel(new AccountUpdateViewModel(getItem())).load();
-//            MvvmFX.getNotificationCenter().publish(NotificationKey.DIALOG, viewTuple.getView(),viewTuple.getCodeBehind());
-        }
-
-
     }
 
 

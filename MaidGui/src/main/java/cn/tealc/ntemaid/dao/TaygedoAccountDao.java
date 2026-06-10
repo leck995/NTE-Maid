@@ -30,8 +30,6 @@ public class TaygedoAccountDao {
     private RowProcessor getRowProcessor() {
         Map<String, String> mapping = new HashMap<>();
         mapping.put("device_id", "deviceId");
-        mapping.put("laohu_token", "laohuToken");
-        mapping.put("laohu_user_id", "laohuUserId");
         mapping.put("access_token", "accessToken");
         mapping.put("refresh_token", "refreshToken");
         mapping.put("role_id", "roleId");
@@ -53,22 +51,18 @@ public class TaygedoAccountDao {
     public int saveOrUpdate(TaygedoAccount account) throws SQLException {
         String sql = """
             INSERT INTO taygedo_account (
-                phone, name, device_id, openudid, vendorid,
-                laohu_token, laohu_user_id, access_token, refresh_token, uid,
+                phone, name, device_id,
+                access_token, refresh_token, uid,
                 role_id, role_name, server_id, server_name, game_id, gender,
                 last_sign_time, token_updated_at, created_at, updated_at
             ) VALUES (
-                ?, ?, ?, ?, ?,
-                ?, ?, ?, ?, ?,
+                ?, ?, ?,
+                ?, ?, ?,
                 ?, ?, ?, ?, ?, ?,
                 ?, ?, ?, ?
             ) ON CONFLICT(phone) DO UPDATE SET
                 name = excluded.name,
                 device_id = excluded.device_id,
-                openudid = excluded.openudid,
-                vendorid = excluded.vendorid,
-                laohu_token = excluded.laohu_token,
-                laohu_user_id = excluded.laohu_user_id,
                 access_token = excluded.access_token,
                 refresh_token = excluded.refresh_token,
                 uid = excluded.uid,
@@ -89,10 +83,6 @@ public class TaygedoAccountDao {
                     account.getPhone(),
                     account.getName(),
                     account.getDeviceId(),
-                    account.getOpenudid(),
-                    account.getVendorid(),
-                    account.getLaohuToken(),
-                    account.getLaohuUserId(),
                     account.getAccessToken(),
                     account.getRefreshToken(),
                     account.getUid(),

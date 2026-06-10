@@ -25,6 +25,7 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
+@Deprecated
 public class AccountUpdateView extends BaseDialog implements FxmlView<AccountUpdateViewModel> {
     private static final Logger log = LoggerFactory.getLogger(AccountUpdateView.class);
     @InjectViewModel

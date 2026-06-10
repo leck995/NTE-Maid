@@ -39,6 +39,7 @@ public class TaygedoLoginViewModel implements ViewModel, SceneLifecycle {
     private final StringProperty countdownText = new SimpleStringProperty("获取验证码");
     private final BooleanProperty canSendCaptcha = new SimpleBooleanProperty(true);
 
+    private TaygedoAccount pendingAccount;
     private int countdownSeconds = 0;
     private Timer countdownTimer;
 
@@ -59,6 +60,7 @@ public class TaygedoLoginViewModel implements ViewModel, SceneLifecycle {
 
         TaygedoAccount account = new TaygedoAccount();
         account.setPhone(phoneNumber);
+        pendingAccount = account;
 
         loading.set(true);
         setStatus("正在发送验证码...");
@@ -93,12 +95,17 @@ public class TaygedoLoginViewModel implements ViewModel, SceneLifecycle {
             setStatus("请输入手机号和验证码");
             return;
         }
+        if (pendingAccount == null) {
+            pendingAccount = new TaygedoAccount();
+            pendingAccount.setPhone(phoneNumber);
+        }
 
         loading.set(true);
         setStatus("正在登录...");
         startThread(() -> {
             try {
-                TaygedoAccount result = service.login(phoneNumber, captchaCode);
+                TaygedoAccount result = service.login(phoneNumber, captchaCode, pendingAccount);
+                pendingAccount = null;
                 service.saveAccount(result);
                 Platform.runLater(() -> {
                     setStatus("登录成功！");
@@ -119,12 +126,17 @@ public class TaygedoLoginViewModel implements ViewModel, SceneLifecycle {
             setStatus("请输入手机号和密码");
             return;
         }
+        if (pendingAccount == null) {
+            pendingAccount = new TaygedoAccount();
+            pendingAccount.setPhone(phoneNumber);
+        }
 
         loading.set(true);
         setStatus("正在登录...");
         startThread(() -> {
             try {
-                TaygedoAccount result = service.loginWithPassword(phoneNumber, pwd);
+                TaygedoAccount result = service.loginWithPassword(phoneNumber, pwd, pendingAccount);
+                pendingAccount = null;
                 service.saveAccount(result);
                 Platform.runLater(() -> {
                     setStatus("登录成功！");

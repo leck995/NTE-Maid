@@ -113,10 +113,6 @@ public class JdbcUtils {
                     phone VARCHAR(20) PRIMARY KEY,
                     name VARCHAR(100),
                     device_id VARCHAR(64),
-                    openudid VARCHAR(64),
-                    vendorid VARCHAR(64),
-                    laohu_token TEXT,
-                    laohu_user_id VARCHAR(64),
                     access_token TEXT,
                     refresh_token TEXT,
                     uid VARCHAR(64),
@@ -135,22 +131,6 @@ public class JdbcUtils {
 
             for (String s : sql.split(";")) {
                 if (!s.trim().isEmpty()) st.execute(s);
-            }
-
-            // 迁移：为旧数据库添加新列
-            String[] migrations = {
-                "ALTER TABLE taygedo_account ADD COLUMN server_id VARCHAR(64)",
-                "ALTER TABLE taygedo_account ADD COLUMN server_name VARCHAR(100)",
-                "ALTER TABLE taygedo_account ADD COLUMN game_id VARCHAR(32)",
-                "ALTER TABLE taygedo_account ADD COLUMN gender VARCHAR(16)",
-                "ALTER TABLE taygedo_account ADD COLUMN last_sign_time BIGINT"
-            };
-            for (String migration : migrations) {
-                try {
-                    st.execute(migration);
-                } catch (SQLException ignored) {
-                    // 列已存在时忽略
-                }
             }
 
             LOG.info("数据库初始化完成，外键级联删除已启用");
