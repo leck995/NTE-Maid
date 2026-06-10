@@ -37,6 +37,7 @@ import java.util.Optional;
  * @author leck
  * @date 2026/06/09
  */
+@Deprecated
 public class GameGachaViewModel implements ViewModel {
     private static final Logger LOG = LoggerFactory.getLogger(GameGachaViewModel.class);
 

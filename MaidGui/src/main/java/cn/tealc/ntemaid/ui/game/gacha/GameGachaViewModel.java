@@ -7,6 +7,7 @@ import cn.tealc.ntemaid.model.taygedo.TaygedoAccount;
 import cn.tealc.ntemaid.service.LocalGachaAnalysisService;
 import cn.tealc.ntemaid.service.LocalGachaDataService;
 import cn.tealc.ntemaid.service.TaygedoAccountService;
+import cn.tealc.ntemaid.util.ImageCacheManager;
 import cn.tealc.taygedo.TaygedoApi;
 import cn.tealc.taygedo.TaygedoException;
 import cn.tealc.taygedo.model.GameGachaResult;
@@ -33,6 +34,7 @@ public class GameGachaViewModel implements ViewModel {
     private final TaygedoApi api;
     private final LocalGachaDataService localGachaDataService;
     private final LocalGachaAnalysisService analysisService;
+    private final ImageCacheManager imageCacheManager;
 
     private final ObservableList<TaygedoAccount> accountList = FXCollections.observableArrayList();
     private final ObjectProperty<TaygedoAccount> selectedAccount = new SimpleObjectProperty<>();
@@ -52,11 +54,13 @@ public class GameGachaViewModel implements ViewModel {
     public GameGachaViewModel(TaygedoAccountService accountService,
                                TaygedoApi api,
                                LocalGachaDataService localGachaDataService,
-                               LocalGachaAnalysisService analysisService) {
+                               LocalGachaAnalysisService analysisService,
+                               ImageCacheManager imageCacheManager) {
         this.accountService = accountService;
         this.api = api;
         this.localGachaDataService = localGachaDataService;
         this.analysisService = analysisService;
+        this.imageCacheManager = imageCacheManager;
         selectedAccount.addListener((obs, old, val) -> {
             if (val != null) loadGachaData();
         });
@@ -171,4 +175,5 @@ public class GameGachaViewModel implements ViewModel {
     public StringProperty roleNameProperty() { return roleName; }
     public IntegerProperty levelProperty() { return level; }
     public StringProperty luckTitleProperty() { return luckTitle; }
+    public ImageCacheManager getImageCacheManager() { return imageCacheManager; }
 }

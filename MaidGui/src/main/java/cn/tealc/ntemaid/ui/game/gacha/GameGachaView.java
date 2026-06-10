@@ -28,14 +28,12 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 import java.util.ResourceBundle;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class GameGachaView implements FxmlView<GameGachaViewModel>, Initializable {
 
     private static final String IMG_BASE_TALL = "https://webstatic.tajiduo.com/bbs/yh-game-records-web-source/character/tall/";
     private static final String IMG_BASE_FORK = "https://webstatic.tajiduo.com/bbs/yh-game-records-web-source/character/fork/";
     private static final String AVATAR_BASE = "https://webstatic.tajiduo.com/bbs/yh-game-records-web-source/avatar/square/";
-    private static final ConcurrentHashMap<String, Image> imageCache = new ConcurrentHashMap<>();
     private static final DateTimeFormatter DATE_FMT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
             .withZone(ZoneId.systemDefault());
 
@@ -132,8 +130,7 @@ public class GameGachaView implements FxmlView<GameGachaViewModel>, Initializabl
     private void buildPlayerInfo() {
         String av = viewModel.avatarProperty().get();
         if (av != null && !av.isEmpty()) {
-            avatarView.setImage(imageCache.computeIfAbsent("avatar_" + av,
-                    k -> new Image(AVATAR_BASE + av + ".PNG", 48, 48, true, true, true)));
+            avatarView.setImage(viewModel.getImageCacheManager().get(AVATAR_BASE + av + ".PNG", 48, 48, true, true));
         }
         String rn = viewModel.roleNameProperty().get();
         roleNameLabel.setText(rn != null ? rn : "");
@@ -241,13 +238,10 @@ public class GameGachaView implements FxmlView<GameGachaViewModel>, Initializabl
         return card;
     }
 
-    /** 获取角色立绘图片（缓存 + 后台加载），弧盘池使用 fork 路径 */
-    private static Image getCharacterImage(String charId) {
-        return imageCache.computeIfAbsent(charId, id -> {
-            String base = id.startsWith("fork_") ? IMG_BASE_FORK : IMG_BASE_TALL;
-            String ext = id.startsWith("fork_") ? ".png" : ".PNG";
-            return new Image(base + id + ext, 0, 42, true, true, true);
-        });
+    private Image getCharacterImage(String charId) {
+        String base = charId.startsWith("fork_") ? IMG_BASE_FORK : IMG_BASE_TALL;
+        String ext = charId.startsWith("fork_") ? ".png" : ".PNG";
+        return viewModel.getImageCacheManager().get(base + charId + ext, 0, 42, true, true);
     }
 
     /** ListView 单元格：角色立绘 + 保底信息 */
