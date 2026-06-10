@@ -1,5 +1,7 @@
 package cn.tealc.ntemaid.thread.system.update;
 
+import cn.tealc.ntemaid.base.Config;
+
 import java.io.IOException;
 import java.nio.file.*;
 import java.util.Optional;
@@ -70,6 +72,10 @@ public class DeleteOldAppVersionTask implements Runnable {
      * @param path 要删除的文件路径
      */
     private void deleteFileSafely(Path path) {
+        if (Config.getSetting().isDevModel()){ //开发模式不删除，用于测试
+            return;
+        }
+
         try {
             if (Files.deleteIfExists(path)) {
                 LOGGER.info("已删除旧版本: " + path.getFileName());

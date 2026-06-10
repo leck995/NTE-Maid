@@ -3,6 +3,7 @@ package cn.tealc.ntemaid.ui.system.update;
 
 import cn.tealc.ntemaid.base.AppConstants;
 import cn.tealc.ntemaid.base.Config;
+import cn.tealc.ntemaid.base.notification.NotificationKey;
 import cn.tealc.ntemaid.base.notification.NotificationManager;
 import cn.tealc.ntemaid.model.system.realease.Release;
 import cn.tealc.ntemaid.thread.system.update.AppUpdateDownloadTask;
@@ -10,11 +11,17 @@ import cn.tealc.ntemaid.util.LanguageManager;
 import cn.tealc.teafx.utils.ResponseBody;
 import cn.tealc.teafx.utils.message.MessageInfo;
 import de.saxsys.mvvmfx.ViewModel;
+import javafx.application.Platform;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleStringProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Optional;
 
 /**
  * @description:
@@ -60,10 +67,8 @@ public class UpdateViewModel implements ViewModel {
             downloading.set(false);
             ResponseBody<Boolean> value = task.getValue();
             if (value.getCode() == 200) {
-                NotificationManager.message(MessageInfo.success("更新完成，请重新启动程序"));
-            } else if (value.getCode() == 201) { //校验失败
-                NotificationManager.message(MessageInfo.warning(value.getMsg()));
-                downloadZip();
+                NotificationManager.message(MessageInfo.success("更新完成，若重启失败请手动重启"));
+                restart();
             } else {
                 NotificationManager.message(MessageInfo.warning(value.getMsg()));
             }
@@ -72,6 +77,24 @@ public class UpdateViewModel implements ViewModel {
         Thread.startVirtualThread(task);
     }
 
+
+    private void restart() {
+        Optional<String> exePath = ProcessHandle.current().info().command();
+        if (exePath.isEmpty()) {
+            LOG.error("无法获取当前进程路径");
+            return;
+        }
+        try {
+            Path bat = Path.of(System.getProperty("java.io.tmpdir"), "ntemaid_restart.bat");
+            String script = "@echo off\r\ntimeout /t 2 /nobreak >nul\r\nstart \"\" \"" + exePath.get() + "\"\r\ndel \"%~f0\"";
+            Files.writeString(bat, script);
+            new ProcessBuilder("cmd", "/c", "start", "/min", "", bat.toString()).start();
+            NotificationManager.publish(NotificationKey.APP_EXIT);
+            Platform.exit();
+        } catch (IOException e) {
+            LOG.error("重启失败", e);
+        }
+    }
 
     public void setSkipVersion() {
         Config.getSetting().setSkipVersion(release.getVersion());

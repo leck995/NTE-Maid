@@ -17,7 +17,7 @@ import java.util.Date;
  * @create: 2024-12-22 15:20
  */
 public class ReleaseCreateUtil {
-    private static final String JAR_PATH = "D:\\Code\\Reposities\\JavaFX\\NTEMaid\\MaidGui\\target\\MaidGui-1.1.0-shaded.jar";
+    private static final String JAR_PATH = "D:\\Code\\Reposities\\JavaFX\\NTEMaid\\MaidGui\\target\\NTEMaid-1.1.0.jar";
     private static final String RELEASE_FILE="release/release.json";
     public static void main(String[] args) throws IOException {
         Release latestRelease = latestRelease();
