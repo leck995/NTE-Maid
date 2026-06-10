@@ -4,7 +4,6 @@ import cn.tealc.ntemaid.model.game.gacha.LocalGachaData;
 import cn.tealc.ntemaid.model.game.gacha.LocalGachaItem;
 import cn.tealc.ntemaid.model.game.gacha.LocalGachaPool;
 import cn.tealc.ntemaid.model.game.gacha.LocalGachaType;
-import cn.tealc.taygedo.model.GameGachaItem;
 import com.google.inject.Inject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 
 public class LocalGachaAnalysisService {
@@ -35,75 +35,108 @@ public class LocalGachaAnalysisService {
         List<LocalGachaItem> defaultRoleList = gachaDataService.getAfterTimeDescByRoleIdAndPoolType(roleId, LocalGachaType.DEFAULT_ROLE_POOL,0);
         List<LocalGachaItem> weaponList = gachaDataService.getAfterTimeDescByRoleIdAndPoolType(roleId, LocalGachaType.WEAPON_POOL,0);
 
+        LocalGachaPool upRolePool = analysisRolePool(upRoleList, LocalGachaType.UP_ROLE_POOL);
+        upRolePool.setPoolName("限定卡池");
+        LocalGachaPool defaultRolePool = analysisRolePool(defaultRoleList, LocalGachaType.DEFAULT_ROLE_POOL);
+        defaultRolePool.setPoolName("常驻卡池");
+        LocalGachaPool weaponPool = analysisWeaponPool(weaponList);
+        weaponPool.setPoolName("弧盘池");
 
+        LocalGachaData gachaData = new LocalGachaData();
+        gachaData.setPools(List.of(upRolePool,defaultRolePool,weaponPool));
 
+        int lucky = gachaData.getPools().stream().mapToInt(LocalGachaPool::getLuckyType).sum() / gachaData.getPools().size();
+        gachaData.setLuckyType(lucky);
 
-
-        return null;
+        return gachaData;
     }
 
-
-
-    private LocalGachaPool analysisRolePool(List<LocalGachaItem> items){
-        for (LocalGachaItem item : items) {
-            item.setUp(!ROLE_LIST.contains(item.getCharid().toLowerCase()));
-        }
-        int sum = items.stream().mapToInt(GameGachaItem::getRareCount).sum();
-        double avg = (double) sum / items.size();
-        double percent = (double) items.size() / sum;
-        LocalGachaPool pool = new LocalGachaPool();
-        pool.setItems(items);
-        pool.setCount(sum);
-        pool.setMax(90);
-        pool.setSsrCount(items.size());
-        pool.setSsrAvg(avg);
-        pool.setSsrPercent(percent);
-        pool.setTime(getDateRange(items));
-
-        if (avg < 40){ //超欧
-            pool.setLuckyType(5);
-        }else if (avg < 50){ //欧
-            pool.setLuckyType(4);
-        }else if (avg < 65){ //一般
-            pool.setLuckyType(3);
-        }else if (avg < 75){//小非
-            pool.setLuckyType(2);
-        }else {//大非
-            pool.setLuckyType(1);
-        }
-        return pool;
-    }
 
 
     private LocalGachaPool analysisWeaponPool(List<LocalGachaItem> items){
-        for (LocalGachaItem item : items) {
-            item.setUp(!WEAPON_LIST.contains(item.getCharid().toLowerCase()));
+        LocalGachaPool pool = analysisPool(items, 80, WEAPON_LIST, true);
+        pool.setType(LocalGachaType.WEAPON_POOL);
+        return pool;
+    }
+
+    private LocalGachaPool analysisRolePool(List<LocalGachaItem> items,LocalGachaType type){
+        LocalGachaPool pool = analysisPool(items, 90, ROLE_LIST, false);
+        pool.setType(type);
+        return pool;
+    }
+
+    private LocalGachaPool analysisPool(List<LocalGachaItem> items, int max, List<String> standardList, boolean trackUp){
+        if (items == null || items.isEmpty()) {
+            LocalGachaPool pool = new LocalGachaPool();
+            pool.setItems(List.of());
+            pool.setMax(max);
+            return pool;
         }
-        int sum = items.stream().mapToInt(GameGachaItem::getRareCount).sum();
+        int sum = 0;
+        int upSsrCount = 0;
+        int noUpSsrCount = 0;
+        List<Integer> upPityList = new ArrayList<>();
+        int accumulatedPulls = 0;
+
+        for (int i = items.size() - 1; i >= 0; i--) {
+            LocalGachaItem item = items.get(i);
+            sum += item.getRareCount();
+            item.setUp(!standardList.contains(item.getCharid().toLowerCase()));
+            if (trackUp) {
+                item.setUpReallyCount(true);
+                accumulatedPulls += item.getRareCount();
+                if (item.isUp()) {
+                    upSsrCount++;
+                    upPityList.add(accumulatedPulls);
+                    accumulatedPulls = 0;
+                } else {
+                    noUpSsrCount++;
+                }
+            }
+        }
+
         double avg = (double) sum / items.size();
         double percent = (double) items.size() / sum;
+
         LocalGachaPool pool = new LocalGachaPool();
         pool.setItems(items);
         pool.setCount(sum);
-        pool.setMax(90);
+        pool.setMax(max);
         pool.setSsrCount(items.size());
         pool.setSsrAvg(avg);
         pool.setSsrPercent(percent);
         pool.setTime(getDateRange(items));
 
+        if (trackUp) {
+            double upSsrAvg = upPityList.isEmpty() ? 0
+                    : (double) upPityList.stream().mapToInt(Integer::intValue).sum() / upPityList.size();
+            pool.setUpSsrAvg(upSsrAvg);
+            pool.setUpSsrCount(upSsrCount);
+            pool.setNoUpSsrCount(noUpSsrCount);
 
-
-
-        if (avg < 40){ //超欧
-            pool.setLuckyType(5);
-        }else if (avg < 50){ //欧
-            pool.setLuckyType(4);
-        }else if (avg < 65){ //一般
-            pool.setLuckyType(3);
-        }else if (avg < 75){//小非
-            pool.setLuckyType(2);
-        }else {//大非
-            pool.setLuckyType(1);
+            if (upSsrAvg < 40){
+                pool.setLuckyType(5);
+            }else if (upSsrAvg < 50){
+                pool.setLuckyType(4);
+            }else if (upSsrAvg < 60){
+                pool.setLuckyType(3);
+            }else if (upSsrAvg < 70){
+                pool.setLuckyType(2);
+            }else {
+                pool.setLuckyType(1);
+            }
+        }else {
+            if (avg < 40){
+                pool.setLuckyType(5);
+            }else if (avg < 50){
+                pool.setLuckyType(4);
+            }else if (avg < 65){
+                pool.setLuckyType(3);
+            }else if (avg < 75){
+                pool.setLuckyType(2);
+            }else {
+                pool.setLuckyType(1);
+            }
         }
         return pool;
     }
@@ -112,6 +145,6 @@ public class LocalGachaAnalysisService {
         if (items == null || items.isEmpty()) return "";
         long first = items.getFirst().getTimeStamp();
         long last = items.getLast().getTimeStamp();
-        return DATE_SHORT.format(Instant.ofEpochMilli(first)) + " - " + DATE_SHORT.format(Instant.ofEpochMilli(last));
+        return DATE_SHORT.format(Instant.ofEpochMilli(last)) + " - " + DATE_SHORT.format(Instant.ofEpochMilli(first));
     }
 }

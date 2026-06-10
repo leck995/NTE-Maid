@@ -10,8 +10,8 @@ public class LocalGachaPool {
     private int ssrCount;
     private double ssrPercent;
     private double ssrAvg;
-    private double upSsrAvg;//限定武器up率
-    private double upSsrCount;//限定武器数量率
+    private double upSsrAvg;//限定武器up平均
+    private double upSsrCount;//限定武器数量
     private double noUpSsrCount;//常驻武器数量
     private int luckyType;//抽卡运气
     private String time;//抽卡起始结束时间
