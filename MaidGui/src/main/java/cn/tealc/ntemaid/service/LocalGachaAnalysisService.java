@@ -114,13 +114,13 @@ public class LocalGachaAnalysisService {
             pool.setUpSsrCount(upSsrCount);
             pool.setNoUpSsrCount(noUpSsrCount);
 
-            if (upSsrAvg < 40){
+            if (avg < 40){
                 pool.setLuckyType(5);
-            }else if (upSsrAvg < 50){
+            }else if (avg < 50){
                 pool.setLuckyType(4);
-            }else if (upSsrAvg < 60){
+            }else if (avg < 60){
                 pool.setLuckyType(3);
-            }else if (upSsrAvg < 70){
+            }else if (avg < 70){
                 pool.setLuckyType(2);
             }else {
                 pool.setLuckyType(1);

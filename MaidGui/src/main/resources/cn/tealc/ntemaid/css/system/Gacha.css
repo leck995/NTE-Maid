@@ -26,6 +26,12 @@
     -fx-font-weight: bold;
 }
 
+.gacha .player-hint {
+    -fx-font-size: 10px;
+    -fx-text-fill: rgba(0, 0, 0, 0.4);
+    -fx-padding: 2 0 0 0;
+}
+
 /* ----- 卡池卡片 ----- */
 .gacha .pool-card {
     -fx-padding: 8px;
@@ -76,25 +82,31 @@
 .gacha .pool-stats .default-accent {
     -fx-text-fill: #9e9e9e;
 }
-.gacha .pool-stats .luck-5 {
+.gacha .luck-5 {
     -fx-text-fill: #4caf50;
     -fx-font-weight: bold;
 }
-.gacha .pool-stats .luck-4 {
+.gacha .luck-4 {
     -fx-text-fill: #8bc34a;
     -fx-font-weight: bold;
 }
-.gacha .pool-stats .luck-3 {
+.gacha .luck-3 {
     -fx-text-fill: #ffb74d;
     -fx-font-weight: bold;
 }
-.gacha .pool-stats .luck-2 {
+.gacha .luck-2 {
     -fx-text-fill: #ef5350;
     -fx-font-weight: bold;
 }
-.gacha .pool-stats .luck-1 {
+.gacha .luck-1 {
     -fx-text-fill: #c62828;
     -fx-font-weight: bold;
+}
+
+.gacha .pool-luck {
+    -fx-font-size: 1.6em;
+    -fx-font-weight: bold;
+    -fx-rotate: 20;
 }
 
 /* ----- 抽卡列表 ----- */
@@ -135,6 +147,11 @@
 }
 .gacha .gacha-list .role-cell .role-name.unup{
     -fx-text-fill: #269578;
+}
+.gacha .gacha-list .role-cell .up-tag {
+    -fx-text-fill: #ffb74d;
+    -fx-font-weight: bold;
+    -fx-font-size: 1em;
 }
 
 

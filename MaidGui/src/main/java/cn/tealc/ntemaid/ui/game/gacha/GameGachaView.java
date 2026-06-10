@@ -52,6 +52,11 @@ public class GameGachaView implements FxmlView<GameGachaViewModel>, Initializabl
     @FXML private Label roleNameLabel;
     @FXML private Label levelLabel;
     @FXML private Label luckLabel;
+    private Label luckHint;
+    private VBox luckBox;
+    private Label analysisLuckLabel;
+    private Label analysisLuckHint;
+    private VBox analysisBox;
     @FXML private HBox poolCardsPane;
     @FXML private ProgressIndicator loadingIndicator;
 
@@ -79,14 +84,40 @@ public class GameGachaView implements FxmlView<GameGachaViewModel>, Initializabl
             statusLabel.setText(val);
         });
 
+        // 将 luckLabel 从父容器中移除，包装为带提示文本的 VBox 再添加
+        luckHint = new Label("近六个月运气");
+        luckHint.getStyleClass().add("player-hint");
+        ((HBox) luckLabel.getParent()).getChildren().remove(luckLabel);
+        luckBox = new VBox(luckLabel, luckHint);
+        luckBox.setAlignment(Pos.CENTER);
+        playerInfoPane.getChildren().add(luckBox);
+
+        // 创建 analysisLuckLabel 及其提示
+        analysisLuckLabel = new Label();
+        analysisLuckLabel.getStyleClass().add("player-luck");
+        analysisLuckHint = new Label("总运气");
+        analysisLuckHint.getStyleClass().add("player-hint");
+        analysisBox = new VBox(analysisLuckLabel, analysisLuckHint);
+        analysisBox.setAlignment(Pos.CENTER);
+        analysisBox.setVisible(false);
+        analysisBox.setManaged(false);
+        playerInfoPane.getChildren().add(analysisBox);
+
         viewModel.gachaDataProperty().addListener((obs, old, data) -> {
             if (data != null) {
                 buildPlayerInfo();
                 buildPoolCards(data);
+                analysisLuckLabel.setText(analysisLuckName(data.getLuckyType()));
+                analysisBox.setVisible(true);
+                analysisBox.setManaged(true);
             } else {
                 playerInfoPane.setVisible(false);
                 playerInfoPane.setManaged(false);
                 poolCardsPane.getChildren().clear();
+                luckBox.setVisible(false);
+                luckBox.setManaged(false);
+                analysisBox.setVisible(false);
+                analysisBox.setManaged(false);
             }
         });
 
@@ -104,9 +135,16 @@ public class GameGachaView implements FxmlView<GameGachaViewModel>, Initializabl
             avatarView.setImage(imageCache.computeIfAbsent("avatar_" + av,
                     k -> new Image(AVATAR_BASE + av + ".PNG", 48, 48, true, true, true)));
         }
-        roleNameLabel.setText(viewModel.roleNameProperty().get() != null ? viewModel.roleNameProperty().get() : "");
+        String rn = viewModel.roleNameProperty().get();
+        roleNameLabel.setText(rn != null ? rn : "");
         levelLabel.setText("Lv." + viewModel.levelProperty().get());
-        luckLabel.setText(viewModel.luckTitleProperty().get() != null ? viewModel.luckTitleProperty().get() : "");
+        String lt = viewModel.luckTitleProperty().get();
+        luckLabel.setText(lt != null ? lt : "");
+
+        boolean hasPlayerInfo = rn != null && !rn.isEmpty();
+        luckBox.setVisible(hasPlayerInfo);
+        luckBox.setManaged(hasPlayerInfo);
+
         playerInfoPane.setVisible(true);
         playerInfoPane.setManaged(true);
     }
@@ -130,15 +168,18 @@ public class GameGachaView implements FxmlView<GameGachaViewModel>, Initializabl
 
         Label tabLabel = new Label(pool.getPoolName());
         tabLabel.getStyleClass().add("pool-title");
+        Label luckBadge = new Label(luckyTypeName(pool.getLuckyType()));
+        luckBadge.getStyleClass().addAll("pool-luck", "luck-" + pool.getLuckyType());
+        HBox titleHbox = new HBox(tabLabel, new Spacer(), luckBadge);
+        titleHbox.setAlignment(Pos.CENTER);
 
         Label countLabel = new Label(String.valueOf(pool.getCount()));
         countLabel.getStyleClass().add("pool-count");
-        HBox titleHbox = new HBox(tabLabel, new Spacer(), countLabel);
 
         Label timeLabel = new Label(pool.getTime() != null ? pool.getTime() : "");
         timeLabel.getStyleClass().add("pool-date");
 
-        header.getChildren().addAll(titleHbox, timeLabel);
+        header.getChildren().addAll(titleHbox, countLabel, timeLabel);
 
         VBox center = new VBox(5);
 
@@ -218,6 +259,7 @@ public class GameGachaView implements FxmlView<GameGachaViewModel>, Initializabl
         private final Label count;
         private final ProgressBar progressBar;
         private final Label desc;
+        private final Label upTag;
         private final LocalGachaPool pool;
 
         public GachaItemListCell(LocalGachaPool pool) {
@@ -239,9 +281,11 @@ public class GameGachaView implements FxmlView<GameGachaViewModel>, Initializabl
 
             desc = new Label();
             desc.getStyleClass().add("role-desc");
+            upTag = new Label("UP!");
+            upTag.getStyleClass().add("up-tag");
             count = new Label();
             count.getStyleClass().add("role-name");
-            HBox left = new HBox(5.0, count);
+            HBox left = new HBox(8.0, upTag, count);
             left.setAlignment(Pos.CENTER_RIGHT);
 
             progressBar = new ProgressBar();
@@ -274,11 +318,13 @@ public class GameGachaView implements FxmlView<GameGachaViewModel>, Initializabl
                 progressBar.setProgress((double) item.getRareCount() / pool.getMax());
 
                 if (item.isUp()) {
+                    upTag.setVisible(true);
                     count.getStyleClass().removeAll("unup");
                     count.getStyleClass().add("up");
                     progressBar.getStyleClass().removeAll("unup");
                     progressBar.getStyleClass().add("up");
                 } else {
+                    upTag.setVisible(false);
                     count.getStyleClass().removeAll("up");
                     count.getStyleClass().add("unup");
                     progressBar.getStyleClass().removeAll("up");
@@ -294,11 +340,22 @@ public class GameGachaView implements FxmlView<GameGachaViewModel>, Initializabl
 
     private static String luckyTypeName(int luckyType) {
         return switch (luckyType) {
-            case 1 -> "大非";
-            case 2 -> "小非";
-            case 3 -> "一般";
+            case 1 -> "超非";
+            case 2 -> "非";
+            case 3 -> "平";
             case 4 -> "欧";
             case 5 -> "超欧";
+            default -> "";
+        };
+    }
+
+    private static String analysisLuckName(int luckyType) {
+        return switch (luckyType) {
+            case 1 -> "非洲之心";
+            case 2 -> "非洲人";
+            case 3 -> "平平无奇";
+            case 4 -> "欧州人";
+            case 5 -> "万里挑一的欧皇";
             default -> "";
         };
     }
