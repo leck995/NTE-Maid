@@ -18,6 +18,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.Tooltip;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 
 import java.awt.*;
@@ -36,7 +37,7 @@ public class HomeView implements Initializable, FxmlView<HomeViewModel> {
     @InjectViewModel
     private HomeViewModel viewModel;
     @FXML
-    private BorderPane root;
+    private AnchorPane root;
     @FXML
     private Button gameTimeBtn;
     @FXML

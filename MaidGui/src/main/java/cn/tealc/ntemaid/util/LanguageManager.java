@@ -3,12 +3,7 @@ package cn.tealc.ntemaid.util;
 
 import cn.tealc.ntemaid.base.Config;
 
-/**
- * @program: WutheringWavesTool
- * @description:
- * @author: Leck
- * @create: 2024-10-20 22:19
- */
+
 public class LanguageManager {
 
     private static final String separate = "#";

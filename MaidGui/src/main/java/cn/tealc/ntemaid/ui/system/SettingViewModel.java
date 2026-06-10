@@ -24,32 +24,21 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.util.List;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
-/**
- * @program: WutheringWavesTool
- * @description:
- * @author: Leck
- * @create: 2024-07-03 20:21
- */
+
 public class SettingViewModel implements ViewModel, SceneLifecycle {
     private static final Logger LOG = LoggerFactory.getLogger(SettingViewModel.class);
     private SimpleBooleanProperty exitWhenGameOver = new SimpleBooleanProperty();
     private SimpleBooleanProperty hideWhenGameStart = new SimpleBooleanProperty();
     private ObservableList<String> fontFamilyList = FXCollections.observableArrayList();
     private SimpleBooleanProperty checkNewVersion = new SimpleBooleanProperty();
-
     private SimpleBooleanProperty diyHomeBg = new SimpleBooleanProperty();
     private SimpleStringProperty diyHomeBgName = new SimpleStringProperty();
     private SimpleIntegerProperty homeBgType = new SimpleIntegerProperty();
     private SimpleStringProperty homeBgDir = new SimpleStringProperty();
-
-
-
-
     private ObservableList<Pair<String, Locale>> languages = FXCollections.observableArrayList();
 
     public SettingViewModel() {
@@ -93,47 +82,15 @@ public class SettingViewModel implements ViewModel, SceneLifecycle {
 
     @Override
     public void onViewRemoved() {
-        checkGameLogOpen();
         Config.save();
     }
 
 
-    /**
-     * description: 检测游戏日志是否被关闭
-     */
-    private void checkGameLogOpen() {
-//        CheckGameConfigTask task = new CheckGameConfigTask();
-//        task.setOnSucceeded(workerStateEvent -> {
-//            Boolean value = task.getValue();
-//            if (!value) { //游戏日志可能被关闭了
-//                Platform.runLater(() -> {
-//                    NotificationManager.message(MessageInfo.success(LanguageManager.getString("ui.main.sync.message.log.close")));
-//                });
-//            }
-//        });
-//        Thread.startVirtualThread(task);
-    }
-
-
-    public void setFontFamily(String fontFamily) {
-       // MainApplication.window.getScene().getRoot().setStyle("-fx-font-family: \"" + fontFamily + "\"");
-    }
-
     public void setBgFile(File file) {
-        String suffix = LocalResourcesManager.getSuffix(file.getName());
-        File newFile = new File(String.format("assets/image/bg/%d.%s", System.currentTimeMillis(), suffix));
         try {
-            Files.copy(file.toPath(), newFile.toPath());
-            if (diyHomeBgName.get() != null && !diyHomeBgName.get().isEmpty()) {
-                File oldFile = new File(String.format("assets/image/bg/%s", diyHomeBgName.get()));
-                if (oldFile.exists()) {
-                    boolean delete = oldFile.delete();
-                    LOG.info("旧背景删除:{}", delete);
-                }
-            }
-            diyHomeBgName.set(newFile.getName());
-           NotificationManager.publish(NotificationKey.CHANGE_BG);
-
+            String newName = LocalResourcesManager.setHomeBg(file, diyHomeBgName.get());
+            diyHomeBgName.set(newName);
+            NotificationManager.publish(NotificationKey.CHANGE_BG);
         } catch (IOException e) {
             LOG.error("IO ERROR", e);
         }
@@ -157,7 +114,7 @@ public class SettingViewModel implements ViewModel, SceneLifecycle {
 
     public void setLanguages(Locale locale) {
         Config.getSetting().setLanguage(locale);
-        Config.language = ResourceBundle.getBundle("cn.tealc/wutheringwavestool/language/local", Config.getSetting().getLanguage());
+        Config.language = ResourceBundle.getBundle("cn.tealc/ntemaid/language/local", Config.getSetting().getLanguage());
         MvvmFX.setGlobalResourceBundle(Config.language);
     }
 

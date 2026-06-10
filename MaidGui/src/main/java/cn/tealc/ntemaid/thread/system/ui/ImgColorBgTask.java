@@ -16,15 +16,9 @@ import java.awt.image.BufferedImage;
 import java.net.URI;
 import java.util.List;
 
-/**
- * @program: WutheringWavesTool
- * @description:
- * @author: Leck
- * @create: 2024-08-01 19:17
- */
-public class ImgColorBgTask extends Task<Background> {
 
-    private String url;
+public class ImgColorBgTask extends Task<Background> {
+    private final String url;
 
     public ImgColorBgTask(String url) {
         this.url = url;

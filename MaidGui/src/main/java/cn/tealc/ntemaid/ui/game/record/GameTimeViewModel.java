@@ -17,12 +17,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
-/**
- * @program: WutheringWavesTool
- * @description:
- * @author: Leck
- * @create: 2024-08-04 04:57
- */
+
 public class GameTimeViewModel implements ViewModel {
     private final ObservableList<XYChart.Series<String,Double>> chartData= FXCollections.observableArrayList();
     private final SimpleStringProperty allTotalTimeText=new SimpleStringProperty();

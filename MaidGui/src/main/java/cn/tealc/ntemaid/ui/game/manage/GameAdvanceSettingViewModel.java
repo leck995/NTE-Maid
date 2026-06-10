@@ -14,12 +14,7 @@ import java.security.GeneralSecurityException;
 import java.util.List;
 import java.util.Optional;
 
-/**
- * @program: WutheringWavesTool
- * @description:
- * @author: Leck
- * @create: 2024-10-17 22:50
- */
+
 public class GameAdvanceSettingViewModel implements ViewModel {
     private final SimpleStringProperty fps = new SimpleStringProperty();
 

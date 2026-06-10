@@ -5,12 +5,7 @@ import com.jfoenixN.controls.JFXDialogLayout;
 import de.saxsys.mvvmfx.MvvmFX;
 import de.saxsys.mvvmfx.utils.notifications.NotificationObserver;
 
-/**
- * @program: WutheringWavesTool
- * @description:
- * @author: Leck
- * @create: 2024-12-17 17:10
- */
+
 public class NotificationManager {
     public static void publish(String key, Object... objects) {
         MvvmFX.getNotificationCenter().publish(key, objects);

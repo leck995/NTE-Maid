@@ -24,12 +24,6 @@ import org.slf4j.LoggerFactory;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-/**
- * @program: WutheringWavesTool
- * @description:
- * @author: Leck
- * @create: 2024-08-04 00:26
- */
 public class TaygedoAccountView implements FxmlView<TaygedoAccountViewModel>, Initializable {
     private static final Logger LOG= LoggerFactory.getLogger(TaygedoAccountView.class);
     @InjectViewModel

@@ -12,7 +12,6 @@ import java.io.IOException;
 import java.util.Optional;
 
 /**
- * @program: WutheringWavesTool
  * @description: 用于判断多开，避免多开
  * @author: Leck
  * @create: 2024-11-24 20:00

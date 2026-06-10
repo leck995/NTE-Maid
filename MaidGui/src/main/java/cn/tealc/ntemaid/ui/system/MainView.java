@@ -62,12 +62,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.ResourceBundle;
 
-/**
- * @program: WutheringWavesTool
- * @description:
- * @author: Leck
- * @create: 2024-07-03 18:59
- */
+
 public class MainView implements Initializable, FxmlView<MainViewModel> {
     private static final Logger LOG = LoggerFactory.getLogger(MainView.class);
     @InjectViewModel

@@ -11,15 +11,7 @@ import javafx.collections.ObservableList;
 
 import java.util.List;
 
-/**
- * @program: WutheringWavesTool
- * @description:
- * @author: Leck
- * @create: 2024-08-04 00:26
- */
 public class TaygedoAccountViewModel extends BaseViewModel {
-
-
     private final TaygedoAccountService accountService;
 
     @Inject

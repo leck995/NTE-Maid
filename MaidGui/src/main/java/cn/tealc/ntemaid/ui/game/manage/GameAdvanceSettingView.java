@@ -28,12 +28,6 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-/**
- * @program: WutheringWavesTool
- * @description:
- * @author: Leck
- * @create: 2024-10-17 22:50
- */
 public class GameAdvanceSettingView implements FxmlView<GameAdvanceSettingViewModel>, Initializable {
     private static final Logger LOG = LoggerFactory.getLogger(GameAdvanceSettingView.class);
     @InjectViewModel

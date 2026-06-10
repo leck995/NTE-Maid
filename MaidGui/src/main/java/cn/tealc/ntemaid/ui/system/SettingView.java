@@ -45,7 +45,6 @@ import java.util.Locale;
 import java.util.ResourceBundle;
 
 /**
- * @program: WutheringWavesTool
  * @description:
  * @author: Leck
  * @create: 2024-07-03 20:20
@@ -182,10 +181,7 @@ public class SettingView implements FxmlView<SettingViewModel>, Initializable {
             }
         });
 
-
         fileSourceType.getToggles().get(Config.getSetting().getResourceSource()).setSelected(true);
-
-
     }
 
 

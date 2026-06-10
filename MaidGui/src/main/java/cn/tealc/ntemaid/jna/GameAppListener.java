@@ -17,7 +17,6 @@ import org.slf4j.LoggerFactory;
 import java.time.LocalDateTime;
 
 /**
- * @program: WutheringWavesTool
  * @description: 有个坑，务必将其设置为全局变量，不知道为什么，不设置为全局变量，钩子无效
  * @author: Leck
  * @create: 2024-07-10 23:29
