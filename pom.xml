@@ -197,12 +197,14 @@
                 <version>2.2.2</version>
             </dependency>
 
-            <!-- OpenCV -->
+            <!-- OpenCV — 暂时废弃 -->
+            <!--
             <dependency>
                 <groupId>org.bytedeco</groupId>
                 <artifactId>opencv-platform</artifactId>
                 <version>4.9.0-1.5.10</version>
             </dependency>
+            -->
 
             <!-- Test -->
             <dependency>

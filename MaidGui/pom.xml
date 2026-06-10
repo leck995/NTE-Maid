@@ -150,10 +150,12 @@
             <artifactId>jnativehook</artifactId>
         </dependency>
 
+        <!-- OpenCV — 暂时废弃
         <dependency>
             <groupId>org.bytedeco</groupId>
             <artifactId>opencv-platform</artifactId>
         </dependency>
+        -->
     </dependencies>
 
     <build>

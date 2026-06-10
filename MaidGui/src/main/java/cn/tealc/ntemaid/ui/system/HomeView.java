@@ -7,7 +7,6 @@ import cn.tealc.ntemaid.jna.GameAppListener;
 import cn.tealc.ntemaid.util.GameResourcesManager;
 import cn.tealc.ntemaid.util.LanguageManager;
 import cn.tealc.ntemaid.vision.MapRegionConfig;
-import cn.tealc.ntemaid.vision.RouteDetector;
 import cn.tealc.ntemaid.vision.RouteResult;
 import cn.tealc.teafx.utils.message.MessageInfo;
 import com.sun.jna.platform.win32.WinDef;

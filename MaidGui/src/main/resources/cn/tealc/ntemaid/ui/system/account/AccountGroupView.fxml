@@ -26,7 +26,7 @@
                         <ToggleGroup fx:id="childSelectedToggle" />
                      </toggleGroup>
                   </ToggleButton>
-                  <ToggleButton contentDisplay="BOTTOM" mnemonicParsing="false" onAction="#toAppAccountEvent" styleClass="child-select" text="%ui.account.app_account" toggleGroup="$childSelectedToggle">
+                  <ToggleButton contentDisplay="BOTTOM" disable="true" mnemonicParsing="false" onAction="#toAppAccountEvent" styleClass="child-select" text="%ui.account.app_account" toggleGroup="$childSelectedToggle" visible="false">
                      <graphic>
                         <Pane prefHeight="200.0" prefWidth="200.0" />
                      </graphic>
