@@ -1,5 +1,6 @@
 package cn.tealc.ntemaid.thread.system.update;
 
+import cn.tealc.ntemaid.base.AppConstants;
 import cn.tealc.ntemaid.base.Config;
 import cn.tealc.ntemaid.model.system.realease.Release;
 import cn.tealc.ntemaid.model.system.realease.ReleaseList;
@@ -55,7 +56,7 @@ public class CheckAppVersionTask extends Task<ResponseBody<Release>> {
                 Release latestRelease = releaseList.getLatestRelease();
                 String version = latestRelease.getVersion();
                 double net = Double.parseDouble(version.replace(".",""));
-                double now = Double.parseDouble(Config.version.replace(".",""));
+                double now = Double.parseDouble(AppConstants.VERSION.replace(".",""));
                 if (checkSkip && Config.getSetting().getSkipVersion() != null){
                     double skip = Double.parseDouble(Config.getSetting().getSkipVersion().replace(".",""));
                     if (net <= skip){ //网络版本低于跳过版本
@@ -82,7 +83,7 @@ public class CheckAppVersionTask extends Task<ResponseBody<Release>> {
     private ResponseBody<Release> getNetReleaseData() {
         try (HttpClient client = HttpClient.newHttpClient()){
             HttpRequest request = HttpRequest.newBuilder()
-                        .uri(URI.create(Config.URL_APP_UPDATE)).GET().build();
+                        .uri(URI.create(AppConstants.URL_APP_UPDATE)).GET().build();
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
             if (response.statusCode() == 200) {
                 ObjectMapper mapper = new ObjectMapper();
@@ -94,7 +95,7 @@ public class CheckAppVersionTask extends Task<ResponseBody<Release>> {
                         Release latestRelease = releaseList.getLatestRelease();
                         String version = latestRelease.getVersion();
                         double net = Double.parseDouble(version.replace(".",""));
-                        double now = Double.parseDouble(Config.version.replace(".",""));
+                        double now = Double.parseDouble(AppConstants.VERSION.replace(".",""));
                         if (checkSkip && Config.getSetting().getSkipVersion() != null){
                             double skip = Double.parseDouble(Config.getSetting().getSkipVersion().replace(".",""));
                             if (net <= skip){ //网络版本低于跳过版本

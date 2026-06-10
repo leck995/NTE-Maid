@@ -5,6 +5,7 @@ import atlantafx.base.controls.ToggleSwitch;
 import atlantafx.base.theme.Styles;
 import atlantafx.base.util.Animations;
 import cn.tealc.ntemaid.FXResourcesLoader;
+import cn.tealc.ntemaid.base.AppConstants;
 import cn.tealc.ntemaid.base.Config;
 import cn.tealc.ntemaid.base.notification.NotificationKey;
 import cn.tealc.ntemaid.base.notification.NotificationManager;
@@ -494,7 +495,7 @@ public class MainView implements Initializable, FxmlView<MainViewModel> {
         Hyperlink browserBtn = new Hyperlink(LanguageManager.getString("ui.setting.sponsor.dialog.browser"));
         browserBtn.setOnAction(actionEvent -> {
             try {
-                Desktop.getDesktop().browse(new URI(Config.URL_SUPPORT_LIST));
+                Desktop.getDesktop().browse(new URI(AppConstants.URL_SUPPORT_LIST));
             } catch (IOException | URISyntaxException e) {
                 LOG.error("打开赞助名单失败{}", e.getMessage());
             }

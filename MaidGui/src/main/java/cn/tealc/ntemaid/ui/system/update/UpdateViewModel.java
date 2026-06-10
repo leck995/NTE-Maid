@@ -1,6 +1,7 @@
 package cn.tealc.ntemaid.ui.system.update;
 
 
+import cn.tealc.ntemaid.base.AppConstants;
 import cn.tealc.ntemaid.base.Config;
 import cn.tealc.ntemaid.base.notification.NotificationManager;
 import cn.tealc.ntemaid.model.system.realease.Release;
@@ -37,7 +38,7 @@ public class UpdateViewModel implements ViewModel {
 
     public UpdateViewModel(Release release) {
         this.release = release;
-        version.set(String.format("V%s -> V%s", Config.version, release.getVersion()));
+        version.set(String.format("V%s -> V%s", AppConstants.VERSION, release.getVersion()));
         name.set(release.getName());
         description.set(release.getDescription());
         dateTime.set(release.getDate());

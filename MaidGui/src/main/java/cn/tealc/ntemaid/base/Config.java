@@ -10,23 +10,9 @@ import java.io.IOException;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
-/**
- * @description:
- * @author: Leck
- * @create: 2024-07-03 00:37
- */
+
 public class Config {
     private static final Logger log = LoggerFactory.getLogger(Config.class);
-    public static final String version = "1.0.0";
-    public static final String appAuthor = "Leck";
-
-    public static final String URL_SUPPORT_LIST = "https://www.yuque.com/chashuisuipian/sm05lg/ag7ct2or8ecz98cp";
-    public static final String URL_PHANTOM_GUIDE = "https://wave.tealc.fun/pages/advance/phantom.html";
-    public static final String URL_APP_UPDATE = "https://nte-update.999758.xyz/release.json";
-    public static final String URL_APP_UPDATE_DEV = "https://nte-update.999758.xyz/release-dev.json";
-    public static final String URL_GITHUB = "https://github.com/leck995/NTE-Maid";
-    public static final String URL_APP_WIKI = "";
-    public static final String URL_GITHUB_ISSUES = URL_GITHUB +"/issues";
     private static volatile Setting setting;
     public static ResourceBundle language;
 

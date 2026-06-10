@@ -1,5 +1,6 @@
 package cn.tealc.ntemaid.ui.system.update;
 
+import cn.tealc.ntemaid.base.AppConstants;
 import cn.tealc.ntemaid.base.Config;
 import cn.tealc.ntemaid.base.notification.NotificationKey;
 import cn.tealc.ntemaid.base.notification.NotificationManager;
@@ -141,7 +142,7 @@ public class UpdateView implements FxmlView<UpdateViewModel>, Initializable {
     @FXML
     void toReleaseWebsite(ActionEvent event) {
         try {
-            Desktop.getDesktop().browse(new URI(Config.URL_GITHUB));
+            Desktop.getDesktop().browse(new URI(AppConstants.URL_GITHUB));
         } catch (IOException e) {
             throw new RuntimeException(e);
         } catch (URISyntaxException e) {

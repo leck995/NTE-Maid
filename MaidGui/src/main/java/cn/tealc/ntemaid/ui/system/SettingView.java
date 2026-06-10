@@ -4,6 +4,7 @@ import atlantafx.base.controls.ToggleSwitch;
 import atlantafx.base.controls.ToggleSwitchSkin;
 import atlantafx.base.theme.Styles;
 import cn.tealc.ntemaid.FXResourcesLoader;
+import cn.tealc.ntemaid.base.AppConstants;
 import cn.tealc.ntemaid.base.Config;
 import cn.tealc.ntemaid.base.notification.NotificationKey;
 import cn.tealc.ntemaid.base.notification.NotificationManager;
@@ -143,8 +144,8 @@ public class SettingView implements FxmlView<SettingViewModel>, Initializable {
 
 
         appName.setText(Config.appTitle);
-        appVersion.setText(Config.version);
-        appAuthor.setText(Config.appAuthor);
+        appVersion.setText(AppConstants.VERSION);
+        appAuthor.setText(AppConstants.APP_AUTHOR);
 
 
         appIconIv.setFitWidth(80);
@@ -194,7 +195,7 @@ public class SettingView implements FxmlView<SettingViewModel>, Initializable {
     @FXML
     void toWeb(ActionEvent event) {
         try {
-            Desktop.getDesktop().browse(new URI(Config.URL_GITHUB));
+            Desktop.getDesktop().browse(new URI(AppConstants.URL_GITHUB));
         } catch (IOException | URISyntaxException e) {
             LOG.warn(e.getMessage());
         }
@@ -229,7 +230,7 @@ public class SettingView implements FxmlView<SettingViewModel>, Initializable {
     @FXML
     void toIssues(ActionEvent event) {
         try {
-            Desktop.getDesktop().browse(new URI(Config.URL_GITHUB_ISSUES));
+            Desktop.getDesktop().browse(new URI(AppConstants.URL_GITHUB_ISSUES));
         } catch (IOException | URISyntaxException e) {
             LOG.warn(e.getMessage());
         }
@@ -262,7 +263,7 @@ public class SettingView implements FxmlView<SettingViewModel>, Initializable {
         Hyperlink browserBtn = new Hyperlink(LanguageManager.getString("ui.setting.sponsor.dialog.browser"));
         browserBtn.setOnAction(actionEvent -> {
             try {
-                Desktop.getDesktop().browse(new URI(Config.URL_SUPPORT_LIST));
+                Desktop.getDesktop().browse(new URI(AppConstants.URL_SUPPORT_LIST));
             } catch (IOException | URISyntaxException e) {
                 LOG.error("打开赞助名单失败{}", e.getMessage());
             }
@@ -283,7 +284,7 @@ public class SettingView implements FxmlView<SettingViewModel>, Initializable {
     @FXML
     void toWiki(ActionEvent event) {
    /*     try {
-            Desktop.getDesktop().browse(new URI(Config.URL_APP_WIKI));
+            Desktop.getDesktop().browse(new URI(AppConstants.URL_APP_WIKI));
         } catch (IOException | URISyntaxException e) {
             LOG.info(e.getMessage());
         }*/
