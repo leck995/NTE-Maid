@@ -65,6 +65,38 @@
     -fx-font-size: 1.1em;
 }
 
+.gacha .pool-stats .ssr-accent {
+    -fx-text-fill: #e57373;
+    -fx-font-weight: bold;
+}
+.gacha .pool-stats .up-accent {
+    -fx-text-fill: #d4a574;
+    -fx-font-weight: bold;
+}
+.gacha .pool-stats .default-accent {
+    -fx-text-fill: #9e9e9e;
+}
+.gacha .pool-stats .luck-5 {
+    -fx-text-fill: #4caf50;
+    -fx-font-weight: bold;
+}
+.gacha .pool-stats .luck-4 {
+    -fx-text-fill: #8bc34a;
+    -fx-font-weight: bold;
+}
+.gacha .pool-stats .luck-3 {
+    -fx-text-fill: #ffb74d;
+    -fx-font-weight: bold;
+}
+.gacha .pool-stats .luck-2 {
+    -fx-text-fill: #ef5350;
+    -fx-font-weight: bold;
+}
+.gacha .pool-stats .luck-1 {
+    -fx-text-fill: #c62828;
+    -fx-font-weight: bold;
+}
+
 /* ----- 抽卡列表 ----- */
 .gacha .gacha-list {
     -fx-background-color: transparent;
@@ -131,10 +163,10 @@
     -fx-padding: 2px;
 }
 .gacha .gacha-list .role-cell .progress-bar.up > .bar {
-    -fx-background-color: #ca3e3e;
+    -fx-background-color: linear-gradient(to right, #ffcdd2, #ef5350, #b71c1c);
 }
 .gacha .gacha-list .role-cell .progress-bar.unup > .bar {
-    -fx-background-color: #269578;
+    -fx-background-color: linear-gradient(to right, #c8e6c9, #66bb6a, #1b5e20);
 }
 
 

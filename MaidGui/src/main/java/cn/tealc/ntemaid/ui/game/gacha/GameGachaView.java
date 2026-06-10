@@ -144,43 +144,46 @@ public class GameGachaView implements FxmlView<GameGachaViewModel>, Initializabl
 
         float ssrPercent = pool.getCount() > 0 ? (float) pool.getSsrCount() / (float) pool.getCount() : 0;
         Label ssrLabel = new Label("S级数量");
+        ssrLabel.getStyleClass().add("ssr-accent");
         int itemCount = pool.getItems() != null ? pool.getItems().size() : 0;
-        Label ssrCountLabel = new Label(String.format("%d[%.2f]", itemCount, ssrPercent));
+        Label ssrCountLabel = new Label(String.format("%d [%.2f]", itemCount, ssrPercent));
+        ssrCountLabel.getStyleClass().add("ssr-accent");
         HBox ssrHbox = new HBox(ssrLabel, new Spacer(), ssrCountLabel);
         ssrHbox.getStyleClass().add("pool-stats");
 
         Label ssrAvgLabel = new Label("S级平均");
+        ssrAvgLabel.getStyleClass().add("ssr-accent");
         Label ssrAvgCountLabel = new Label(String.format("%.2f", pool.getSsrAvg()));
+        ssrAvgCountLabel.getStyleClass().add("ssr-accent");
         HBox ssrAvgHbox = new HBox(ssrAvgLabel, new Spacer(), ssrAvgCountLabel);
         ssrAvgHbox.getStyleClass().add("pool-stats");
-
-        Label statLabel = new Label(String.format("总计 %d 抽 | 五星 %d 个 | 平均 %.1f 抽 | %s",
-                pool.getCount(), pool.getSsrCount(),
-                pool.getSsrAvg(), luckyTypeName(pool.getLuckyType())));
-        statLabel.getStyleClass().add("pool-stats");
-
-
 
         if (pool.getType() == LocalGachaType.WEAPON_POOL) {
             int upTotal = (int) pool.getUpSsrCount() + (int) pool.getNoUpSsrCount();
             float upPercent = upTotal > 0 ? (float) pool.getUpSsrCount() / (float) upTotal : 0;
             Label upLabel = new Label("限定数量");
-            Label upCountLabel = new Label(String.format("%.0f[%.2f]", pool.getUpSsrCount(), upPercent));
+            upLabel.getStyleClass().add("up-accent");
+            Label upCountLabel = new Label(String.format("%.0f [%.2f]", pool.getUpSsrCount(), upPercent));
+            upCountLabel.getStyleClass().add("up-accent");
             HBox upHbox = new HBox(upLabel, new Spacer(), upCountLabel);
             upHbox.getStyleClass().add("pool-stats");
 
             Label upAvgLabel = new Label("限定平均");
+            upAvgLabel.getStyleClass().add("up-accent");
             Label upAvgCountLabel = new Label(String.format("%.2f", pool.getUpSsrAvg()));
+            upAvgCountLabel.getStyleClass().add("up-accent");
             HBox upAvgHbox = new HBox(upAvgLabel, new Spacer(), upAvgCountLabel);
             upAvgHbox.getStyleClass().add("pool-stats");
 
             Label noUpLabel = new Label("常驻数量");
-            Label noUpCountLabel = new Label(String.valueOf((int) pool.getNoUpSsrCount()));
+            noUpLabel.getStyleClass().add("default-accent");
+            Label noUpCountLabel = new Label(String.format("%.0f", pool.getNoUpSsrCount()));
+            noUpCountLabel.getStyleClass().add("default-accent");
             HBox noUpHbox = new HBox(noUpLabel, new Spacer(), noUpCountLabel);
             noUpHbox.getStyleClass().add("pool-stats");
 
-            center.getChildren().addAll(ssrHbox,upHbox, noUpHbox,upAvgHbox,ssrAvgHbox );
-        }else {
+            center.getChildren().addAll(ssrHbox, ssrAvgHbox, upHbox, upAvgHbox, noUpHbox);
+        } else {
             center.getChildren().addAll(ssrHbox, ssrAvgHbox);
         }
 
