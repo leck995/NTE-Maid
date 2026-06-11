@@ -104,7 +104,12 @@ public class AppUpdateDownloadTask extends Task<ResponseBody<Boolean>> {
                     updateProgress(totalBytesRead, contentLength);
                 }
             }
+            if (saveFile.length() != contentLength) {
+                LOG.error("文件大小不匹配: expected={}, actual={}", contentLength, saveFile.length());
+                return ResponseBody.create(201, "文件下载不完整", false);
+            }
             if (checkMd5()) {
+                LOG.error("MD5验证通过，开始安装");
                 updateAppClasspathAdvanced(saveFile.getName());
                 return ResponseBody.create(200, "准备安装", true);
             }
