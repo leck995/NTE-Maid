@@ -35,10 +35,13 @@ public class MusicPlayerEvent implements Consumer<String> {
         }else if (row.contains(ONLINE_TEAM_QUITE)){
             stopUserPlayer = false;
         }else if (row.contains(Off_VEHICLE) || row.contains(BEGIN_TRANSFER) || row.contains(ENDPLAY_RACING)){
+            if(stopUserPlayer)
+                return;
             player.pauseWithFadeOut();
         }else if (row.contains(ON_VEHICLE)){
-            if (!stopUserPlayer)
-                player.playWithFadeIn();
+            if (stopUserPlayer)
+                return;
+            player.playWithFadeIn();
         }else if (row.contains(MUSIC_PLAYING)){
             stopGameFirstMusic();
         }
@@ -52,9 +55,6 @@ public class MusicPlayerEvent implements Consumer<String> {
      */
     public void stopGameFirstMusic() {
         Win32KeySender win32KeySender = new Win32KeySender();
-        win32KeySender.clickKey(Win32KeySender.VirtualKey.F,Duration.millis(1500));
-
-
-
+        win32KeySender.clickKey(Win32KeySender.VirtualKey.DIGIT2,Duration.millis(1500));
     }
 }
