@@ -4,8 +4,8 @@ public final class AppConstants {
     private AppConstants() {}
     public static final String VERSION = "1.1.0";
     public static final String APP_AUTHOR = "Leck";
-    public static final String URL_APP_UPDATE = "https://nte-update.999758.xyz/release.json";
-    public static final String URL_APP_UPDATE_DEV = "https://nte-update.999758.xyz/release-dev.json";
+    public static final String URL_APP_UPDATE = "https://cdn.999758.xyz/nte/release.json";
+    public static final String URL_APP_UPDATE_DEV = "https://cdn.999758.xyz/nte/release-dev.json";
     public static final String URL_GITHUB = "https://github.com/leck995/NTE-Maid";
     public static final String URL_GITHUB_ISSUES = URL_GITHUB + "/issues";
     public static final String URL_SUPPORT_LIST = "";

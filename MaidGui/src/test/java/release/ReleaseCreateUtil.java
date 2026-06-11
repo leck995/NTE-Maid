@@ -41,7 +41,8 @@ public class ReleaseCreateUtil {
                 2. 新增塔吉多签到
                 3. 播放器歌曲添加到歌单支持多选
                 4. 新增探索指南自动跳转到每日任务
-                5. 修复播放器在联机状态下的BUG
+                5. 优化自动更新体验
+                6. 修复播放器在联机状态下的BUG
                 
                 """;
         boolean latestForce = false; //是否是强制更新
@@ -52,7 +53,10 @@ public class ReleaseCreateUtil {
         String latestMd5 = DigestUtils.md5Hex(new FileInputStream(latestFile));
         //https://api.github.com/repos/leck995/WutheringWavesTool/releases/latest
         //如果有github,则第一个放github下载链接
-        String[] latestUrls = {"https://nte-update.999758.xyz/NTEMaid-1.1.0.jar"};
+        String[] latestUrls = {
+                "https://release.999758.xyz/nte/NTEMaid-1.1.0.jar",
+                "https://cdn.999758.xyz/nte/NTEMaid-1.1.0.jar"
+        };
         String warning = "更新警告";//强制更新警告
         boolean isPre = false;
         Release latestRelease = new Release(latestName, latestVersion, latestDescription, dateTime, latestForce, latestUrls, latestMd5, warning, isPre);

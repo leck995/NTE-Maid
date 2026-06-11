@@ -1,7 +1,6 @@
 package cn.tealc.ntemaid.ui.system.update;
 
 import cn.tealc.ntemaid.base.AppConstants;
-import cn.tealc.ntemaid.base.Config;
 import cn.tealc.ntemaid.base.notification.NotificationKey;
 import cn.tealc.ntemaid.base.notification.NotificationManager;
 import cn.tealc.ntemaid.util.LanguageManager;
@@ -9,12 +8,14 @@ import cn.tealc.teafx.utils.message.MessageInfo;
 import de.saxsys.mvvmfx.FxmlView;
 import de.saxsys.mvvmfx.InjectViewModel;
 import javafx.application.Platform;
+import javafx.collections.ListChangeListener;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextArea;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
@@ -73,6 +74,10 @@ public class UpdateView implements FxmlView<UpdateViewModel>, Initializable {
     private Label forceLabel;
     @FXML
     private Label version;
+    @FXML
+    private HBox urlChoiceGroup;
+
+    private ToggleGroup toggleGroup = new ToggleGroup();
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -84,9 +89,46 @@ public class UpdateView implements FxmlView<UpdateViewModel>, Initializable {
         progressLabel.textProperty().bind(viewModel.progressLabelProperty());
         dateTime.textProperty().bind(viewModel.dateTimeProperty());
         progressBar.progressProperty().bind(viewModel.progressValueProperty());
-        cancelBtn.disableProperty().bind(viewModel.downloadingProperty());
         downloadBtn.disableProperty().bind(viewModel.downloadingProperty());
         forceLabel.textProperty().bind(viewModel.forceLabelProperty());
+
+
+        MenuItem laterMenuItem = cancelBtn.getItems().get(0);
+        MenuItem skipMenuItem = cancelBtn.getItems().get(1);
+        viewModel.downloadingProperty().addListener((obs, old, downloading) -> {
+            cancelBtn.getItems().clear();
+            if (downloading) {
+                MenuItem cancelItem = new MenuItem("取消下载");
+                cancelItem.setOnAction(e -> viewModel.cancelDownload());
+                cancelBtn.getItems().add(cancelItem);
+                urlChoiceGroup.setDisable(true);
+            } else {
+                cancelBtn.getItems().addAll(laterMenuItem, skipMenuItem);
+                urlChoiceGroup.setDisable(false);
+            }
+        });
+
+        viewModel.getUrls().addListener((ListChangeListener<? super String>) change -> {
+            urlChoiceGroup.getChildren().clear();
+            for (int i = 0; i < change.getList().size(); i++) {
+                String row = change.getList().get(i);
+                RadioButton radioButton = new RadioButton("下载源" + (i+1));
+                if (row.contains("cdn")){
+                    radioButton.setText("镜像源");
+                }else if (row.contains("release")){
+                    radioButton.setText("默认源");
+                }
+                radioButton.setToggleGroup(toggleGroup);
+                if (i == 0){
+                    radioButton.setSelected(true);
+                }
+                int finalI = i;
+                radioButton.setOnAction(event -> viewModel.setUrlIndex(finalI));
+                urlChoiceGroup.getChildren().add(radioButton);
+            }
+        });
+
+        viewModel.initialize();
     }
 
     private void initTitleBar() {
@@ -136,7 +178,7 @@ public class UpdateView implements FxmlView<UpdateViewModel>, Initializable {
 
     @FXML
     void startUpdate(ActionEvent event) {
-        viewModel.downloadZip();
+        viewModel.strtUpdateVersion();
     }
 
     @FXML

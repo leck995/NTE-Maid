@@ -1,8 +1,12 @@
 package cn.tealc.ntemaid.thread.system.update;
 
-import cn.tealc.ntemaid.base.Config;
+import cn.tealc.ntemaid.base.AppInjector;
+import cn.tealc.ntemaid.base.notification.NotificationKey;
+import cn.tealc.ntemaid.base.notification.NotificationManager;
 import cn.tealc.ntemaid.model.system.realease.Release;
 import cn.tealc.teafx.utils.ResponseBody;
+import cn.tealc.teafx.utils.message.MessageInfo;
+import javafx.application.Platform;
 import javafx.concurrent.Task;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.slf4j.Logger;
@@ -26,62 +30,48 @@ import java.util.List;
  */
 public class AppUpdateDownloadTask extends Task<ResponseBody<Boolean>> {
     private static final Logger LOG = LoggerFactory.getLogger(AppUpdateDownloadTask.class);
-    private static final int MAX_RETRIES = 3;
 
-    private final File saveFile;
+    private final File targetFile;
     private final Release release;
-    private String url;
+    private final String url;
 
-    public AppUpdateDownloadTask(Release release) {
+    public AppUpdateDownloadTask(Release release,int urlIndex) {
         this.release = release;
         LOG.info(release.getMd5());
         String fileName = String.format("NTEMaid-%s.jar", release.getVersion());
-        saveFile = new File("app/" + fileName);
-        if (release.getUrls().length == 1) {
-            url = release.getUrls()[0];
-        } else if (release.getUrls().length > 1) {
-            if (Config.getSetting().getResourceSource() == 0) {
-                url = release.getUrls()[0];
-            } else {
-                url = release.getUrls()[1];
-            }
-        }
+        targetFile = new File("app/" + fileName);
+        url = release.getUrls()[urlIndex];
+        LOG.info("更新网站: {}", url);
     }
 
     @Override
     protected ResponseBody<Boolean> call() throws Exception {
         updateProgress(0, 1);
-        if (saveFile.exists()) {
-            String md5 = DigestUtils.md5Hex(new FileInputStream(saveFile));
+        if (targetFile.exists()) {
+            String md5 = DigestUtils.md5Hex(new FileInputStream(targetFile));
             LOG.info("本地MD5:{},网络MD5:{}",md5,release.getMd5());
-
             if (md5.equals(release.getMd5())) {
                 LOG.info("本地存在新版本文件，进行安装");
-                updateAppClasspathAdvanced(saveFile.getName());
+                updateAppClasspathAdvanced(targetFile.getName());
                 return ResponseBody.create(200, "准备安装", true);
             } else {
-                deleteZip();
+                deleteFile();
             }
         }
 
-        for (int attempt = 1; attempt <= MAX_RETRIES; attempt++) {
-            LOG.info("第 {} 次下载尝试", attempt);
-            ResponseBody<Boolean> result = doDownload();
-            if (result.getCode() == 200) {
-                return result;
-            }
-            LOG.warn("第 {} 次下载失败: {}", attempt, result.getMsg());
-            deleteZip();
-            if (attempt == MAX_RETRIES) {
-                return ResponseBody.create(-1, "下载失败，已重试 " + MAX_RETRIES + " 次: " + result.getMsg(), false);
-            }
-        }
-        return ResponseBody.create(-1, "下载失败", false);
+        ResponseBody<Boolean> result = doDownload();
+        return result;
     }
 
     private ResponseBody<Boolean> doDownload() {
-        try (HttpClient client = HttpClient.newHttpClient()) {
-            HttpRequest request = HttpRequest.newBuilder().uri(URI.create(url)).timeout(Duration.ofSeconds(5)).build();
+        HttpClient client = AppInjector.getInstance(HttpClient.class);
+        try {
+            HttpRequest request = HttpRequest
+                    .newBuilder()
+                    .uri(URI.create(url))
+                    .timeout(Duration.ofSeconds(10))
+                    .header("Accept-Encoding", "identity")
+                    .build();
             HttpResponse<InputStream> response = client.send(request, HttpResponse.BodyHandlers.ofInputStream());
             if (response.statusCode() != 200) {
                 LOG.error("下载安装包失败,错误代码: {}", response.statusCode());
@@ -90,27 +80,36 @@ public class AppUpdateDownloadTask extends Task<ResponseBody<Boolean>> {
             long contentLength = response.headers().firstValueAsLong("Content-Length").orElse(-1L);
             if (contentLength <= 0) {
                 LOG.error("无法获取文件大小");
-                return ResponseBody.create(201, "无法获取文件大小", false);
+                return ResponseBody.create(201, "下载文件大小校验失败，请重新尝试", false);
             }
             updateTitle(String.format("%d M", contentLength / 1000 / 1000));
             try (InputStream inputStream = response.body();
-                 FileOutputStream outputStream = new FileOutputStream(saveFile)) {
-                byte[] buffer = new byte[4096];
+                 FileOutputStream outputStream = new FileOutputStream(targetFile)) {
+                byte[] buffer = new byte[65536];
                 int bytesRead;
                 long totalBytesRead = 0;
+                long lastUpdate = 0;
                 while ((bytesRead = inputStream.read(buffer)) != -1) {
+                    if (isCancelled()) {
+                        deleteFile();
+                        return ResponseBody.create(-1, "下载已取消", false);
+                    }
                     outputStream.write(buffer, 0, bytesRead);
                     totalBytesRead += bytesRead;
-                    updateProgress(totalBytesRead, contentLength);
+                    if (totalBytesRead - lastUpdate >= 524288) {
+                        updateProgress(totalBytesRead, contentLength);
+                        lastUpdate = totalBytesRead;
+                    }
                 }
+                updateProgress(totalBytesRead, contentLength);
             }
-            if (saveFile.length() != contentLength) {
-                LOG.error("文件大小不匹配: expected={}, actual={}", contentLength, saveFile.length());
+            if (targetFile.length() != contentLength) {
+                LOG.error("文件大小不匹配: expected={}, actual={}", contentLength, targetFile.length());
                 return ResponseBody.create(201, "文件下载不完整", false);
             }
             if (checkMd5()) {
-                LOG.error("MD5验证通过，开始安装");
-                updateAppClasspathAdvanced(saveFile.getName());
+                LOG.info("MD5验证通过，开始安装");
+                updateAppClasspathAdvanced(targetFile.getName());
                 return ResponseBody.create(200, "准备安装", true);
             }
             return ResponseBody.create(201, "校验安装包失败", false);
@@ -124,7 +123,7 @@ public class AppUpdateDownloadTask extends Task<ResponseBody<Boolean>> {
     }
 
     private boolean checkMd5() {
-        try (FileInputStream inputStream = new FileInputStream(saveFile)) {
+        try (FileInputStream inputStream = new FileInputStream(targetFile)) {
             String md5 = DigestUtils.md5Hex(inputStream);
             return md5.equals(release.getMd5());
         } catch (IOException e) {
@@ -157,9 +156,9 @@ public class AppUpdateDownloadTask extends Task<ResponseBody<Boolean>> {
     }
 
 
-    private void deleteZip() {
-        if (saveFile.exists()) {
-            saveFile.delete();
+    private void deleteFile() {
+        if (targetFile.exists()) {
+            targetFile.delete();
         }
     }
 }

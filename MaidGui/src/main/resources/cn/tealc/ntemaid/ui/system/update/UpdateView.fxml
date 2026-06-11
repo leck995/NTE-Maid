@@ -16,7 +16,7 @@
 <?import javafx.scene.shape.SVGPath?>
 <?import org.kordamp.ikonli.javafx.FontIcon?>
 
-<StackPane fx:id="root" prefHeight="600.0" prefWidth="1000.0" styleClass="update" stylesheets="@../../../css/Update.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cn.tealc.ntemaid.ui.system.update.UpdateView">
+<StackPane fx:id="root" prefHeight="600.0" prefWidth="1000.0" styleClass="update" stylesheets="@../../../css/Update.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cn.tealc.ntemaid.ui.system.update.UpdateView">
    <children>
       <AnchorPane prefHeight="400.0" prefWidth="600.0">
          <children>
@@ -83,6 +83,12 @@
                         <Hyperlink onAction="#toReleaseWebsite" styleClass="text-caption" text="%ui.update.left.grid.website.key" />
                      </children>
                   </HBox>
+               </children>
+            </VBox>
+            <VBox prefWidth="250.0" spacing="8.0" AnchorPane.bottomAnchor="160.0" AnchorPane.leftAnchor="20.0">
+               <children>
+                  <Label text="速度慢可尝试切换下载源" />
+                  <HBox fx:id="urlChoiceGroup" prefWidth="250.0" spacing="4.0" />
                </children>
             </VBox>
             <VBox alignment="TOP_CENTER" prefWidth="250.0" spacing="5.0" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="20.0">
