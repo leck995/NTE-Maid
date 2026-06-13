@@ -2,10 +2,10 @@ package cn.tealc.ntemaid.ui.taygedo.gacha;
 
 import cn.tealc.ntemaid.model.game.Character;
 import cn.tealc.ntemaid.model.game.Weapon;
-import cn.tealc.ntemaid.model.game.gacha.LocalGachaItem;
-import cn.tealc.ntemaid.model.game.gacha.LocalGachaType;
+import cn.tealc.ntemaid.model.game.gacha.local.LocalGachaItem;
+import cn.tealc.ntemaid.model.game.gacha.local.LocalGachaType;
 import cn.tealc.ntemaid.model.taygedo.TaygedoAccount;
-import cn.tealc.ntemaid.service.LocalGachaDataService;
+import cn.tealc.ntemaid.service.gacha.LocalGachaDataService;
 import cn.tealc.ntemaid.service.TaygedoAccountService;
 import cn.tealc.taygedo.TaygedoApi;
 import cn.tealc.taygedo.TaygedoException;

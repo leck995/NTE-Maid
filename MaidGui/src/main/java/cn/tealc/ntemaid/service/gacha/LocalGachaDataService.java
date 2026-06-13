@@ -1,8 +1,8 @@
-package cn.tealc.ntemaid.service;
+package cn.tealc.ntemaid.service.gacha;
 
 import cn.tealc.ntemaid.dao.LocalGachaDataDao;
-import cn.tealc.ntemaid.model.game.gacha.LocalGachaItem;
-import cn.tealc.ntemaid.model.game.gacha.LocalGachaType;
+import cn.tealc.ntemaid.model.game.gacha.local.LocalGachaItem;
+import cn.tealc.ntemaid.model.game.gacha.local.LocalGachaType;
 import cn.tealc.taygedo.model.GameGachaItem;
 import cn.tealc.taygedo.model.GameGachaPool;
 import cn.tealc.taygedo.model.GameGachaResult;

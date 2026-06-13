@@ -1,4 +1,4 @@
-package cn.tealc.ntemaid.model.game.gacha;
+package cn.tealc.ntemaid.model.game.gacha.local;
 
 import java.util.List;
 

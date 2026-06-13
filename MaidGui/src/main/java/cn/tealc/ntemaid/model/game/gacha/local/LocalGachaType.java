@@ -1,4 +1,4 @@
-package cn.tealc.ntemaid.model.game.gacha;
+package cn.tealc.ntemaid.model.game.gacha.local;
 
 public enum LocalGachaType {
     UP_ROLE_POOL(0), DEFAULT_ROLE_POOL(1), WEAPON_POOL(2),UNKNOWN(-1);

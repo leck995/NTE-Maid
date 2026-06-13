@@ -1,8 +1,11 @@
-package cn.tealc.ntemaid.model.game.gacha;
+package cn.tealc.ntemaid.model.game.gacha.common;
+
+import cn.tealc.ntemaid.model.game.gacha.local.LocalGachaItem;
+import cn.tealc.ntemaid.model.game.gacha.local.LocalGachaType;
 
 import java.util.List;
 
-public class LocalGachaPool {
+public class CommonGachaPool {
     private String poolName;
     private LocalGachaType type;
     private int count;
@@ -16,7 +19,7 @@ public class LocalGachaPool {
     private int luckyType;//抽卡运气
     private String time;//抽卡起始结束时间
 
-    private List<LocalGachaItem> items;
+    private List<CommonGachaItem> items;
 
     public String getPoolName() {
         return poolName;
@@ -58,11 +61,11 @@ public class LocalGachaPool {
         this.ssrAvg = ssrAvg;
     }
 
-    public List<LocalGachaItem> getItems() {
+    public List<CommonGachaItem> getItems() {
         return items;
     }
 
-    public void setItems(List<LocalGachaItem> items) {
+    public void setItems(List<CommonGachaItem> items) {
         this.items = items;
     }
 

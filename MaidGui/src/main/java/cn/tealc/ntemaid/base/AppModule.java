@@ -4,6 +4,7 @@ import cn.tealc.ntemaid.StageInitializer;
 import cn.tealc.ntemaid.dao.*;
 import cn.tealc.ntemaid.repository.NavRepository;
 import cn.tealc.ntemaid.service.*;
+import cn.tealc.ntemaid.service.gacha.LocalGachaDataService;
 import cn.tealc.ntemaid.service.impl.ConfigServiceImpl;
 import cn.tealc.ntemaid.service.impl.GameTimeServiceImpl;
 import cn.tealc.ntemaid.ui.tray.TrayIconManager;

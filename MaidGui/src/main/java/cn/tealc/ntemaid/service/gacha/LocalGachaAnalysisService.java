@@ -1,9 +1,9 @@
-package cn.tealc.ntemaid.service;
+package cn.tealc.ntemaid.service.gacha;
 
-import cn.tealc.ntemaid.model.game.gacha.LocalGachaData;
-import cn.tealc.ntemaid.model.game.gacha.LocalGachaItem;
-import cn.tealc.ntemaid.model.game.gacha.LocalGachaPool;
-import cn.tealc.ntemaid.model.game.gacha.LocalGachaType;
+import cn.tealc.ntemaid.model.game.gacha.local.LocalGachaData;
+import cn.tealc.ntemaid.model.game.gacha.local.LocalGachaItem;
+import cn.tealc.ntemaid.model.game.gacha.local.LocalGachaPool;
+import cn.tealc.ntemaid.model.game.gacha.local.LocalGachaType;
 import com.google.inject.Inject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

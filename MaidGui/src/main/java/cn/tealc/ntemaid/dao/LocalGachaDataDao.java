@@ -1,6 +1,6 @@
 package cn.tealc.ntemaid.dao;
 
-import cn.tealc.ntemaid.model.game.gacha.LocalGachaItem;
+import cn.tealc.ntemaid.model.game.gacha.local.LocalGachaItem;
 import org.apache.commons.dbutils.BasicRowProcessor;
 import org.apache.commons.dbutils.BeanProcessor;
 import org.apache.commons.dbutils.QueryRunner;
