@@ -10,6 +10,7 @@ public final class AppConstants {
     public static final String URL_GITHUB_ISSUES = URL_GITHUB + "/issues";
     public static final String URL_SUPPORT_LIST = "";
     public static final String URL_APP_WIKI = "";
+    public static final String URL_WIKI_GACHA_GET = "";
 
     public static final String URL_HOST_SERVER = "https://api.999758.xyz:20141";
     //public static final String URL_HOST_SERVER = "http://127.0.0.1:8080";

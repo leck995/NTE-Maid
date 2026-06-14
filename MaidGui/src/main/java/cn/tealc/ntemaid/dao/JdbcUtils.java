@@ -126,7 +126,7 @@ public class JdbcUtils {
                 );
 
                 CREATE UNIQUE INDEX IF NOT EXISTS idx_common_gacha_unique
-                ON common_gacha(player_id, time, sort);
+                ON game_common_gacha(player_id, time, sort);
 
                 CREATE TABLE IF NOT EXISTS taygedo_account (
                     phone VARCHAR(20) PRIMARY KEY,

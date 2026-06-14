@@ -2,6 +2,7 @@ package cn.tealc.ntemaid.ui.game.gacha;
 
 import atlantafx.base.controls.Spacer;
 import atlantafx.base.theme.Styles;
+import cn.tealc.ntemaid.base.AppConstants;
 import cn.tealc.ntemaid.base.notification.NotificationManager;
 import cn.tealc.ntemaid.model.game.gacha.common.CommonGachaData;
 import cn.tealc.ntemaid.model.game.gacha.common.CommonGachaItem;
@@ -17,6 +18,7 @@ import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
@@ -24,6 +26,7 @@ import javafx.scene.control.ProgressBar;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.Separator;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TextFormatter;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
@@ -33,7 +36,10 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 
+import java.awt.Desktop;
 import java.io.File;
+import java.io.IOException;
+import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -50,34 +56,43 @@ public class GameGachaCommonView implements FxmlView<GameGachaCommonViewModel>, 
     @FXML private AnchorPane root;
     @FXML private VBox contentPane;
     @FXML private VBox emptyPane;
-    @FXML private Label statusLabel;
     @FXML private Label luckLabel;
     @FXML private HBox poolCardsPane;
     @FXML private ProgressIndicator loadingIndicator;
-    @FXML private javafx.scene.control.ComboBox<?> accountCombo;
-    @FXML private Button refreshBtn;
+    @FXML private ComboBox<String> accountCombo;
+    @FXML private Button deleteBtn;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         luckLabel.setVisible(false);
-        accountCombo.setVisible(false);
-        accountCombo.setManaged(false);
-        refreshBtn.setVisible(false);
-        refreshBtn.setManaged(false);
-
         emptyPane.setVisible(false);
         emptyPane.setManaged(false);
-
         poolCardsPane.setVisible(false);
         poolCardsPane.setManaged(false);
 
         loadingIndicator.visibleProperty().bind(viewModel.loadingProperty());
 
-        viewModel.statusMessageProperty().addListener((obs, old, val) -> {
-            boolean hasMsg = val != null && !val.isEmpty();
-            statusLabel.setVisible(hasMsg);
-            statusLabel.setManaged(hasMsg);
-            statusLabel.setText(val);
+        accountCombo.setItems(viewModel.playerIdsProperty());
+        accountCombo.valueProperty().addListener((obs, old, val) -> {
+            if (val != null && !val.equals(viewModel.selectedPlayerIdProperty().get())) {
+                viewModel.selectPlayer(val);
+            }
+        });
+        viewModel.selectedPlayerIdProperty().addListener((obs, old, val) -> {
+            if (val != null && !val.isEmpty() && !val.equals(accountCombo.getValue())) {
+                accountCombo.setValue(val);
+            }
+        });
+
+        viewModel.hasDataProperty().addListener((obs, old, has) -> {
+            boolean show = has != null && has;
+            accountCombo.setVisible(show);
+            accountCombo.setManaged(show);
+            deleteBtn.setVisible(show);
+            deleteBtn.setManaged(show);
+            emptyPane.setVisible(!show);
+            emptyPane.setManaged(!show);
+            emptyPane.setMouseTransparent(!show);
         });
 
         viewModel.gachaDataProperty().addListener((obs, old, data) -> {
@@ -92,10 +107,40 @@ public class GameGachaCommonView implements FxmlView<GameGachaCommonViewModel>, 
                 poolCardsPane.setManaged(false);
             }
         });
+
+        viewModel.loadPlayerIds();
+        viewModel.initSelectPlayer();
     }
 
     @FXML
-    void onRefresh(ActionEvent event) {
+    void onOpenWiki(ActionEvent event) {
+        try {
+            Desktop.getDesktop().browse(URI.create(AppConstants.URL_WIKI_GACHA_GET));
+        } catch (IOException e) {
+            // ignore
+        }
+    }
+
+    @FXML
+    void onDelete(ActionEvent event) {
+        String playerId = accountCombo.getValue();
+        if (playerId == null || playerId.isEmpty()) return;
+
+        JFXDialogLayout layout = new JFXDialogLayout();
+        Label title = new Label("确认删除");
+        title.getStyleClass().add(Styles.TITLE_3);
+        layout.setHeading(title);
+
+        Label body = new Label("确定要删除玩家 " + playerId + " 的所有抽卡数据吗？此操作不可恢复。");
+        layout.setBody(body);
+
+        Button ok = new Button("删除");
+        ok.getStyleClass().add(Styles.DANGER);
+        ok.setOnAction(e -> viewModel.deleteCurrentPlayer(playerId));
+        Button cancel = new Button("取消");
+        cancel.setCancelButton(true);
+        layout.setActions(ok, cancel);
+        NotificationManager.dialog(layout);
     }
 
     @FXML
@@ -110,23 +155,24 @@ public class GameGachaCommonView implements FxmlView<GameGachaCommonViewModel>, 
         }
 
         JFXDialogLayout layout = new JFXDialogLayout();
-        Label title = new Label("设置游戏ID");
-        title.getStyleClass().add(Styles.TITLE_2);
+        Label title = new Label("导入抽卡数据");
+        title.getStyleClass().add(Styles.TITLE_3);
         layout.setHeading(title);
 
         TextField field = new TextField();
-        field.setPromptText("输入玩家ID（可选）");
-        Label hint = new Label("请正确输入玩家ID，如果输错了可能会影响后续记录保存");
+        field.setPromptText("输入玩家ID（必填，仅数字）");
+        field.setTextFormatter(new TextFormatter<>(change ->
+                change.getControlNewText().matches("\\d*") ? change : null));
+
+        Label hint = new Label("玩家ID不能为空，只允许输入数字");
         hint.getStyleClass().add(Styles.TEXT_SUBTLE);
         VBox body = new VBox(8.0, field, hint);
         layout.setBody(body);
 
         Button ok = new Button("确认");
         ok.getStyleClass().add(Styles.ACCENT);
-        ok.setOnAction(e -> {
-            String playerId = field.getText() != null ? field.getText().trim() : "";
-            viewModel.importAndAnalyze(file, playerId);
-        });
+        ok.disableProperty().bind(field.textProperty().isEmpty());
+        ok.setOnAction(e -> viewModel.importAndAnalyze(file, field.getText().trim()));
         Button cancel = new Button("取消");
         cancel.setCancelButton(true);
         layout.setActions(ok, cancel);
@@ -151,7 +197,6 @@ public class GameGachaCommonView implements FxmlView<GameGachaCommonViewModel>, 
         card.setPadding(new Insets(12));
         HBox.setHgrow(card, Priority.ALWAYS);
 
-        // ---- 头部 ----
         VBox header = new VBox(2);
         Label poolNameLabel = new Label(pool.getPoolName());
         poolNameLabel.getStyleClass().add("pool-title");
@@ -167,20 +212,14 @@ public class GameGachaCommonView implements FxmlView<GameGachaCommonViewModel>, 
         dateLabel.getStyleClass().add("pool-date");
         header.getChildren().addAll(titleRow, countLabel, dateLabel);
 
-        // ---- 中部统计 ----
         VBox stats = new VBox(5);
-
-        // 当前已垫抽数
         stats.getChildren().add(buildStatRow("四星已垫", String.valueOf(pool.getNoUpSrSize()), "sr-accent"));
         stats.getChildren().add(buildStatRow("五星已垫", String.valueOf(pool.getNoUpSsrSize()), "sr-accent"));
-
-        // 五星
         stats.getChildren().add(buildStatRow("五星数量", String.format("%d [%.2f%%]",
                 pool.getSsrCount(), pct(pool.getSsrCount(), pool.getTotalCount())), "ssr-accent"));
         stats.getChildren().add(buildStatRow("五星平均", String.format("%.2f",
                 pool.getSsrAvg()), "ssr-accent"));
 
-        // UP 统计（仅武器池）
         if (pool.getType() == LocalGachaType.WEAPON_POOL) {
             int upTotal = pool.getUpSsrCount() + (int) pool.getNoUpSsrCount();
             stats.getChildren().add(buildStatRow("限定数量/不歪率", String.format("%d [%.2f%%]",
@@ -189,7 +228,6 @@ public class GameGachaCommonView implements FxmlView<GameGachaCommonViewModel>, 
                     pool.getUpSsrAvg()), "up-accent"));
         }
 
-        // ---- 底部：五星列表（时间倒序，最新在前） ----
         List<CommonGachaItem> reversedList = new ArrayList<>(
                 pool.getSsrDataList() != null ? pool.getSsrDataList() : List.of());
         java.util.Collections.reverse(reversedList);
@@ -219,7 +257,6 @@ public class GameGachaCommonView implements FxmlView<GameGachaCommonViewModel>, 
         return total > 0 ? (double) part / total * 100 : 0;
     }
 
-    /** 获取物品立绘，fork_ 开头走弧盘路径，其余走角色路径 */
     private Image getItemImage(String itemId) {
         boolean fork = itemId != null && itemId.startsWith("fork_");
         String base = fork ? IMG_BASE_FORK : IMG_BASE_TALL;
@@ -227,7 +264,6 @@ public class GameGachaCommonView implements FxmlView<GameGachaCommonViewModel>, 
         return viewModel.getImageCacheManager().get(base + itemId + ext, 0, 42, true, true);
     }
 
-    /** 五星条目单元格：立绘 + 名称/日期 + UP标签/出货抽数 + 进度条 */
     private class SsrItemListCell extends ListCell<CommonGachaItem> {
         private final BorderPane root;
         private final ImageView iv;
@@ -241,7 +277,6 @@ public class GameGachaCommonView implements FxmlView<GameGachaCommonViewModel>, 
         SsrItemListCell(CommonGachaPool pool) {
             this.pool = pool;
             root = new BorderPane();
-
             iv = new ImageView();
             iv.setFitHeight(42);
             iv.setFitWidth(42);
@@ -301,8 +336,6 @@ public class GameGachaCommonView implements FxmlView<GameGachaCommonViewModel>, 
             }
         }
     }
-
-    // ---- 运气文本映射 ----
 
     private static String luckyTypeName(int luckyType) {
         return switch (luckyType) {
