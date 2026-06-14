@@ -5,6 +5,7 @@ import cn.tealc.ntemaid.dao.*;
 import cn.tealc.ntemaid.repository.NavRepository;
 import cn.tealc.ntemaid.service.*;
 import cn.tealc.ntemaid.service.gacha.CommonGachaAnalysisService;
+import cn.tealc.ntemaid.service.gacha.CommonGachaService;
 import cn.tealc.ntemaid.service.gacha.LocalGachaAnalysisService;
 import cn.tealc.ntemaid.service.gacha.LocalGachaDataService;
 import cn.tealc.ntemaid.service.impl.ConfigServiceImpl;
@@ -27,6 +28,7 @@ public class AppModule extends AbstractModule {
         bind(PlayingListDao.class).in(Singleton.class);
         bind(TaygedoAccountDao.class).in(Singleton.class);
         bind(LocalGachaDataDao.class).in(Singleton.class);
+        bind(CommonGachaDao.class).in(Singleton.class);
         bind(PlaylistDao.class).in(Singleton.class);
         bind(MusicDao.class).in(Singleton.class);
 
@@ -42,6 +44,7 @@ public class AppModule extends AbstractModule {
         bind(LocalGachaDataService.class).in(Singleton.class);
         bind(LocalGachaAnalysisService.class).in(Singleton.class);
         bind(CommonGachaAnalysisService.class).in(Singleton.class);
+        bind(CommonGachaService.class).in(Singleton.class);
         bind(PlaylistService.class).in(Singleton.class);
         bind(MusicService.class).in(Singleton.class);
         bind(NativeProcessService.class).in(Singleton.class);

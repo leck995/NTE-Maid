@@ -109,6 +109,25 @@ public class JdbcUtils {
                     time_stamp BIGINT
                 );
 
+                CREATE TABLE IF NOT EXISTS game_common_gacha (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    player_id VARCHAR(64) NOT NULL,
+                    record_id TEXT,
+                    record_type VARCHAR(32),
+                    time VARCHAR(32) NOT NULL,
+                    pool_id VARCHAR(64),
+                    pool_name VARCHAR(64),
+                    item_id VARCHAR(64),
+                    item_name VARCHAR(64),
+                    count INTEGER DEFAULT 1,
+                    roll_points INTEGER DEFAULT 0,
+                    roll_label VARCHAR(32),
+                    sort INTEGER DEFAULT 0
+                );
+
+                CREATE UNIQUE INDEX IF NOT EXISTS idx_common_gacha_unique
+                ON common_gacha(player_id, time, sort);
+
                 CREATE TABLE IF NOT EXISTS taygedo_account (
                     phone VARCHAR(20) PRIMARY KEY,
                     name VARCHAR(100),

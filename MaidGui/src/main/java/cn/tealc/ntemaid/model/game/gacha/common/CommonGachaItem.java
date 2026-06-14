@@ -41,6 +41,7 @@ public class CommonGachaItem {
     private int rarity; //物品等级
     private boolean up;
     private long id;
+    private int sort;
 
 
     public long getId() {
@@ -49,6 +50,14 @@ public class CommonGachaItem {
 
     public void setId(long id) {
         this.id = id;
+    }
+
+    public int getSort() {
+        return sort;
+    }
+
+    public void setSort(int sort) {
+        this.sort = sort;
     }
 
     public int getUpCount() {
