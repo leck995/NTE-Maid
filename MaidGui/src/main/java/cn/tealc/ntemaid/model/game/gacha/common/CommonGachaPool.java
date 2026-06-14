@@ -10,6 +10,7 @@ public class CommonGachaPool {
     private LocalGachaType type;
     private int max; //卡池保底最大抽数
     private int luckyType;//抽卡运气
+    private int reallyLuckyType;//真实抽卡运气（歪了不算）
     private String time;//抽卡起始结束时间
 
     private Integer totalCount = 0; //总抽数
@@ -263,5 +264,13 @@ public class CommonGachaPool {
 
     public void setrMax(Integer rMax) {
         this.rMax = rMax;
+    }
+
+    public int getReallyLuckyType() {
+        return reallyLuckyType;
+    }
+
+    public void setReallyLuckyType(int reallyLuckyType) {
+        this.reallyLuckyType = reallyLuckyType;
     }
 }

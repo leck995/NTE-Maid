@@ -14,27 +14,29 @@ import java.util.*;
 public class CommonGachaAnalysisService {
 
     private static final ObjectMapper MAPPER = new ObjectMapper();
-    /** itemId → rarity，来自 character.json */
+    /** itemId → rarity */
     private static final Map<String, Integer> CHARACTER_RARITY_MAP = new HashMap<>();
-    /** itemId → rarity，来自 weapon.json */
+    /** itemId → rarity */
     private static final Map<String, Integer> WEAPON_RARITY_MAP = new HashMap<>();
+    /** itemId → zh 名称 */
+    private static final Map<String, String> ITEM_NAME_MAP = new HashMap<>();
 
     /** 常驻5★角色（非UP），其余5★为限定 */
     private static final Set<String> STANDARD_ROLE_5 = Set.of(
-            "1003", "1004", "1010", "1023", "1025", "1039", "1054", "1055");
+            "1055","1054","1039","1025","1023","1003");
     /** 常驻5★弧盘（非UP），其余5★为限定 */
     private static final Set<String> STANDARD_FORK_5 = Set.of(
-            "fork_Butterfly", "fork_BlackBook", "fork_mofeikesi",
-            "fork_jingmotingyuan", "fork_wushoutieyu", "fork_BitGame",
-            "fork_rishi", "fork_NestBird", "fork_Arachne", "fork_Whale");
+            "fork_butterfly","fork_blackBook","fork_mofeikesi"
+            ,"fork_jingmotingyuan","fork_wushoutieyu","fork_bitGame","fork_rishi"
+            ,"fork_nestBird","fork_arachne","fork_whale");
 
     static {
-        loadRarityMap("resources/data/character.json", CHARACTER_RARITY_MAP);
-        loadRarityMap("resources/data/weapon.json", WEAPON_RARITY_MAP);
+        loadDataFile("resources/data/character.json", CHARACTER_RARITY_MAP);
+        loadDataFile("resources/data/weapon.json", WEAPON_RARITY_MAP);
     }
 
-    /** 从本地文件加载 {id: {rarity: "5"}} 格式的 JSON，提取 id → rarity 映射 */
-    private static void loadRarityMap(String filePath, Map<String, Integer> target) {
+    /** 加载 {id: {rarity, zh, ...}} 格式的 JSON，提取 rarity 和中文名称 */
+    private static void loadDataFile(String filePath, Map<String, Integer> rarityTarget) {
         File file = new File(filePath);
         if (!file.exists()) {
             return;
@@ -45,11 +47,14 @@ public class CommonGachaAnalysisService {
             for (Map.Entry<String, Map<String, String>> entry : raw.entrySet()) {
                 Map<String, String> value = entry.getValue();
                 if (value.containsKey("rarity")) {
-                    target.put(entry.getKey(), Integer.parseInt(value.get("rarity")));
+                    rarityTarget.put(entry.getKey(), Integer.parseInt(value.get("rarity")));
+                }
+                if (value.containsKey("zh")) {
+                    ITEM_NAME_MAP.put(entry.getKey(), value.get("zh"));
                 }
             }
         } catch (IOException | NumberFormatException e) {
-            // 加载失败时 map 为空，后续默认按R处理
+            // 加载失败时 map 为空，后续按默认值处理
         }
     }
 
@@ -60,14 +65,12 @@ public class CommonGachaAnalysisService {
      * 3. 汇总到 CommonGachaData
      */
     public CommonGachaData analysis(List<CommonGachaItem> items) {
-        // 按卡池ID分组：弧盘池统一归到 "ForkLottery"，角色池按原始 poolId
         Map<String, List<CommonGachaItem>> map = new LinkedHashMap<>();
         for (CommonGachaItem item : items) {
             String key = item.getPoolId().startsWith("ForkLottery_") ? "ForkLottery" : item.getPoolId();
             map.computeIfAbsent(key, k -> new ArrayList<>()).add(item);
         }
 
-        // 逐个卡池分析
         List<CommonGachaPool> pools = new ArrayList<>();
         for (Map.Entry<String, List<CommonGachaItem>> entry : map.entrySet()) {
             CommonGachaPool pool = analyzePool(entry.getValue(), entry.getKey());
@@ -76,11 +79,9 @@ public class CommonGachaAnalysisService {
             }
         }
 
-        // 汇总结果
         CommonGachaData data = new CommonGachaData();
         data.setPools(pools);
 
-        // 综合运气值 = 各卡池运气值的平均值
         if (!pools.isEmpty()) {
             int lucky = (int) pools.stream().mapToInt(CommonGachaPool::getLuckyType).average().orElse(0);
             data.setLuckyType(lucky);
@@ -89,40 +90,32 @@ public class CommonGachaAnalysisService {
         return data;
     }
 
-    /**
-     * 分析单个卡池：
-     * - 从旧到新遍历，分别追踪 SSR/SR/R 的保底计数
-     * - 记录每个条目的 size（出货抽数）和 rarity
-     * - 统计各稀有度的数量、平均、最小、最大
-     * - 统计 UP 五星的出货抽数和不歪率
-     */
     private CommonGachaPool analyzePool(List<CommonGachaItem> items, String poolId) {
         if (items == null || items.isEmpty()) {
             return null;
         }
 
+        LocalGachaType poolType = getPoolType(poolId);
         boolean isForkPool = poolId.startsWith("ForkLottery");
         int max = isForkPool ? 80 : 90;
 
-        List<CommonGachaItem> ssrList = new ArrayList<>();   // 5★
-        List<CommonGachaItem> srList = new ArrayList<>();    // 4★
-        List<CommonGachaItem> rList = new ArrayList<>();     // 3★
+        List<CommonGachaItem> ssrList = new ArrayList<>();
+        List<CommonGachaItem> srList = new ArrayList<>();
+        List<CommonGachaItem> rList = new ArrayList<>();
 
         int totalCount = 0;
-        int ssrPity = 0;  // 距上一个5★的抽数
-        int srPity = 0;   // 距上一个4★的抽数
-        int rPity = 0;    // 距上一个3★的抽数
+        int ssrPity = 0;
+        int srPity = 0;
+        int rPity = 0;
 
         int upSsrCount = 0;
         int noUpSsrCount = 0;
         List<Integer> upSsrPityList = new ArrayList<>();
-        int upAccumulator = 0; // 累计UP保底数，只在UP出货时重置，包含中间常驻5★的抽数
+        int upAccumulator = 0;
 
-        // 从旧到新遍历（items 是新→旧存储）
         for (int i = items.size() - 1; i >= 0; i--) {
             CommonGachaItem item = items.get(i);
 
-            // 角色池中 roll_points==0 为免费赠送，不计入抽数
             if (!isForkPool && item.getRollPoints() == 0) {
                 continue;
             }
@@ -138,19 +131,25 @@ public class CommonGachaAnalysisService {
             int rarity = getRarity(item);
             item.setRarity(rarity);
 
+            // 优先使用数据文件中的中文名称
+            String dataName = ITEM_NAME_MAP.get(item.getItemId());
+            if (dataName != null) {
+                item.setItemName(dataName);
+            }
+
             if (rarity == 5) {
                 item.setUpCount(ssrPity);
                 ssrList.add(item);
 
-                upAccumulator += ssrPity; // 常驻5★的抽数也要累计到UP保底中
-                boolean up = isUp(item.getItemId());
-                item.setUp(up);
-                if (up) {
+                upAccumulator += ssrPity;
+                if (isUp(item.getItemId(),isForkPool)) {
                     upSsrCount++;
                     upSsrPityList.add(upAccumulator);
-                    upAccumulator = 0; // 只有UP出货才重置
+                    upAccumulator = 0;
+                    item.setUp(true);
                 } else {
                     noUpSsrCount++;
+                    item.setUp(false);
                 }
                 ssrPity = 0;
             } else if (rarity == 4) {
@@ -164,10 +163,9 @@ public class CommonGachaAnalysisService {
             }
         }
 
-        // 填充分析结果
         CommonGachaPool pool = new CommonGachaPool();
         pool.setPoolName(items.get(0).getPoolName());
-        pool.setType(getPoolType(poolId));
+        pool.setType(poolType);
         pool.setMax(max);
         pool.setTotalCount(totalCount);
 
@@ -205,41 +203,50 @@ public class CommonGachaAnalysisService {
         // UP 五星统计
         pool.setUpSsrCount(upSsrCount);
         pool.setNoUpSsrCount(noUpSsrCount);
-        //计算限定SSR平均抽数
-        if (!upSsrPityList.isEmpty()) {
+        if (upSsrCount > 0 && !upSsrPityList.isEmpty()) {
             int sum = upSsrPityList.stream().mapToInt(Integer::intValue).sum();
             pool.setUpSsrAvg((double) sum / upSsrCount);
         }
         int totalSsr = upSsrCount + noUpSsrCount;
         if (totalSsr > 0) {
-            pool.setNonBannerRate((double) upSsrCount / totalSsr); // 不歪率 = UP数/总五星数
+            pool.setNonBannerRate((double) upSsrCount / totalSsr);
         }
 
-        // 运气评级（基于五星平均出货抽数）
+        // 运气评级（基于五星平均）
         double ssrAvg = pool.getSsrAvg();
-        if (ssrAvg > 0) {
-            if (ssrAvg < 40) pool.setLuckyType(5);
-            else if (ssrAvg < 50) pool.setLuckyType(4);
-            else if (ssrAvg < 65) pool.setLuckyType(3);
-            else if (ssrAvg < 75) pool.setLuckyType(2);
-            else pool.setLuckyType(1);
+        pool.setLuckyType(calcLuckyType(ssrAvg));
+
+        // 真实运气评级（弧盘池基于UP平均，排除歪的常驻；角色池同普通运气）
+        if (isForkPool && pool.getUpSsrAvg() > 0) {
+            pool.setReallyLuckyType(calcLuckyType(pool.getUpSsrAvg()));
+        } else {
+            pool.setReallyLuckyType(pool.getLuckyType());
         }
 
         pool.setTime(getDateRange(items));
         return pool;
     }
 
+    private static int calcLuckyType(double avg) {
+        if (avg <= 0) return 1;
+        if (avg < 40) return 5;
+        if (avg < 50) return 4;
+        if (avg < 65) return 3;
+        if (avg < 75) return 2;
+        return 1;
+    }
+
     /** 判断是否为UP（限定）物品：不在对应常驻列表中的5★即为UP */
-    private boolean isUp(String itemId) {
+    private static boolean isUp(String itemId,boolean isFork) {
         if (itemId == null) return false;
-        if (CHARACTER_RARITY_MAP.containsKey(itemId)) {
+        if (isFork){
+            return !STANDARD_FORK_5.contains(itemId.toLowerCase());
+        }else {
             return !STANDARD_ROLE_5.contains(itemId);
         }
-        if (WEAPON_RARITY_MAP.containsKey(itemId)) {
-            return !STANDARD_FORK_5.contains(itemId);
-        }
-        return false;
+
     }
+
 
     // ---- 稀有度查表 ----
 
@@ -275,7 +282,7 @@ public class CommonGachaAnalysisService {
     private LocalGachaType getPoolType(String poolId) {
         if (poolId.startsWith("ForkLottery")) return LocalGachaType.WEAPON_POOL;
         if ("CardPool_NewRole".equals(poolId)) return LocalGachaType.DEFAULT_ROLE_POOL;
-        return LocalGachaType.UP_ROLE_POOL; // CardPool_Character
+        return LocalGachaType.UP_ROLE_POOL;
     }
 
     // ---- 日期范围 ----

@@ -40,8 +40,16 @@ public class CommonGachaItem {
     private int upCount; //获取到该物品的总抽数
     private int rarity; //物品等级
     private boolean up;
+    private long id;
 
 
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
 
     public int getUpCount() {
         return upCount;

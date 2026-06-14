@@ -155,7 +155,7 @@ public class GameGachaCommonView implements FxmlView<GameGachaCommonViewModel>, 
         VBox header = new VBox(2);
         Label poolNameLabel = new Label(pool.getPoolName());
         poolNameLabel.getStyleClass().add("pool-title");
-        Label luckBadge = new Label(luckyTypeName(pool.getLuckyType()));
+        Label luckBadge = new Label(luckyTypeName(pool.getReallyLuckyType()));
         luckBadge.getStyleClass().addAll("pool-luck", "luck-" + pool.getLuckyType());
         HBox titleRow = new HBox(poolNameLabel, new Spacer(), luckBadge);
         titleRow.setAlignment(Pos.CENTER);
@@ -171,8 +171,8 @@ public class GameGachaCommonView implements FxmlView<GameGachaCommonViewModel>, 
         VBox stats = new VBox(5);
 
         // 当前已垫抽数
-        stats.getChildren().add(buildStatRow("五星已垫", String.valueOf(pool.getNoUpSsrSize()), "ssr-accent"));
         stats.getChildren().add(buildStatRow("四星已垫", String.valueOf(pool.getNoUpSrSize()), "sr-accent"));
+        stats.getChildren().add(buildStatRow("五星已垫", String.valueOf(pool.getNoUpSsrSize()), "sr-accent"));
 
         // 五星
         stats.getChildren().add(buildStatRow("五星数量", String.format("%d [%.2f%%]",
@@ -180,21 +180,13 @@ public class GameGachaCommonView implements FxmlView<GameGachaCommonViewModel>, 
         stats.getChildren().add(buildStatRow("五星平均", String.format("%.2f",
                 pool.getSsrAvg()), "ssr-accent"));
 
-        // 四星
-        stats.getChildren().add(buildStatRow("四星数量", String.format("%d [%.2f%%]",
-                pool.getSrCount(), pct(pool.getSrCount(), pool.getTotalCount())), "sr-accent"));
-
         // UP 统计（仅武器池）
         if (pool.getType() == LocalGachaType.WEAPON_POOL) {
             int upTotal = pool.getUpSsrCount() + (int) pool.getNoUpSsrCount();
-            stats.getChildren().add(buildStatRow("限定数量", String.format("%d [%.2f%%]",
+            stats.getChildren().add(buildStatRow("限定数量/不歪率", String.format("%d [%.2f%%]",
                     pool.getUpSsrCount(), pct(pool.getUpSsrCount(), upTotal)), "up-accent"));
             stats.getChildren().add(buildStatRow("限定平均", String.format("%.2f",
                     pool.getUpSsrAvg()), "up-accent"));
-            stats.getChildren().add(buildStatRow("常驻数量", String.format("%.0f",
-                    pool.getNoUpSsrCount()), "default-accent"));
-            stats.getChildren().add(buildStatRow("不歪率", String.format("%.2f%%",
-                    pool.getNonBannerRate() * 100), "up-accent"));
         }
 
         // ---- 底部：五星列表（时间倒序，最新在前） ----
