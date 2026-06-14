@@ -4,58 +4,20 @@ import cn.tealc.ntemaid.model.game.gacha.common.CommonGachaData;
 import cn.tealc.ntemaid.model.game.gacha.common.CommonGachaItem;
 import cn.tealc.ntemaid.model.game.gacha.common.CommonGachaPool;
 import cn.tealc.ntemaid.model.game.gacha.local.LocalGachaType;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import cn.tealc.ntemaid.repository.GameDataRepository;
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.*;
 
+@Singleton
 public class CommonGachaAnalysisService {
 
-    private static final ObjectMapper MAPPER = new ObjectMapper();
-    /** itemId → rarity */
-    private static final Map<String, Integer> CHARACTER_RARITY_MAP = new HashMap<>();
-    /** itemId → rarity */
-    private static final Map<String, Integer> WEAPON_RARITY_MAP = new HashMap<>();
-    /** itemId → zh 名称 */
-    private static final Map<String, String> ITEM_NAME_MAP = new HashMap<>();
+    private final GameDataRepository dataRepo;
 
-    /** 常驻5★角色（非UP），其余5★为限定 */
-    private static final Set<String> STANDARD_ROLE_5 = Set.of(
-            "1055","1054","1039","1025","1023","1003");
-    /** 常驻5★弧盘（非UP），其余5★为限定 */
-    private static final Set<String> STANDARD_FORK_5 = Set.of(
-            "fork_butterfly","fork_blackBook","fork_mofeikesi"
-            ,"fork_jingmotingyuan","fork_wushoutieyu","fork_bitGame","fork_rishi"
-            ,"fork_nestBird","fork_arachne","fork_whale");
-
-    static {
-        loadDataFile("resources/data/character.json", CHARACTER_RARITY_MAP);
-        loadDataFile("resources/data/weapon.json", WEAPON_RARITY_MAP);
-    }
-
-    /** 加载 {id: {rarity, zh, ...}} 格式的 JSON，提取 rarity 和中文名称 */
-    private static void loadDataFile(String filePath, Map<String, Integer> rarityTarget) {
-        File file = new File(filePath);
-        if (!file.exists()) {
-            return;
-        }
-        try {
-            Map<String, Map<String, String>> raw = MAPPER.readValue(file,
-                    new TypeReference<Map<String, Map<String, String>>>() {});
-            for (Map.Entry<String, Map<String, String>> entry : raw.entrySet()) {
-                Map<String, String> value = entry.getValue();
-                if (value.containsKey("rarity")) {
-                    rarityTarget.put(entry.getKey(), Integer.parseInt(value.get("rarity")));
-                }
-                if (value.containsKey("zh")) {
-                    ITEM_NAME_MAP.put(entry.getKey(), value.get("zh"));
-                }
-            }
-        } catch (IOException | NumberFormatException e) {
-            // 加载失败时 map 为空，后续按默认值处理
-        }
+    @Inject
+    public CommonGachaAnalysisService(GameDataRepository dataRepo) {
+        this.dataRepo = dataRepo;
     }
 
     /**
@@ -132,7 +94,7 @@ public class CommonGachaAnalysisService {
             item.setRarity(rarity);
 
             // 优先使用数据文件中的中文名称
-            String dataName = ITEM_NAME_MAP.get(item.getItemId());
+            String dataName = dataRepo.getChineseName(item.getItemId());
             if (dataName != null) {
                 item.setItemName(dataName);
             }
@@ -142,7 +104,7 @@ public class CommonGachaAnalysisService {
                 ssrList.add(item);
 
                 upAccumulator += ssrPity;
-                if (isUp(item.getItemId(),isForkPool)) {
+                if (dataRepo.isUp(item.getItemId(), isForkPool)) {
                     upSsrCount++;
                     upSsrPityList.add(upAccumulator);
                     upAccumulator = 0;
@@ -236,31 +198,8 @@ public class CommonGachaAnalysisService {
         return 1;
     }
 
-    /** 判断是否为UP（限定）物品：不在对应常驻列表中的5★即为UP */
-    private static boolean isUp(String itemId,boolean isFork) {
-        if (itemId == null) return false;
-        if (isFork){
-            return !STANDARD_FORK_5.contains(itemId.toLowerCase());
-        }else {
-            return !STANDARD_ROLE_5.contains(itemId);
-        }
-
-    }
-
-
-    // ---- 稀有度查表 ----
-
-    public static int getRarity(String itemId) {
-        if (itemId == null) return 3;
-        Integer r = CHARACTER_RARITY_MAP.get(itemId);
-        if (r != null) return r;
-        r = WEAPON_RARITY_MAP.get(itemId);
-        if (r != null) return r;
-        return 3;
-    }
-
     private int getRarity(CommonGachaItem item) {
-        return getRarity(item.getItemId());
+        return dataRepo.getRarity(item.getItemId());
     }
 
     // ---- 统计工具 ----

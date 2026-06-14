@@ -2,6 +2,7 @@ package cn.tealc.ntemaid.base;
 
 import cn.tealc.ntemaid.StageInitializer;
 import cn.tealc.ntemaid.dao.*;
+import cn.tealc.ntemaid.repository.GameDataRepository;
 import cn.tealc.ntemaid.repository.NavRepository;
 import cn.tealc.ntemaid.service.*;
 import cn.tealc.ntemaid.service.gacha.CommonGachaAnalysisService;
@@ -49,6 +50,7 @@ public class AppModule extends AbstractModule {
         bind(MusicService.class).in(Singleton.class);
         bind(NativeProcessService.class).in(Singleton.class);
         bind(AsyncRunner.class).in(Singleton.class);
+        bind(GameDataRepository.class).in(Singleton.class);
         bind(NavRepository.class).in(Singleton.class);
         bind(ShutdownManager.class).in(Singleton.class);
         bind(TrayIconManager.class).in(Singleton.class);

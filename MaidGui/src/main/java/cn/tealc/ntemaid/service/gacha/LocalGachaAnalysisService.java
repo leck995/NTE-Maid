@@ -4,6 +4,7 @@ import cn.tealc.ntemaid.model.game.gacha.local.LocalGachaData;
 import cn.tealc.ntemaid.model.game.gacha.local.LocalGachaItem;
 import cn.tealc.ntemaid.model.game.gacha.local.LocalGachaPool;
 import cn.tealc.ntemaid.model.game.gacha.local.LocalGachaType;
+import cn.tealc.ntemaid.repository.GameDataRepository;
 import com.google.inject.Inject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,17 +17,17 @@ import java.util.List;
 
 public class LocalGachaAnalysisService {
     private static final Logger LOG = LoggerFactory.getLogger(LocalGachaAnalysisService.class);
-    private final LocalGachaDataService gachaDataService;
-    private List<String> WEAPON_LIST = List.of("fork_butterfly","fork_blackBook","fork_mofeikesi"
-            ,"fork_jingmotingyuan","fork_wushoutieyu","fork_bitGame","fork_rishi"
-            ,"fork_nestBird","fork_arachne","fork_whale");
-    private List<String> ROLE_LIST = List.of("1055","1054","1039","1025","1023","1003");
     private static final DateTimeFormatter DATE_SHORT = DateTimeFormatter.ofPattern("yyyy-MM-dd")
             .withZone(ZoneId.systemDefault());
 
+    private final LocalGachaDataService gachaDataService;
+    private final GameDataRepository dataRepo;
+
     @Inject
-    public LocalGachaAnalysisService(LocalGachaDataService gachaDataService) {
+    public LocalGachaAnalysisService(LocalGachaDataService gachaDataService,
+                                      GameDataRepository dataRepo) {
         this.gachaDataService = gachaDataService;
+        this.dataRepo = dataRepo;
     }
 
 
@@ -54,18 +55,18 @@ public class LocalGachaAnalysisService {
 
 
     private LocalGachaPool analysisWeaponPool(List<LocalGachaItem> items){
-        LocalGachaPool pool = analysisPool(items, 80, WEAPON_LIST, true);
+        LocalGachaPool pool = analysisPool(items, 80, true);
         pool.setType(LocalGachaType.WEAPON_POOL);
         return pool;
     }
 
     private LocalGachaPool analysisRolePool(List<LocalGachaItem> items,LocalGachaType type){
-        LocalGachaPool pool = analysisPool(items, 90, ROLE_LIST, false);
+        LocalGachaPool pool = analysisPool(items, 90, false);
         pool.setType(type);
         return pool;
     }
 
-    private LocalGachaPool analysisPool(List<LocalGachaItem> items, int max, List<String> standardList, boolean trackUp){
+    private LocalGachaPool analysisPool(List<LocalGachaItem> items, int max, boolean isFork){
         if (items == null || items.isEmpty()) {
             LocalGachaPool pool = new LocalGachaPool();
             pool.setItems(List.of());
@@ -81,8 +82,8 @@ public class LocalGachaAnalysisService {
         for (int i = items.size() - 1; i >= 0; i--) {
             LocalGachaItem item = items.get(i);
             sum += item.getRareCount();
-            item.setUp(!standardList.contains(item.getCharid().toLowerCase()));
-            if (trackUp) {
+            item.setUp(dataRepo.isUp(item.getCharid(), isFork));
+            if (isFork) {
                 item.setUpReallyCount(true);
                 accumulatedPulls += item.getRareCount();
                 if (item.isUp()) {
@@ -107,7 +108,7 @@ public class LocalGachaAnalysisService {
         pool.setSsrPercent(percent);
         pool.setTime(getDateRange(items));
 
-        if (trackUp) {
+        if (isFork) {
             double upSsrAvg = upPityList.isEmpty() ? 0
                     : (double) upPityList.stream().mapToInt(Integer::intValue).sum() / upPityList.size();
             pool.setUpSsrAvg(upSsrAvg);
