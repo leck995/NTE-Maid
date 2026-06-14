@@ -71,7 +71,7 @@
                 <children>
                     <FontIcon iconLiteral="mdal-inbox" iconSize="48" styleClass="empty-icon" />
                     <Label styleClass="title-3" text="暂无抽卡数据" />
-                    <Label text="请先选择一个已登录的账号" textFill="#666" />
+                    <Label text="点击「导入数据」按钮导入抽卡JSON文件" textFill="#666" />
                 </children>
             </VBox>
 

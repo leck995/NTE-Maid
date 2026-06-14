@@ -4,6 +4,8 @@ import cn.tealc.ntemaid.StageInitializer;
 import cn.tealc.ntemaid.dao.*;
 import cn.tealc.ntemaid.repository.NavRepository;
 import cn.tealc.ntemaid.service.*;
+import cn.tealc.ntemaid.service.gacha.CommonGachaAnalysisService;
+import cn.tealc.ntemaid.service.gacha.LocalGachaAnalysisService;
 import cn.tealc.ntemaid.service.gacha.LocalGachaDataService;
 import cn.tealc.ntemaid.service.impl.ConfigServiceImpl;
 import cn.tealc.ntemaid.service.impl.GameTimeServiceImpl;
@@ -38,6 +40,8 @@ public class AppModule extends AbstractModule {
         bind(TaygedoAccountService.class).in(Singleton.class);
         bind(TaygedoLoginService.class).in(Singleton.class);
         bind(LocalGachaDataService.class).in(Singleton.class);
+        bind(LocalGachaAnalysisService.class).in(Singleton.class);
+        bind(CommonGachaAnalysisService.class).in(Singleton.class);
         bind(PlaylistService.class).in(Singleton.class);
         bind(MusicService.class).in(Singleton.class);
         bind(NativeProcessService.class).in(Singleton.class);

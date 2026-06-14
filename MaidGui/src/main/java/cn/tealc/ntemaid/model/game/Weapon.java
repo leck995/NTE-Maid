@@ -10,6 +10,7 @@ public class Weapon {
     private String ja;
     private String ko;
     private int rarity;
+    private String icon;
 
 
     public String getId() {
@@ -50,5 +51,13 @@ public class Weapon {
 
     public void setRarity(int rarity) {
         this.rarity = rarity;
+    }
+
+    public String getIcon() {
+        return icon;
+    }
+
+    public void setIcon(String icon) {
+        this.icon = icon;
     }
 }

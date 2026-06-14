@@ -30,12 +30,34 @@ public class CommonGachaItem {
     private int count;
 
     @JsonProperty("roll_points")
-    private int rollPoints;
+    private long rollPoints;
 
     @JsonProperty("roll_label")
     private String rollLabel;
 
     private String playerId;
+
+    private int upCount; //获取到该物品的总抽数
+    private int rarity; //物品等级
+    private boolean up;
+
+
+
+    public int getUpCount() {
+        return upCount;
+    }
+
+    public void setUpCount(int upCount) {
+        this.upCount = upCount;
+    }
+
+    public int getRarity() {
+        return rarity;
+    }
+
+    public void setRarity(int rarity) {
+        this.rarity = rarity;
+    }
 
     public CommonGachaItem() {
     }
@@ -105,11 +127,11 @@ public class CommonGachaItem {
         this.count = count;
     }
 
-    public int getRollPoints() {
+    public long getRollPoints() {
         return rollPoints;
     }
 
-    public void setRollPoints(int rollPoints) {
+    public void setRollPoints(long rollPoints) {
         this.rollPoints = rollPoints;
     }
 
@@ -127,6 +149,14 @@ public class CommonGachaItem {
 
     public void setPlayerId(String playerId) {
         this.playerId = playerId;
+    }
+
+    public boolean isUp() {
+        return up;
+    }
+
+    public void setUp(boolean up) {
+        this.up = up;
     }
 
     @Override
