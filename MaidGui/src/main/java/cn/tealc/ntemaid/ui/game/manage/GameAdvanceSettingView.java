@@ -81,7 +81,7 @@ public class GameAdvanceSettingView implements FxmlView<GameAdvanceSettingViewMo
         if (userAdvanceSettingSwitch.isSelected()) {
             userAdvanceSettingSwitch.setSelected(false);
             Label title = new Label(LanguageManager.getString("ui.common.warning"));
-            title.getStyleClass().add(Styles.TITLE_2);
+            title.getStyleClass().add(Styles.TITLE_3);
             Label tip1 = new Label(LanguageManager.getString("ui.game_manager.advance.warning.tip"));
             tip1.setWrapText(true);
             tip1.setPrefWidth(350);

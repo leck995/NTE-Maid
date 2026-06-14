@@ -89,7 +89,7 @@ public class TaygedoAccountView implements FxmlView<TaygedoAccountViewModel>, In
         private void delete() {
             JFXDialogLayout dialogLayout = new JFXDialogLayout();
             Label title = new Label("确认");
-            title.getStyleClass().add(Styles.TITLE_2);
+            title.getStyleClass().add(Styles.TITLE_3);
             dialogLayout.setHeading(title);
             Label content = new Label(String.format("确认删除账号 %s 的数据吗", getItem().getPhone()));
             dialogLayout.setBody(content);

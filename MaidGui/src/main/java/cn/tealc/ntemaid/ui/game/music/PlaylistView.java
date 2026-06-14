@@ -173,7 +173,7 @@ public class PlaylistView implements FxmlView<PlaylistViewModel>, Initializable 
     void createPlaylistEvent(ActionEvent event) {
         JFXDialogLayout layout = new JFXDialogLayout();
         Label title = new Label("创建歌单");
-        title.getStyleClass().add(Styles.TITLE_2);
+        title.getStyleClass().add(Styles.TITLE_3);
         layout.setHeading(title);
         TextField nameField = new TextField();
         nameField.setPromptText("请输入歌单名称");
@@ -245,7 +245,7 @@ public class PlaylistView implements FxmlView<PlaylistViewModel>, Initializable 
         private void showAlterDialog() {
             JFXDialogLayout layout = new JFXDialogLayout();
             Label title = new Label("修改歌单");
-            title.getStyleClass().add(Styles.TITLE_2);
+            title.getStyleClass().add(Styles.TITLE_3);
             layout.setHeading(title);
             TextField nameField = new TextField(getItem().getName());
             layout.setBody(nameField);
