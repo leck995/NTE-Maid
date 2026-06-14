@@ -11,7 +11,7 @@ public class NavData {
     private String icon; //ikonli
     private boolean visible;//可见性
     private int order; //顺序
-    private boolean kujiequ;
+    private boolean bbs;
     private String viewClass;
     private String viewModelClass;
     private boolean fxml;
@@ -58,12 +58,12 @@ public class NavData {
         this.order = order;
     }
 
-    public boolean isKujiequ() {
-        return kujiequ;
+    public boolean isBbs() {
+        return bbs;
     }
 
-    public void setKujiequ(boolean kujiequ) {
-        this.kujiequ = kujiequ;
+    public void setBbs(boolean bbs) {
+        this.bbs = bbs;
     }
 
     public String getViewClass() {

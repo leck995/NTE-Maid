@@ -1,6 +1,7 @@
 package cn.tealc.ntemaid.ui.game.gacha;
 
 import atlantafx.base.util.Animations;
+import cn.tealc.ntemaid.base.Config;
 import de.saxsys.mvvmfx.FluentViewLoader;
 import de.saxsys.mvvmfx.FxmlView;
 import de.saxsys.mvvmfx.InjectViewModel;
@@ -25,13 +26,20 @@ public class GameGachaGroupView implements FxmlView<GameGachaGroupViewModel>, In
     private GameGachaGroupViewModel viewModel;
     @FXML
     private StackPane content;
+    @FXML
+    private ToggleButton taygedoBtn,commonBtn;
     private Parent commonChild;
     private Parent taygedoView;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        createCommonChild();
-        //createTaygedoChild();
+        if (Config.getSetting().isEnableTaygedo()){
+            createTaygedoChild();
+        }else {
+            createCommonChild();
+            taygedoBtn.setVisible(false);
+            taygedoBtn.setManaged(false);
+        }
     }
 
 

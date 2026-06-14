@@ -112,6 +112,8 @@ public class MainViewModel implements ViewModel, SceneLifecycle {
 
 
     public void startTaygedoTask() {
+        if (!Config.getSetting().isEnableTaygedo())
+            return;
         asyncRunner.runBackground(() -> {
             taygedoRefrshToken();
             autoTaygedoSign();

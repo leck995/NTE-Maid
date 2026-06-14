@@ -94,6 +94,8 @@ public class SettingView implements FxmlView<SettingViewModel>, Initializable {
     private ToggleSwitch autoStartGame;
     @FXML
     private ToggleSwitch autoKillOfficialLauncher;
+    @FXML
+    private ToggleSwitch enableTaygedoSwitch;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -105,6 +107,7 @@ public class SettingView implements FxmlView<SettingViewModel>, Initializable {
             }
         });
 
+        enableTaygedoSwitch.selectedProperty().bindBidirectional(Config.getSetting().enableTaygedoProperty());
 
         hideWhenGameStart.setSkin(new ToggleSwitchSkin(hideWhenGameStart));
         hideWhenGameStart.selectedProperty().bindBidirectional(viewModel.hideWhenGameStartProperty());
@@ -112,7 +115,6 @@ public class SettingView implements FxmlView<SettingViewModel>, Initializable {
         silentStartUp.selectedProperty().bindBidirectional(Config.getSetting().silentStartupProperty());
         autoStartGame.selectedProperty().bindBidirectional(Config.getSetting().autoStartGameProperty());
         autoKillOfficialLauncher.selectedProperty().bindBidirectional(Config.getSetting().autoKillOfficialLauncherProperty());
-
 
         diyBgField.textProperty().bindBidirectional(viewModel.diyHomeBgNameProperty());
         diyBgInputGroup.managedProperty().bind(Bindings.equal(1, viewModel.homeBgTypeProperty()));

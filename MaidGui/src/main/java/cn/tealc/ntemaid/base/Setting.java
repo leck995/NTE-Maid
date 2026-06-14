@@ -50,6 +50,7 @@ public class Setting {
     private final SimpleStringProperty diyHomeBgName = new SimpleStringProperty(); //自定义背景文件名称
     private final SimpleIntegerProperty diyHomeBgType = new SimpleIntegerProperty(); // 0为默认，1为指定背景，2为背景文件夹
     private final SimpleStringProperty diyHomeBgDir = new SimpleStringProperty();
+    private final SimpleBooleanProperty enableTaygedo = new SimpleBooleanProperty(true);
 
     private final SimpleIntegerProperty closeEvent = new SimpleIntegerProperty(0); //关闭主界面行为，0选择，1退出，2最小化
     /*=================设置-游戏行为===================*/
@@ -560,5 +561,17 @@ public class Setting {
 
     public void setTaygedoAutoSign(boolean taygedoAutoSign) {
         this.taygedoAutoSign.set(taygedoAutoSign);
+    }
+
+    public boolean isEnableTaygedo() {
+        return enableTaygedo.get();
+    }
+
+    public SimpleBooleanProperty enableTaygedoProperty() {
+        return enableTaygedo;
+    }
+
+    public void setEnableTaygedo(boolean enableTaygedo) {
+        this.enableTaygedo.set(enableTaygedo);
     }
 }

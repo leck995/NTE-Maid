@@ -53,6 +53,8 @@
                                     <RadioButton accessibleText="2" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#setCloseEvent" text="%ui.setting.base.close_event.type03" toggleGroup="$closeEventToggleGroup" />
                                  </children>
                               </HBox>
+                              <Label styleClass="title-4" text="%ui.setting.base.enable_taygedo" />
+                              <ToggleSwitch fx:id="enableTaygedoSwitch" labelPosition="RIGHT" text="%ui.setting.game.switch" />
                            </children>
                         </VBox>
                         <Label styleClass="title-3" text="%ui.setting.base.diy.title" />
