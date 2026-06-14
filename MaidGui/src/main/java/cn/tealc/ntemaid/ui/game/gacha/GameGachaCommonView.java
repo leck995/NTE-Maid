@@ -108,8 +108,7 @@ public class GameGachaCommonView implements FxmlView<GameGachaCommonViewModel>, 
             }
         });
 
-        viewModel.loadPlayerIds();
-        viewModel.initSelectPlayer();
+        viewModel.initPlayerIds();
     }
 
     @FXML
@@ -164,7 +163,7 @@ public class GameGachaCommonView implements FxmlView<GameGachaCommonViewModel>, 
         field.setTextFormatter(new TextFormatter<>(change ->
                 change.getControlNewText().matches("\\d*") ? change : null));
 
-        Label hint = new Label("玩家ID不能为空，只允许输入数字");
+        Label hint = new Label("请认真填写，否则可能会导致数据错误");
         hint.getStyleClass().add(Styles.TEXT_SUBTLE);
         VBox body = new VBox(8.0, field, hint);
         layout.setBody(body);

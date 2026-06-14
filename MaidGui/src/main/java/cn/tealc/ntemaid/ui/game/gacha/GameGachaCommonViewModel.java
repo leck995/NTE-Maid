@@ -53,22 +53,31 @@ public class GameGachaCommonViewModel extends BaseViewModel {
 
     public ImageCacheManager getImageCacheManager() { return imageCacheManager; }
 
-    public void loadPlayerIds() {
-        playerIds.setAll(commonGachaService.getDistinctPlayerIds());
-        hasData.set(!playerIds.isEmpty());
+    private void loadPlayerIdsAsync(Runnable onDone) {
+        Thread.ofVirtual().start(() -> {
+            List<String> ids = commonGachaService.getDistinctPlayerIds();
+            Platform.runLater(() -> {
+                playerIds.setAll(ids);
+                hasData.set(!playerIds.isEmpty());
+                if (onDone != null) onDone.run();
+            });
+        });
     }
 
     /**
-     * 界面首次加载时调用，恢复上次选中的玩家，没有则选第一个
+     * 界面首次加载时调用，异步加载 playerId 列表并恢复上次选中
      */
-    public void initSelectPlayer() {
-        if (playerIds.isEmpty()) return;
-        String saved = configService.getConfig(GACHA_COMMON_SELECTED).orElse("");
-        if (!saved.isEmpty() && playerIds.contains(saved)) {
-            selectPlayer(saved);
-        } else {
-            selectPlayer(playerIds.get(0));
-        }
+    public void initPlayerIds() {
+        loadPlayerIdsAsync(() -> {
+            if (!playerIds.isEmpty()) {
+                String saved = configService.getConfig(GACHA_COMMON_SELECTED).orElse("");
+                if (!saved.isEmpty() && playerIds.contains(saved)) {
+                    selectPlayer(saved);
+                } else {
+                    selectPlayer(playerIds.get(0));
+                }
+            }
+        });
     }
 
     public void selectPlayer(String playerId) {
@@ -106,15 +115,14 @@ public class GameGachaCommonViewModel extends BaseViewModel {
                 int added = commonGachaService.importFromFile(file, playerId);
                 List<CommonGachaItem> items = commonGachaService.getByPlayerId(playerId);
                 CommonGachaData data = analysisService.analysis(items);
-                Platform.runLater(() -> {
-                    loadPlayerIds();
+                Platform.runLater(() -> loadPlayerIdsAsync(() -> {
                     selectedPlayerId.set(playerId);
                     configService.setConfig(GACHA_COMMON_SELECTED, playerId);
                     gachaData.set(data);
                     loading.set(false);
                     NotificationManager.message(
                             MessageInfo.success(String.format("导入完成，新增 %d 条，共 %d 条记录", added, items.size())));
-                });
+                }));
             } catch (Exception e) {
                 LOG.error("导入抽卡数据失败", e);
                 Platform.runLater(() -> {
@@ -133,12 +141,13 @@ public class GameGachaCommonViewModel extends BaseViewModel {
                 commonGachaService.deleteByPlayerId(playerId);
                 Platform.runLater(() -> {
                     gachaData.set(null);
-                    loadPlayerIds();
-                    if (!playerIds.isEmpty()) {
-                        selectedPlayerId.set(playerIds.get(0));
-                        selectPlayer(playerIds.get(0));
-                    }
-                    NotificationManager.message(MessageInfo.info("已删除玩家 " + playerId + " 的数据"));
+                    loadPlayerIdsAsync(() -> {
+                        if (!playerIds.isEmpty()) {
+                            selectedPlayerId.set(playerIds.get(0));
+                            selectPlayer(playerIds.get(0));
+                        }
+                        NotificationManager.message(MessageInfo.info("已删除玩家 " + playerId + " 的数据"));
+                    });
                 });
             } catch (Exception e) {
                 LOG.error("删除抽卡数据失败, playerId={}", playerId, e);

@@ -40,11 +40,6 @@ public class GameGachaGroupView implements FxmlView<GameGachaGroupViewModel>, In
         if (event.getSource() instanceof ToggleButton toggleButton) {
             if (toggleButton.isSelected()) {
                 createCommonChild();
-                commonChild.setOpacity(0);
-                Platform.runLater(() -> {
-                    commonChild.setOpacity(1);
-                    Animations.slideInUp(commonChild, Duration.millis(300)).play();
-                });
             } else {
                 toggleButton.setSelected(true);
             }
@@ -60,8 +55,11 @@ public class GameGachaGroupView implements FxmlView<GameGachaGroupViewModel>, In
                             .fxmlView(GameGachaCommonView.class)
                             .load();
             commonChild = viewTuple.getView();
+            commonChild.setOpacity(0);
+            content.getChildren().setAll(commonChild);
             Platform.runLater(() -> {
-                content.getChildren().setAll(commonChild);
+                commonChild.setOpacity(1);
+                Animations.slideInUp(commonChild, Duration.millis(300)).play();
             });
         } else {
             content.getChildren().setAll(commonChild);
