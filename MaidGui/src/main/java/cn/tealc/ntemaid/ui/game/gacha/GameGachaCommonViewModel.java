@@ -4,6 +4,7 @@ import cn.tealc.ntemaid.model.game.gacha.common.CommonGachaData;
 import cn.tealc.ntemaid.model.game.gacha.common.CommonGachaItem;
 import cn.tealc.ntemaid.service.gacha.CommonGachaAnalysisService;
 import cn.tealc.ntemaid.ui.base.BaseViewModel;
+import cn.tealc.ntemaid.util.ImageCacheManager;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -27,6 +28,7 @@ public class GameGachaCommonViewModel extends BaseViewModel {
 
     private final CommonGachaAnalysisService analysisService;
     private final ObjectMapper mapper;
+    private final ImageCacheManager imageCacheManager;
 
     private final ObjectProperty<CommonGachaData> gachaData = new SimpleObjectProperty<>();
     private final StringProperty statusMessage = new SimpleStringProperty("");
@@ -34,10 +36,14 @@ public class GameGachaCommonViewModel extends BaseViewModel {
 
     @Inject
     public GameGachaCommonViewModel(CommonGachaAnalysisService analysisService,
-                                    ObjectMapper mapper) {
+                                    ObjectMapper mapper,
+                                    ImageCacheManager imageCacheManager) {
         this.analysisService = analysisService;
         this.mapper = mapper;
+        this.imageCacheManager = imageCacheManager;
     }
+
+    public ImageCacheManager getImageCacheManager() { return imageCacheManager; }
 
     /**
      * 导入 JSON 文件并执行抽卡分析，结果写入 gachaData

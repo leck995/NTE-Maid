@@ -24,6 +24,7 @@ import javafx.scene.control.ProgressBar;
 import javafx.scene.control.ProgressIndicator;
 import javafx.scene.control.Separator;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
@@ -34,10 +35,15 @@ import javafx.stage.FileChooser;
 
 import java.io.File;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
 public class GameGachaCommonView implements FxmlView<GameGachaCommonViewModel>, Initializable {
+
+    private static final String IMG_BASE_TALL = "https://webstatic.tajiduo.com/bbs/yh-game-records-web-source/character/tall/";
+    private static final String IMG_BASE_FORK = "https://webstatic.tajiduo.com/bbs/yh-game-records-web-source/character/fork/";
+
     @InjectViewModel
     private GameGachaCommonViewModel viewModel;
 
@@ -45,10 +51,6 @@ public class GameGachaCommonView implements FxmlView<GameGachaCommonViewModel>, 
     @FXML private VBox contentPane;
     @FXML private VBox emptyPane;
     @FXML private Label statusLabel;
-    @FXML private HBox playerInfoPane;
-    @FXML private ImageView avatarView;
-    @FXML private Label roleNameLabel;
-    @FXML private Label levelLabel;
     @FXML private Label luckLabel;
     @FXML private HBox poolCardsPane;
     @FXML private ProgressIndicator loadingIndicator;
@@ -57,6 +59,7 @@ public class GameGachaCommonView implements FxmlView<GameGachaCommonViewModel>, 
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        luckLabel.setVisible(false);
         accountCombo.setVisible(false);
         accountCombo.setManaged(false);
         refreshBtn.setVisible(false);
@@ -65,8 +68,6 @@ public class GameGachaCommonView implements FxmlView<GameGachaCommonViewModel>, 
         emptyPane.setVisible(false);
         emptyPane.setManaged(false);
 
-        playerInfoPane.setVisible(false);
-        playerInfoPane.setManaged(false);
         poolCardsPane.setVisible(false);
         poolCardsPane.setManaged(false);
 
@@ -86,8 +87,6 @@ public class GameGachaCommonView implements FxmlView<GameGachaCommonViewModel>, 
                 poolCardsPane.setVisible(true);
                 poolCardsPane.setManaged(true);
             } else {
-                playerInfoPane.setVisible(false);
-                playerInfoPane.setManaged(false);
                 poolCardsPane.getChildren().clear();
                 poolCardsPane.setVisible(false);
                 poolCardsPane.setManaged(false);
@@ -97,7 +96,6 @@ public class GameGachaCommonView implements FxmlView<GameGachaCommonViewModel>, 
 
     @FXML
     void onRefresh(ActionEvent event) {
-        // 导入模式下刷新按钮已隐藏
     }
 
     @FXML
@@ -136,13 +134,7 @@ public class GameGachaCommonView implements FxmlView<GameGachaCommonViewModel>, 
     }
 
     private void buildPlayerInfo(CommonGachaData data) {
-        roleNameLabel.setText(data.getPools() != null && !data.getPools().isEmpty()
-                ? data.getPools().get(0).getPoolName() : "");
-        levelLabel.setText(String.format("共 %d 个卡池",
-                data.getPools() != null ? data.getPools().size() : 0));
         luckLabel.setText(analysisLuckName(data.getLuckyType()));
-        playerInfoPane.setVisible(true);
-        playerInfoPane.setManaged(true);
     }
 
     private void buildPoolCards(CommonGachaData data) {
@@ -159,7 +151,7 @@ public class GameGachaCommonView implements FxmlView<GameGachaCommonViewModel>, 
         card.setPadding(new Insets(12));
         HBox.setHgrow(card, Priority.ALWAYS);
 
-        // ---- 头部：卡池名 + 运气徽章 + 总抽数 ----
+        // ---- 头部 ----
         VBox header = new VBox(2);
         Label poolNameLabel = new Label(pool.getPoolName());
         poolNameLabel.getStyleClass().add("pool-title");
@@ -173,29 +165,24 @@ public class GameGachaCommonView implements FxmlView<GameGachaCommonViewModel>, 
 
         Label dateLabel = new Label(pool.getTime() != null ? pool.getTime() : "");
         dateLabel.getStyleClass().add("pool-date");
-
         header.getChildren().addAll(titleRow, countLabel, dateLabel);
 
-        // ---- 中部：统计信息 ----
+        // ---- 中部统计 ----
         VBox stats = new VBox(5);
 
-        // 五星统计
+        // 当前已垫抽数
+        stats.getChildren().add(buildStatRow("五星已垫", String.valueOf(pool.getNoUpSsrSize()), "ssr-accent"));
+        stats.getChildren().add(buildStatRow("四星已垫", String.valueOf(pool.getNoUpSrSize()), "sr-accent"));
+
+        // 五星
         stats.getChildren().add(buildStatRow("五星数量", String.format("%d [%.2f%%]",
                 pool.getSsrCount(), pct(pool.getSsrCount(), pool.getTotalCount())), "ssr-accent"));
-        stats.getChildren().add(buildStatRow("五星平均/最小/最大",
-                String.format("%.2f / %d / %d", pool.getSsrAvg(), pool.getSsrMin(), pool.getSsrMax()), "ssr-accent"));
+        stats.getChildren().add(buildStatRow("五星平均", String.format("%.2f",
+                pool.getSsrAvg()), "ssr-accent"));
 
-        // 四星统计
+        // 四星
         stats.getChildren().add(buildStatRow("四星数量", String.format("%d [%.2f%%]",
                 pool.getSrCount(), pct(pool.getSrCount(), pool.getTotalCount())), "sr-accent"));
-        stats.getChildren().add(buildStatRow("四星平均/最小/最大",
-                String.format("%.2f / %d / %d", pool.getSrAvg(), pool.getSrMin(), pool.getSrMax()), "sr-accent"));
-
-        // 三星统计
-        stats.getChildren().add(buildStatRow("三星数量", String.format("%d [%.2f%%]",
-                pool.getrCount(), pct(pool.getrCount(), pool.getTotalCount())), "default-accent"));
-        stats.getChildren().add(buildStatRow("三星平均/最小/最大",
-                String.format("%.2f / %d / %d", pool.getrAvg(), pool.getrMin(), pool.getrMax()), "default-accent"));
 
         // UP 统计（仅武器池）
         if (pool.getType() == LocalGachaType.WEAPON_POOL) {
@@ -210,11 +197,13 @@ public class GameGachaCommonView implements FxmlView<GameGachaCommonViewModel>, 
                     pool.getNonBannerRate() * 100), "up-accent"));
         }
 
-        // ---- 底部：五星列表 ----
+        // ---- 底部：五星列表（时间倒序，最新在前） ----
+        List<CommonGachaItem> reversedList = new ArrayList<>(
+                pool.getSsrDataList() != null ? pool.getSsrDataList() : List.of());
+        java.util.Collections.reverse(reversedList);
         ListView<CommonGachaItem> listView = new ListView<>();
         listView.getStyleClass().add("gacha-list");
-        listView.setItems(FXCollections.observableArrayList(
-                pool.getSsrDataList() != null ? pool.getSsrDataList() : List.of()));
+        listView.setItems(FXCollections.observableArrayList(reversedList));
         listView.setCellFactory(param -> new SsrItemListCell(pool));
         listView.setPrefHeight(200);
         VBox.setVgrow(listView, Priority.ALWAYS);
@@ -238,18 +227,33 @@ public class GameGachaCommonView implements FxmlView<GameGachaCommonViewModel>, 
         return total > 0 ? (double) part / total * 100 : 0;
     }
 
-    /** 五星条目单元格 */
-    private static class SsrItemListCell extends ListCell<CommonGachaItem> {
+    /** 获取物品立绘，fork_ 开头走弧盘路径，其余走角色路径 */
+    private Image getItemImage(String itemId) {
+        boolean fork = itemId != null && itemId.startsWith("fork_");
+        String base = fork ? IMG_BASE_FORK : IMG_BASE_TALL;
+        String ext = fork ? ".png" : ".PNG";
+        return viewModel.getImageCacheManager().get(base + itemId + ext, 0, 42, true, true);
+    }
+
+    /** 五星条目单元格：立绘 + 名称/日期 + UP标签/出货抽数 + 进度条 */
+    private class SsrItemListCell extends ListCell<CommonGachaItem> {
         private final BorderPane root;
+        private final ImageView iv;
         private final Label name;
         private final Label date;
-        private final Label pity;
+        private final Label count;
+        private final Label upTag;
         private final ProgressBar progressBar;
         private final CommonGachaPool pool;
 
         SsrItemListCell(CommonGachaPool pool) {
             this.pool = pool;
             root = new BorderPane();
+
+            iv = new ImageView();
+            iv.setFitHeight(42);
+            iv.setFitWidth(42);
+            iv.setSmooth(true);
 
             name = new Label();
             name.getStyleClass().add("role-name");
@@ -259,14 +263,19 @@ public class GameGachaCommonView implements FxmlView<GameGachaCommonViewModel>, 
             center.setPadding(new Insets(0, 0, 0, 10));
             center.setAlignment(Pos.CENTER_LEFT);
 
-            pity = new Label();
-            pity.getStyleClass().add("role-name");
+            upTag = new Label("UP!");
+            upTag.getStyleClass().add("up-tag");
+            count = new Label();
+            count.getStyleClass().add("role-name");
+            HBox right = new HBox(8.0, upTag, count);
+            right.setAlignment(Pos.CENTER_RIGHT);
 
             progressBar = new ProgressBar();
             progressBar.setProgress(0);
 
+            root.setLeft(iv);
             root.setCenter(center);
-            root.setRight(pity);
+            root.setRight(right);
             root.setBottom(progressBar);
             root.getStyleClass().addAll("role-cell");
         }
@@ -275,10 +284,25 @@ public class GameGachaCommonView implements FxmlView<GameGachaCommonViewModel>, 
         protected void updateItem(CommonGachaItem item, boolean empty) {
             super.updateItem(item, empty);
             if (!empty && item != null) {
+                iv.setImage(getItemImage(item.getItemId()));
                 name.setText(item.getItemName());
                 date.setText(item.getTime());
-                pity.setText(String.format("%02d", item.getUpCount()));
+                count.setText(String.format("%02d", item.getUpCount()));
                 progressBar.setProgress((double) item.getUpCount() / pool.getMax());
+
+                if (item.isUp()) {
+                    upTag.setVisible(true);
+                    count.getStyleClass().removeAll("unup");
+                    count.getStyleClass().add("up");
+                    progressBar.getStyleClass().removeAll("unup");
+                    progressBar.getStyleClass().add("up");
+                } else {
+                    upTag.setVisible(false);
+                    count.getStyleClass().removeAll("up");
+                    count.getStyleClass().add("unup");
+                    progressBar.getStyleClass().removeAll("up");
+                    progressBar.getStyleClass().add("unup");
+                }
                 setGraphic(root);
             } else {
                 setGraphic(null);
