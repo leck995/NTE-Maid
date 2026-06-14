@@ -258,7 +258,12 @@ public class MainView implements Initializable, FxmlView<MainViewModel> {
                     ViewTuple<?, ?> load = NavLoader.load(navData);
                     bgPane.setVisible(navData.isShowBg());
                     child.getChildren().setAll(load.getView());
-                    startNavAnim();
+                    child.setOpacity(0);
+                    Platform.runLater(()->{
+                        child.setOpacity(1);
+                        startNavAnim();
+                    });
+
                 } else {
                     source.setSelected(true);
                 }

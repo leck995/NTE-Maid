@@ -6,6 +6,7 @@ import cn.tealc.ntemaid.model.taygedo.TaygedoAccount;
 import cn.tealc.ntemaid.service.TaygedoAccountService;
 import cn.tealc.ntemaid.ui.base.BaseViewModel;
 import com.google.inject.Inject;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -28,8 +29,10 @@ public class TaygedoAccountViewModel extends BaseViewModel {
 
 
     private void refreshAccountList() {
-        List<TaygedoAccount> allAccount = accountService.getAll();
-        accountList.setAll(allAccount);
+        Thread.startVirtualThread(() -> {
+            List<TaygedoAccount> allAccount = accountService.getAll();
+            Platform.runLater(() -> accountList.setAll(allAccount));
+        });
     }
 
 

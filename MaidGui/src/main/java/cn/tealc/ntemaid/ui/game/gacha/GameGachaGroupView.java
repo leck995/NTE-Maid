@@ -35,8 +35,10 @@ public class GameGachaGroupView implements FxmlView<GameGachaGroupViewModel>, In
     public void initialize(URL url, ResourceBundle resourceBundle) {
         if (Config.getSetting().isEnableTaygedo()){
             createTaygedoChild();
+            taygedoBtn.setSelected(true);
         }else {
             createCommonChild();
+            commonBtn.setSelected(true);
             taygedoBtn.setVisible(false);
             taygedoBtn.setManaged(false);
         }

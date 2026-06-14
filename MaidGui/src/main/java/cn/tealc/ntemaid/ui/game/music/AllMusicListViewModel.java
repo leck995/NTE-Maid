@@ -9,6 +9,7 @@ import cn.tealc.ntemaid.service.PlaylistService;
 import cn.tealc.teafx.utils.message.MessageInfo;
 import com.google.inject.Inject;
 import de.saxsys.mvvmfx.ViewModel;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
@@ -35,8 +36,10 @@ public class AllMusicListViewModel implements ViewModel {
     }
 
     public void refreshMusicList() {
-        List<Music> allMusic = musicService.getAllMusic();
-        allMusicList.setAll(allMusic);
+        Thread.startVirtualThread(() -> {
+            List<Music> allMusic = musicService.getAllMusic();
+            Platform.runLater(() -> allMusicList.setAll(allMusic));
+        });
     }
 
     /**

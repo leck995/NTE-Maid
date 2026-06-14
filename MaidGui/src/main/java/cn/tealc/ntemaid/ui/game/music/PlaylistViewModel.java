@@ -8,6 +8,7 @@ import cn.tealc.ntemaid.service.PlaylistService;
 import cn.tealc.teafx.utils.message.MessageInfo;
 import com.google.inject.Inject;
 import de.saxsys.mvvmfx.ViewModel;
+import javafx.application.Platform;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -28,8 +29,10 @@ public class PlaylistViewModel implements ViewModel {
     }
 
     private void getAllPlaylist() {
-        List<Playlist> playlistList = playlistService.getPlaylistList();
-        playlists.setAll(playlistList);
+        Thread.startVirtualThread(() -> {
+            List<Playlist> playlistList = playlistService.getPlaylistList();
+            Platform.runLater(() -> playlists.setAll(playlistList));
+        });
     }
 
     /**

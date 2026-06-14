@@ -52,13 +52,15 @@ public class HomeViewModel implements ViewModel, SceneLifecycle {
         NotificationManager.subscribe(NotificationKey.HOME_GAME_TIME_UPDATE, gameTimeObserver);
 
         if (Config.getSetting().getGameRootDir() == null){
-            String gameInstallPath = getGameInstallPath();
-            if (gameInstallPath != null){
-                Config.getSetting().setGameRootDir(gameInstallPath);
-                Platform.runLater(()->{
-                    NotificationManager.message(MessageInfo.info("已识别到安装目录，若错误请手动设置"));
-                });
-            }
+            Thread.startVirtualThread(() -> {
+                String gameInstallPath = getGameInstallPath();
+                if (gameInstallPath != null){
+                    Platform.runLater(() -> {
+                        Config.getSetting().setGameRootDir(gameInstallPath);
+                        NotificationManager.message(MessageInfo.info("已识别到安装目录，若错误请手动设置"));
+                    });
+                }
+            });
         }
     }
 

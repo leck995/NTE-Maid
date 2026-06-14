@@ -5,6 +5,7 @@ import cn.tealc.ntemaid.service.GameTimeService;
 import cn.tealc.ntemaid.util.LanguageManager;
 import com.google.inject.Inject;
 import de.saxsys.mvvmfx.ViewModel;
+import javafx.application.Platform;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -13,8 +14,6 @@ import javafx.collections.ObservableList;
 import javafx.scene.chart.XYChart;
 
 import java.time.Duration;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 
@@ -32,71 +31,48 @@ public class GameTimeViewModel implements ViewModel {
     @Inject
     public GameTimeViewModel(GameTimeService gameTimeService) {
         this.gameTimeService = gameTimeService;
-        freshTotalData();
+        Thread.startVirtualThread(this::freshTotalData);
     }
 
 
-
-    /**
-     * @description: 更新用户数据
-     * @param:
-     * @return  void
-     * @date:   2024/10/8
-     */
     private void freshTotalData() {
-        chartData.clear();
         List<GameTime> allRecords = gameTimeService.getAllRecords();
-        if (allRecords.isEmpty()) return;
+        if (allRecords.isEmpty()) {
+            Platform.runLater(() -> chartData.clear());
+            return;
+        }
 
-        // 1. 统计总时长（小时）
         long totalMs = allRecords.stream().mapToLong(GameTime::getDuration).sum();
-        allTotalTimeText.set(String.format("%.2f", totalMs / 3600000.0));
+        double totalHours = totalMs / 3600000.0;
 
-        // 2. 统计总天数
         Map<String, List<GameTime>> groupedMap = gameTimeService.getGroupedRecords();
-        currentDayText.set(String.format(LanguageManager.getString("ui.game_time.account.days"), groupedMap.size()));
+        int dayCount = groupedMap.size();
 
-        // 3. 更新图表 (近七日)
-        updateChartData(gameTimeService.getLastSevenDaysGroupedRecords(),
-                LanguageManager.getString("ui.game_time.total.charts.main_account"));
-
-        // 4. 当前账号统计（这里假设 mainMap 就是 groupedMap，根据你具体逻辑调整）
-        double currentTotalTimeHours = totalMs / 3600000.0;
-        currentTotalTimeText.set(String.format("%.2f", currentTotalTimeHours));
-        totalProgressValue.set(1.0); // 比例逻辑
-
-        // 5. 更新今日详情
-        updateCurrentGameTime();
-    }
-
-    private void updateChartData(Map<String, List<GameTime>> map, String name) {
+        Map<String, List<GameTime>> last7Days = gameTimeService.getLastSevenDaysGroupedRecords();
         XYChart.Series<String, Double> series = new XYChart.Series<>();
-        series.setName(name);
-
-        map.forEach((date, list) -> {
+        series.setName(LanguageManager.getString("ui.game_time.total.charts.main_account"));
+        last7Days.forEach((date, list) -> {
             long dayDuration = list.stream().mapToLong(GameTime::getDuration).sum();
-            series.getData().add(new XYChart.Data<>(date, dayDuration / 60000.0)); // 转为分钟显示
+            series.getData().add(new XYChart.Data<>(date, dayDuration / 60000.0));
         });
-        chartData.add(series);
-    }
 
-    /**
-     * @description: 获取当前账号今日游玩时间
-     * @param:
-     * @return  void
-     * @date:   2024/8/4
-     */
-    private void updateCurrentGameTime() {
-        long sum = gameTimeService.getTodayTotalDuration();
-        Duration duration = Duration.ofMillis(sum);
-        long hour = duration.toHours();
-        long minute = duration.toMinutesPart();
-        currentProgressValue.set(duration.toMinutes() / 1440.0);
-        currentTimeText.set(String.format(
-                LanguageManager.getString("ui.game_time.account.duration"),
-                hour,
-                minute
-        ));
+        long todayDuration = gameTimeService.getTodayTotalDuration();
+        Duration duration = Duration.ofMillis(todayDuration);
+
+        Platform.runLater(() -> {
+            chartData.clear();
+            chartData.add(series);
+            allTotalTimeText.set(String.format("%.2f", totalHours));
+            currentDayText.set(String.format(LanguageManager.getString("ui.game_time.account.days"), dayCount));
+            currentTotalTimeText.set(String.format("%.2f", totalHours));
+            totalProgressValue.set(1.0);
+            currentTimeText.set(String.format(
+                    LanguageManager.getString("ui.game_time.account.duration"),
+                    duration.toHours(),
+                    duration.toMinutesPart()
+            ));
+            currentProgressValue.set(duration.toMinutes() / 1440.0);
+        });
     }
 
 

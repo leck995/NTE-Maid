@@ -69,11 +69,15 @@ public class TaygedoSignInViewModel implements ViewModel {
     }
 
     private void refreshAccountList() {
-        List<TaygedoAccount> accounts = accountService.getAll();
-        accountList.setAll(accounts);
-        if (!accounts.isEmpty() && selectedAccount.get() == null) {
-            selectedAccount.set(accounts.getFirst());
-        }
+        Thread.startVirtualThread(() -> {
+            List<TaygedoAccount> accounts = accountService.getAll();
+            Platform.runLater(() -> {
+                accountList.setAll(accounts);
+                if (!accounts.isEmpty() && selectedAccount.get() == null) {
+                    selectedAccount.set(accounts.getFirst());
+                }
+            });
+        });
     }
 
     private void loadSignInData() {
