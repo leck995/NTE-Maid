@@ -14,14 +14,12 @@ public class WindowCapture {
 
     private static final User32 user32 = User32.INSTANCE;
     private static final GDI32 gdi32 = GDI32.INSTANCE;
-
     // 扩展 User32 以支持 PrintWindow
     public interface User32Ext extends User32 {
         User32Ext INSTANCE = Native.load("user32", User32Ext.class);
         boolean PrintWindow(HWND hwnd, HDC hdcBlt, int nFlags);
     }
     private static final User32Ext user32Ext = User32Ext.INSTANCE;
-
     // Windows API 常量定义
     private static final int PW_CLIENTONLY = 0x00000001;       // 只截取客户区（不要标题栏和边框）
     private static final int PW_RENDERFULLCONTENT = 0x00000002; // 确保硬件加速内容不黑屏
@@ -86,7 +84,7 @@ public class WindowCapture {
         if (hdcWindow != null) user32.ReleaseDC(hwnd, hdcWindow);
     }
 
-    public static void main(String[] args) {
+    public static void snapshot(String[] args) {
         HWND hwnd = user32.FindWindow(null, "异环  ");
 
         if (hwnd == null) {
