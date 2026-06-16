@@ -76,6 +76,8 @@ public class TaygedoSignInViewModel implements ViewModel {
                 if (!accounts.isEmpty() && selectedAccount.get() == null) {
                     selectedAccount.set(accounts.getFirst());
                 }
+
+                publish("UPDATE_SELECTED_ACCOUNT");
             });
         });
     }

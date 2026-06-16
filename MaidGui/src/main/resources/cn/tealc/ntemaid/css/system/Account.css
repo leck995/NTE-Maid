@@ -15,7 +15,8 @@
     -fx-padding: 3;
     -fx-cursor: hand;
 }
-.account-group .child-select:hover{
+.account-group .child-select:hover,
+.account-group .child-select:selected{
     -fx-text-fill: -color-accent-fg;
 }
 .account-group .child-select > Pane{

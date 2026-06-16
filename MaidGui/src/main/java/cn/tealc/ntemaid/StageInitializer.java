@@ -27,7 +27,7 @@ public class StageInitializer {
     public StageInitializer() {}
 
     public Scene init(Stage stage) throws IOException {
-        Application.setUserAgentStylesheet(FXResourcesLoader.load("css/light.css"));
+        Application.setUserAgentStylesheet(FXResourcesLoader.load("css/Light.css"));
         ViewTuple<MainView, MainViewModel> viewTuple = FluentViewLoader.fxmlView(MainView.class).load();
         Scene scene = new Scene(viewTuple.getView());
         scene.getStylesheets().add(FXResourcesLoader.load("css/Default.css"));

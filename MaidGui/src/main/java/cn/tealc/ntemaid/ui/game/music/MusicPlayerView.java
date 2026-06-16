@@ -354,21 +354,4 @@ public class MusicPlayerView extends StackPane implements FxmlView<MusicPlayerVi
             viewModel.loadMusicListFromDir(file);
         }
     }
-
-    @FXML
-    void showTipEvent(Event event) {
-      String tip = """
-              游戏内键盘快捷键
-              播放暂停  ->  Pause
-              提高音量  ->  Ins
-              降低音量  ->  Del
-              上一曲    ->  Page Up
-              下一曲    ->  Page Down
-              只有在授予程序 管理员权限 的前提下使用
-              """;
-        JFXDialogLayout build = DialogBuilder.create().title("快捷键").message(tip).cancel("取消").build();
-        NotificationManager.dialog(build);
-    }
-
-
 }

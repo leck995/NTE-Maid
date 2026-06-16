@@ -2,7 +2,6 @@
 .gacha {
     -fx-background-color: transparent;
 }
-
 /* ----- 玩家信息卡片 ----- */
 .gacha .player-info {
     -fx-background-color: rgba(0, 0, 0, 0.03);

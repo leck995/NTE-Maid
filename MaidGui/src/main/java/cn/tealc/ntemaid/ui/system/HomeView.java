@@ -92,7 +92,7 @@ public class HomeView implements Initializable, FxmlView<HomeViewModel> {
 
 
     @FXML
-    void toAlbumDir(ActionEvent event) {
+    void toGameAlbumDir(ActionEvent event) {
         Optional<File> fileOp = GameResourcesManager.getGameScreenShoot();
         if (fileOp.isPresent()) {
             try {
@@ -104,6 +104,21 @@ public class HomeView implements Initializable, FxmlView<HomeViewModel> {
             NotificationManager.publish(NotificationKey.MESSAGE, MessageInfo.warning(LanguageManager.getString("ui.home.message.type06")));
         }
     }
+
+    @FXML
+    void toAppAlbumDir(ActionEvent event) {
+        File file = new File("snapshot");
+        if (file.exists()){
+            try {
+                Desktop.getDesktop().open(file);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }else {
+            NotificationManager.publish(NotificationKey.MESSAGE, MessageInfo.warning(LanguageManager.getString("ui.home.message.type06")));
+        }
+    }
+
 
     @FXML
     void toGameDir(ActionEvent event) {

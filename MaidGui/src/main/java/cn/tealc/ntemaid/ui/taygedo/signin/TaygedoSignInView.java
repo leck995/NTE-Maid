@@ -53,6 +53,8 @@ public class TaygedoSignInView implements FxmlView<TaygedoSignInViewModel>, Init
         accountCombo.setCellFactory(param -> new AccountListCell());
         accountCombo.setButtonCell(new AccountListCell());
         viewModel.selectedAccountProperty().bindBidirectional(accountCombo.valueProperty());
+        viewModel.subscribe("UPDATE_SELECTED_ACCOUNT",(s, objects) -> accountCombo.getSelectionModel().selectFirst());
+
 
         statusLabel.textProperty().bind(viewModel.statusMessageProperty());
 
