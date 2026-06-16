@@ -30,6 +30,8 @@ public class GameEnhanceView implements FxmlView<GameEnhanceViewModel>, Initiali
     private ToggleSwitch fishingEnableSwitch;
     @FXML
     private ToggleSwitch snapshotEnableSwitch;
+    @FXML
+    private ToggleSwitch roleAutoWalkingSwitch;
 
 
     @Override
@@ -38,7 +40,7 @@ public class GameEnhanceView implements FxmlView<GameEnhanceViewModel>, Initiali
 
         adventureManualSwitch.selectedProperty().bindBidirectional(Config.getSetting().adventureManualSkipProperty());
         snapshotEnableSwitch.selectedProperty().bindBidirectional(Config.getSetting().snapshotProperty());
-
+        roleAutoWalkingSwitch.selectedProperty().bindBidirectional(Config.getSetting().autoWalkingProperty());
     }
 
     private void initFishing() {

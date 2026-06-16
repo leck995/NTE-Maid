@@ -7,7 +7,7 @@ import cn.tealc.ntemaid.base.ShutdownManager;
 import cn.tealc.ntemaid.base.notification.NotificationKey;
 import cn.tealc.ntemaid.base.notification.NotificationManager;
 import cn.tealc.ntemaid.jna.GameAppListener;
-import cn.tealc.ntemaid.jna.GlobalKeyListener;
+import cn.tealc.ntemaid.jna.key.GlobalKeyListenManager;
 import cn.tealc.ntemaid.thread.game.log.LogMonitorManager;
 import cn.tealc.ntemaid.thread.system.StartGameTask;
 import cn.tealc.ntemaid.ui.tray.TrayIconManager;
@@ -98,7 +98,7 @@ public class MainApp extends Application {
         } catch (NativeHookException e) {
             throw new RuntimeException(e);
         }
-        GlobalScreen.addNativeKeyListener(new GlobalKeyListener());
+        GlobalScreen.addNativeKeyListener(GlobalKeyListenManager.getInstance());
     }
 
 }

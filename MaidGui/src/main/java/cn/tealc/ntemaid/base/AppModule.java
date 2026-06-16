@@ -2,6 +2,7 @@ package cn.tealc.ntemaid.base;
 
 import cn.tealc.ntemaid.StageInitializer;
 import cn.tealc.ntemaid.dao.*;
+import cn.tealc.ntemaid.jna.key.Win32KeySender;
 import cn.tealc.ntemaid.repository.GameDataRepository;
 import cn.tealc.ntemaid.repository.NavRepository;
 import cn.tealc.ntemaid.service.*;
@@ -55,6 +56,9 @@ public class AppModule extends AbstractModule {
         bind(ShutdownManager.class).in(Singleton.class);
         bind(TrayIconManager.class).in(Singleton.class);
         bind(StageInitializer.class).in(Singleton.class);
+
+
+        bind(Win32KeySender.class).in(Singleton.class);
     }
 
     @Provides

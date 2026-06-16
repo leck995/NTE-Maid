@@ -10,7 +10,6 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-
 <StackPane fx:id="root" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cn.tealc.ntemaid.ui.game.manage.GameEnhanceView">
    <children>
       <AnchorPane prefHeight="800.0" prefWidth="1200.0" styleClass="game-setting">
@@ -40,7 +39,7 @@
                                  <children>
                                     <Label styleClass="title-3" text="截图功能" />
                                     <ToggleSwitch fx:id="snapshotEnableSwitch" labelPosition="RIGHT" text="开启截图" />
-                                    <Label styleClass="text-subtle" text="默认使用 - 键进行截图" />
+                                    <Label styleClass="text-subtle" text="默认使用 + 键进行截图" />
                                  </children>
                               </VBox>
                               <VBox layoutX="10.0" layoutY="114.0" spacing="10.0">
@@ -48,6 +47,13 @@
                                     <Label styleClass="title-3" text="探索指南优化" />
                                     <ToggleSwitch fx:id="adventureManualSwitch" labelPosition="RIGHT" text="自动跳转到每日任务" />
                                     <Label styleClass="text-subtle" text="4k屏未适配，如果无法自动跳转，请联系开发者进行适配" />
+                                 </children>
+                              </VBox>
+                              <VBox layoutX="10.0" layoutY="401.0" spacing="10.0">
+                                 <children>
+                                    <Label styleClass="title-3" text="人物自动行走" />
+                                    <ToggleSwitch fx:id="roleAutoWalkingSwitch" labelPosition="RIGHT" text="开启" />
+                                    <Label styleClass="text-subtle" text="按住CapsLk开启自动行走，再按取消" />
                                  </children>
                               </VBox>
                            </children>

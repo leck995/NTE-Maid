@@ -1,5 +1,6 @@
 package cn.tealc.ntemaid.ui.system.update;
 
+import cn.tealc.ntemaid.MainApp;
 import cn.tealc.ntemaid.base.AppConstants;
 import cn.tealc.ntemaid.base.notification.NotificationKey;
 import cn.tealc.ntemaid.base.notification.NotificationManager;
@@ -148,7 +149,7 @@ public class UpdateView implements FxmlView<UpdateViewModel>, Initializable {
         titlebar.getChildren().clear();
         titlebar.getChildren().add(headerbar);
         Platform.runLater(() -> {
-            Stage window = (Stage) root.getScene().getWindow();
+            Stage window = (Stage) MainApp.window.getScene().getWindow();
             HeaderBar.setPrefButtonHeight(window, 0);
         });
     }

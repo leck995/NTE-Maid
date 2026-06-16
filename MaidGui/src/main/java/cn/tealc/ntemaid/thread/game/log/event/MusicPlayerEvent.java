@@ -1,7 +1,7 @@
 package cn.tealc.ntemaid.thread.game.log.event;
 
 import cn.tealc.ntemaid.base.Config;
-import cn.tealc.ntemaid.jna.Win32KeySender;
+import cn.tealc.ntemaid.jna.key.Win32KeySender;
 import cn.tealc.ntemaid.player.BaseAudioPlayer;
 import cn.tealc.ntemaid.player.MusicPlayerClient;
 import javafx.util.Duration;
@@ -43,8 +43,19 @@ public class MusicPlayerEvent implements Consumer<String> {
                 return;
             player.playWithFadeIn();
         }else if (row.contains(MUSIC_PLAYING)){
-            stopGameFirstMusic();
+            if (!Config.getSetting().isGamePlayerOpen()){
+                stopGameFirstMusic();
+            }
+        }else if (row.contains(MUSIC_PAUSE)){
+            if (Config.getSetting().isGamePlayerOpen()){
+                starGameFirstMusic();
+            }
         }
+    }
+
+    private void starGameFirstMusic() {
+        Win32KeySender win32KeySender = new Win32KeySender();
+        win32KeySender.clickKey(Win32KeySender.VirtualKey.DIGIT2,Duration.millis(1500));
     }
 
     /**

@@ -110,6 +110,9 @@ public class GameAppListener implements WinUser.WinEventProc {
     }
 
     public WinDef.HWND getGameHWND() {
+        if (game != null && !user32.IsWindow(game)) {
+            game = user32.FindWindow(null, "异环  ");
+        }
         return game;
     }
 }

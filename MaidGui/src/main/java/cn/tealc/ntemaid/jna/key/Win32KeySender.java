@@ -1,7 +1,7 @@
-package cn.tealc.ntemaid.jna;
+package cn.tealc.ntemaid.jna.key;
 
+import cn.tealc.ntemaid.jna.GameAppListener;
 import com.sun.jna.Native;
-import com.sun.jna.platform.win32.WinDef;
 import com.sun.jna.platform.win32.WinDef.HWND;
 import com.sun.jna.platform.win32.WinDef.LPARAM;
 import com.sun.jna.platform.win32.WinDef.WPARAM;
@@ -60,6 +60,13 @@ public class Win32KeySender {
         scheduler.schedule(() -> clickKey(key), (long) delay.toMillis(), TimeUnit.MILLISECONDS);
     }
 
+    public void pressKey(VirtualKey key) {
+        pressKey(key.vkCode, key.scanCode);
+    }
+    public void releaseKey(VirtualKey key) {
+        releaseKey(key.vkCode, key.scanCode);
+    }
+
     // ---- 鼠标：立即执行 ----
 
     /**
@@ -92,14 +99,28 @@ public class Win32KeySender {
         if (hwnd == null) {
             return;
         }
-
         int lParamDown = (scanCode << 16);
         int lParamUp = (scanCode << 16) | (1 << 30) | (1 << 31) | 1;
-
         User32Ext.INSTANCE.PostMessageW(hwnd, WinUser.WM_KEYDOWN, new WPARAM(vkCode), new LPARAM(lParamDown));
         User32Ext.INSTANCE.PostMessageW(hwnd, WinUser.WM_KEYUP, new WPARAM(vkCode), new LPARAM(lParamUp));
         log.debug("PostMessage 按键 VK=0x{} SC=0x{} -> {}", Integer.toHexString(vkCode), Integer.toHexString(scanCode), GAME_WINDOW_TITLE);
     }
+
+    private void pressKey(int vkCode, int scanCode) {
+        if (hwnd == null) {
+            return;
+        }
+        int lParamDown = (scanCode << 16);
+        User32Ext.INSTANCE.PostMessageW(hwnd, WinUser.WM_KEYDOWN, new WPARAM(vkCode), new LPARAM(lParamDown));
+    }
+    private void releaseKey(int vkCode, int scanCode) {
+        if (hwnd == null) {
+            return;
+        }
+        int lParamUp = (scanCode << 16) | (1 << 30) | (1 << 31) | 1;
+        User32Ext.INSTANCE.PostMessageW(hwnd, WinUser.WM_KEYUP, new WPARAM(vkCode), new LPARAM(lParamUp));}
+
+
 
     private void postMouseClick(int downMsg, int upMsg, int x, int y) {
         if (hwnd == null) {

@@ -5,33 +5,36 @@ import cn.tealc.ntemaid.base.AppInjector;
 import cn.tealc.ntemaid.base.Config;
 import cn.tealc.ntemaid.base.notification.NotificationKey;
 import cn.tealc.ntemaid.base.notification.NotificationManager;
+import cn.tealc.ntemaid.model.system.AnnouncementItem;
+import cn.tealc.ntemaid.model.system.ResponseBody;
 import cn.tealc.ntemaid.model.system.nav.NavData;
 import cn.tealc.ntemaid.model.system.realease.Release;
 import cn.tealc.ntemaid.model.taygedo.TaygedoAccount;
 import cn.tealc.ntemaid.player.MusicPlayerClient;
 import cn.tealc.ntemaid.repository.NavRepository;
-import cn.tealc.ntemaid.service.AsyncRunner;
-import cn.tealc.ntemaid.service.TaygedoAccountService;
-import cn.tealc.ntemaid.service.TaygedoLoginService;
-import cn.tealc.ntemaid.service.TaygedoSignInService;
+import cn.tealc.ntemaid.service.*;
+import cn.tealc.ntemaid.thread.system.AnnouncementGetTask;
 import cn.tealc.ntemaid.thread.system.resources.AppResourcesSyncTask;
 import cn.tealc.ntemaid.thread.system.update.CheckAppVersionTask;
 import cn.tealc.ntemaid.thread.system.update.DeleteOldAppVersionTask;
 import cn.tealc.ntemaid.util.LanguageManager;
 import cn.tealc.taygedo.TaygedoException;
 import cn.tealc.taygedo.model.SigninState;
-import cn.tealc.teafx.utils.ResponseBody;
 import cn.tealc.teafx.utils.message.MessageInfo;
 import cn.tealc.teafx.utils.message.MessageType;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.inject.Inject;
 import de.saxsys.mvvmfx.MvvmFX;
 import de.saxsys.mvvmfx.SceneLifecycle;
 import de.saxsys.mvvmfx.ViewModel;
 import javafx.application.Platform;
+import javafx.util.Duration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -41,7 +44,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 public class MainViewModel implements ViewModel, SceneLifecycle {
     private static final Logger LOG = LoggerFactory.getLogger(MainViewModel.class);
-
+    private static final String ANNOUNCEMENTS = "ANNOUNCEMENTS";
     private final TaygedoAccountService accountService;
     private final TaygedoLoginService loginService;
     private final TaygedoSignInService signInService;
@@ -77,6 +80,7 @@ public class MainViewModel implements ViewModel, SceneLifecycle {
         initMusicClient();
         startTaygedoTask();
         syncAppResources();
+        checkAnnouncements();
     }
 
     private static void initMusicClient() {
@@ -198,5 +202,30 @@ public class MainViewModel implements ViewModel, SceneLifecycle {
 
         asyncRunner.runBackground(new DeleteOldAppVersionTask());
     }
+
+    private void checkAnnouncements() {
+        String gameId = "nte2001";
+        AnnouncementGetTask task = new AnnouncementGetTask(gameId);
+        task.setOnSucceeded(workerStateEvent -> {
+            ResponseBody<List<AnnouncementItem>> value = task.getValue();
+            if (value.getCode() == 200 && value.getData() != null) {
+                ConfigService configService = AppInjector.getInstance(ConfigService.class);
+                Set<Integer> notifiedIds = configService.getObjectConfig(ANNOUNCEMENTS, new TypeReference<Set<Integer>>() {})
+                        .orElse(new HashSet<>());
+                for (AnnouncementItem item : value.getData()) {
+                    if (!notifiedIds.contains(item.getId())) {
+                        Platform.runLater(() -> {
+                            MessageInfo messageInfo = new MessageInfo(MessageType.INFO,item.getTitle(), item.getContent(),true, Duration.seconds(30));
+                            NotificationManager.message(messageInfo);
+                        });
+                        notifiedIds.add(item.getId());
+                    }
+                }
+                configService.setObject(ANNOUNCEMENTS, notifiedIds);
+            }
+        });
+        asyncRunner.runBackground(task);
+    }
+
 
 }

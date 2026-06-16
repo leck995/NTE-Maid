@@ -1,7 +1,7 @@
 package cn.tealc.ntemaid.thread.game.log.event;
 
 import cn.tealc.ntemaid.base.Config;
-import cn.tealc.ntemaid.jna.Win32KeySender;
+import cn.tealc.ntemaid.jna.key.Win32KeySender;
 import javafx.util.Duration;
 
 import java.util.function.Consumer;

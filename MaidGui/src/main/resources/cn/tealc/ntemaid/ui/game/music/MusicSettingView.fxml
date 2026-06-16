@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import atlantafx.base.controls.ToggleSwitch?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+
+<StackPane fx:id="root" prefHeight="200.0" prefWidth="550.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cn.tealc.ntemaid.ui.game.music.MusicSettingView">
+   <children>
+      <VBox prefHeight="200.0" prefWidth="100.0">
+         <children>
+            <VBox spacing="10.0">
+               <children>
+                  <Label styleClass="title-3" text="开启游戏内播放器" />
+                  <ToggleSwitch fx:id="gamePlayerSwitch" labelPosition="RIGHT" text="开启" />
+                  <Label prefWidth="400.0" styleClass="text-subtle" text="由于1.1版本游戏会在其播放器关闭的情况下播放城市背景音乐，如果想使用本程序的播放器且没有背景音乐，请开启此选项，并前往游戏内设置-声音-播放器音量设置为0" wrapText="true" />
+               </children>
+            </VBox>
+         </children>
+      </VBox>
+   </children>
+   <padding>
+      <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+   </padding>
+</StackPane>

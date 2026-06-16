@@ -2,7 +2,7 @@ package cn.tealc.ntemaid.thread.game.log.event;
 
 import cn.tealc.ntemaid.FXResourcesLoader;
 import cn.tealc.ntemaid.base.Config;
-import cn.tealc.ntemaid.jna.Win32KeySender;
+import cn.tealc.ntemaid.jna.key.Win32KeySender;
 import cn.tealc.ntemaid.jna.WindowClientSizeUtil;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;

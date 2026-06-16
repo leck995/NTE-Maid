@@ -1,10 +1,16 @@
 package cn.tealc.ntemaid.ui.game.music;
 
 import atlantafx.base.util.Animations;
+import cn.tealc.ntemaid.base.notification.NotificationManager;
+import cn.tealc.ntemaid.ui.game.manage.GameEnhanceView;
+import cn.tealc.ntemaid.ui.game.manage.GameEnhanceViewModel;
+import com.jfoenixN.controls.JFXDialogLayout;
 import de.saxsys.mvvmfx.*;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
+import javafx.scene.control.Label;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.BorderPane;
@@ -86,4 +92,19 @@ public class MusicParentView extends BorderPane implements FxmlView<MusicParentV
         }
     }
 
+
+    @FXML
+    void showSettingPane(ActionEvent event) {
+        JFXDialogLayout layout = new JFXDialogLayout();
+
+        ViewTuple<MusicSettingView, MusicSettingViewModel> viewTuple = FluentViewLoader.fxmlView(MusicSettingView.class).load();
+        layout.setBody(viewTuple.getView());
+
+        NotificationManager.dialog(layout);
+
+
+        //Label musicModel = new Label()
+
+
+    }
 }

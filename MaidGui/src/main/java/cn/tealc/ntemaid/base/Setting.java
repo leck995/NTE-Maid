@@ -77,7 +77,8 @@ public class Setting {
     private final SimpleStringProperty musicDir = new SimpleStringProperty(); //歌曲目录
     private final SimpleDoubleProperty musicVolume = new SimpleDoubleProperty(0.5); //歌曲目录
     private final SimpleBooleanProperty musicEnable = new SimpleBooleanProperty(true); //启动游戏音乐播放功能
-
+    private final SimpleBooleanProperty musicOutControlByLog = new SimpleBooleanProperty(true); //启动游戏播放控制不受日志控制, 目前仍交给musicEnable
+    private final SimpleBooleanProperty gamePlayerOpen = new SimpleBooleanProperty(false); //游戏内播放器开启
 
     /*=================钓鱼相关===================*/
     private final SimpleBooleanProperty fishing = new SimpleBooleanProperty(true);//开启钓鱼优化
@@ -88,6 +89,7 @@ public class Setting {
 
     private final SimpleBooleanProperty snapshot = new SimpleBooleanProperty(true);//开启截图功能
 
+    private final SimpleBooleanProperty autoWalking = new SimpleBooleanProperty(true);//开启人物自动行走
 
 
     // 自定义序列化器
@@ -112,6 +114,42 @@ public class Setting {
             List<String> list = p.readValueAs(List.class);
             return FXCollections.observableArrayList(list);
         }
+    }
+
+    public boolean isAutoWalking() {
+        return autoWalking.get();
+    }
+
+    public SimpleBooleanProperty autoWalkingProperty() {
+        return autoWalking;
+    }
+
+    public void setAutoWalking(boolean autoWalking) {
+        this.autoWalking.set(autoWalking);
+    }
+
+    public boolean isMusicOutControlByLog() {
+        return musicOutControlByLog.get();
+    }
+
+    public SimpleBooleanProperty musicOutControlByLogProperty() {
+        return musicOutControlByLog;
+    }
+
+    public void setMusicOutControlByLog(boolean musicOutControlByLog) {
+        this.musicOutControlByLog.set(musicOutControlByLog);
+    }
+
+    public boolean isGamePlayerOpen() {
+        return gamePlayerOpen.get();
+    }
+
+    public SimpleBooleanProperty gamePlayerOpenProperty() {
+        return gamePlayerOpen;
+    }
+
+    public void setGamePlayerOpen(boolean gamePlayerOpen) {
+        this.gamePlayerOpen.set(gamePlayerOpen);
     }
 
     public boolean isAdventureManualSkip() {

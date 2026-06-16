@@ -1,5 +1,6 @@
 package cn.tealc.ntemaid.service;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import javafx.util.Pair;
 
 import java.util.List;
@@ -22,14 +23,18 @@ public interface ConfigService {
      */
     Optional<Boolean> getBooleanConfig(String key);
 
-    Optional<Pair<String,String>> getPairConfig(String key);
+    Optional<Pair<String, String>> getPairConfig(String key);
 
     List<String> getListConfig(String key);
+
+    <T> Optional<T> getObjectConfig(String key, TypeReference<T> typeRef);
+
+    <T> void setObject(String key, T value);
 
     void setConfig(String key, Object value);
 
     void setConfig(String key, String... values);
-    
+
     void setConfigs(Map<String, String> configs);
 
     void removeConfig(String key);
