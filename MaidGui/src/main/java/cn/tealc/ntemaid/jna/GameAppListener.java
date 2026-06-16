@@ -17,44 +17,70 @@ import org.slf4j.LoggerFactory;
 import java.time.LocalDateTime;
 
 /**
- * @description: 有个坑，务必将其设置为全局变量，不知道为什么，不设置为全局变量，钩子无效
+ * @description: 游戏应用监听器（启动时主动同步 + 运行中纯事件驱动，拒绝常驻线程）
  * @author: Leck
- * @create: 2024-07-10 23:29
  */
 public class GameAppListener implements WinUser.WinEventProc {
     private final Logger LOG = LoggerFactory.getLogger(GameAppListener.class);
+
+    private static final String GAME_WINDOW_TITLE = "异环  ";
     private static GameAppListener gameAppListener;
     private final GameTimeService gameTimeService = AppInjector.getInstance(GameTimeService.class);
+    private final User32 user32 = User32.INSTANCE;
+
     private WinDef.HWND game;
     private WinNT.HANDLE hKey;
     private boolean start = false;
-    private final User32 user32 = User32.INSTANCE;
     private LocalDateTime startGameTime;
-
 
     private GameAppListener() {}
 
-    public static GameAppListener getInstance() {
+    public static synchronized GameAppListener getInstance() {
         if (gameAppListener == null) gameAppListener = new GameAppListener();
         return gameAppListener;
     }
 
-    // 提供开启方法
+    /**
+     * 开启监听
+     */
     public void startListening() {
+        // 1. 挂载前台切换钩子（处理应用运行期间，游戏切换、启动、或关闭后切回其他窗体的事件）
         if (hKey == null) {
-            // 0x0003 是 EVENT_SYSTEM_FOREGROUND
             hKey = User32.INSTANCE.SetWinEventHook(0x0003, 0x0003, null, this, 0, 0, 0);
             LOG.info("游戏应用监听器已启动");
         }
+
+        // 2. 【核心改进】启动时单次主动检查：防止游戏早已在前台运行，或者错过了切换事件
+        checkGameStatusOnStart();
     }
 
-    // 提供停止方法
+    /**
+     * 启动时单次同步状态，不挂载任何常驻线程
+     */
+    private void checkGameStatusOnStart() {
+        if (start) return;
+
+        // 主动去系统的所有顶级窗口中寻找“异环”
+        WinDef.HWND hwnd = user32.FindWindow(null, GAME_WINDOW_TITLE);
+        if (hwnd != null && user32.IsWindow(hwnd)) {
+            // 找到了游戏窗口，进一步确认它是否就是当前的前台窗口
+            WinDef.HWND foregroundHwnd = user32.GetForegroundWindow();
+            if (hwnd.equals(foregroundHwnd)) {
+                game = hwnd;
+                start = true;
+                startGameTime = LocalDateTime.now(); // 如果是补录，也可以考虑通过进程创建时间来获取更精准的startGameTime
+                LOG.info("【同步成功】检测到游戏已经在前台运行，自动激活监听状态");
+            }
+        }
+    }
+
     public void stopListening() {
         if (hKey != null) {
             User32.INSTANCE.UnhookWinEvent(hKey);
             hKey = null;
             LOG.info("游戏应用监听器已停止");
         }
+        start = false;
     }
 
     @Override
@@ -63,26 +89,29 @@ public class GameAppListener implements WinUser.WinEventProc {
         user32.GetWindowText(hwnd, buffer, buffer.length);
         String title = Native.toString(buffer);
 
-        if (title.equals("异环  ")) {
+        if (title.equals(GAME_WINDOW_TITLE)) {
             if (!start) {
                 game = hwnd;
                 start = true;
-                startGameTime = LocalDateTime.now(); // 记录开始时间
-                LOG.info("检测到异环已经启动");
+                startGameTime = LocalDateTime.now();
+                LOG.info("检测到异环切换至前台");
             }
         } else if (title.equals(Config.appTitle)) {
+            // 切回本程序时，如果游戏已经启动，更新一次 UI 上的持续时间
             if (start) {
                 long duration = java.time.Duration.between(startGameTime, LocalDateTime.now()).toMillis();
                 NotificationManager.publish(NotificationKey.HOME_GAME_TIME_UPDATE, duration);
-                save();
+                save(); // 顺便检查游戏是否已经关闭
             }
         } else {
+            // 切换到其他无关窗口
             if (start) save();
         }
     }
 
     private void save() {
-        if (!user32.IsWindow(game)) { // 窗口关闭
+        // 纯事件驱动核心：只有在发生窗口切换事件、且游戏窗口已经失效（被关闭）时才触发结算
+        if (!user32.IsWindow(game)) {
             start = false;
             LocalDateTime endTime = LocalDateTime.now();
 
@@ -91,8 +120,7 @@ public class GameAppListener implements WinUser.WinEventProc {
 
             if (Config.getSetting().isAutoKillOfficialLauncher()){
                 LOG.info("游戏结束，自动退出官方启动器");
-                NativeProcessService service = new NativeProcessService();
-                service.killOfficialLauncher();
+                new NativeProcessService().killOfficialLauncher();
             }
 
             if (Config.getSetting().isExitWhenGameOver()){
@@ -111,7 +139,7 @@ public class GameAppListener implements WinUser.WinEventProc {
 
     public WinDef.HWND getGameHWND() {
         if (game != null && !user32.IsWindow(game)) {
-            game = user32.FindWindow(null, "异环  ");
+            game = user32.FindWindow(null, GAME_WINDOW_TITLE);
         }
         return game;
     }
