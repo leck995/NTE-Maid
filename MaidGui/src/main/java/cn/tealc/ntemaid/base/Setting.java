@@ -84,6 +84,9 @@ public class Setting {
     private final SimpleBooleanProperty fishingBait = new SimpleBooleanProperty(true);//自动拉杆
     private final SimpleBooleanProperty fishingFinish = new SimpleBooleanProperty(true);//退出结算界面
 
+    private final SimpleBooleanProperty adventureManualSkip = new SimpleBooleanProperty(true);//开启探索指南跳转
+
+    private final SimpleBooleanProperty snapshot = new SimpleBooleanProperty(true);//开启截图功能
 
 
 
@@ -109,6 +112,30 @@ public class Setting {
             List<String> list = p.readValueAs(List.class);
             return FXCollections.observableArrayList(list);
         }
+    }
+
+    public boolean isAdventureManualSkip() {
+        return adventureManualSkip.get();
+    }
+
+    public SimpleBooleanProperty adventureManualSkipProperty() {
+        return adventureManualSkip;
+    }
+
+    public void setAdventureManualSkip(boolean adventureManualSkip) {
+        this.adventureManualSkip.set(adventureManualSkip);
+    }
+
+    public boolean isSnapshot() {
+        return snapshot.get();
+    }
+
+    public SimpleBooleanProperty snapshotProperty() {
+        return snapshot;
+    }
+
+    public void setSnapshot(boolean snapshot) {
+        this.snapshot.set(snapshot);
     }
 
     public Locale getLanguage() {

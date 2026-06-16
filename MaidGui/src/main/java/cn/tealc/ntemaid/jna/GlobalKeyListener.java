@@ -53,6 +53,8 @@ public class GlobalKeyListener implements NativeKeyListener {
     }
 
     private void snapshot() {
+        if (!Config.getSetting().isSnapshot())
+            return;
         Thread.startVirtualThread(() -> {
             WinDef.HWND gameHWND = GameAppListener.getInstance().getGameHWND();
             BufferedImage bufferedImage = WindowCapture.captureGameClientArea(gameHWND);

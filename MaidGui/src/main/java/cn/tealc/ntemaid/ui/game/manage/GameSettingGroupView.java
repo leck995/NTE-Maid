@@ -23,9 +23,9 @@ import java.util.ResourceBundle;
  * @author: Leck
  * @create: 2025-02-10 19:17
  */
-public class GameSettingParentView implements FxmlView<GameSettingParentViewModel>, Initializable {
+public class GameSettingGroupView implements FxmlView<GameSettingGroupViewModel>, Initializable {
     @InjectViewModel
-    private GameSettingParentViewModel viewModel;
+    private GameSettingGroupViewModel viewModel;
     @FXML
     private StackPane root;
     @FXML
@@ -37,6 +37,7 @@ public class GameSettingParentView implements FxmlView<GameSettingParentViewMode
 
     private Parent advanceChild;
     private Parent baseChild;
+    private Parent enhanceChild;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -73,6 +74,24 @@ public class GameSettingParentView implements FxmlView<GameSettingParentViewMode
             }
         }
     }
+
+
+    @FXML
+    void toEnhanceChild(ActionEvent event) {
+        if (event.getSource() instanceof ToggleButton toggleButton){
+            if (toggleButton.isSelected()) {
+                if (enhanceChild == null) {
+                    ViewTuple<GameEnhanceView, GameEnhanceViewModel> viewTuple = FluentViewLoader.fxmlView(GameEnhanceView.class).load();
+                    enhanceChild = viewTuple.getView();
+                }
+                content.getChildren().setAll(enhanceChild);
+                Animations.slideInUp(enhanceChild, Duration.millis(300)).play();
+            } else {
+                toggleButton.setSelected(true);
+            }
+        }
+    }
+
 
     private void createBaseChild(){
         if (baseChild == null) {

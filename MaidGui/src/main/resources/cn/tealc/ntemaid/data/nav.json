@@ -34,7 +34,7 @@
     "visible": true,
     "order": 3,
     "bbs": false,
-    "viewClass": "cn.tealc.ntemaid.ui.game.manage.GameSettingParentView",
+    "viewClass": "cn.tealc.ntemaid.ui.game.manage.GameSettingGroupView",
     "viewModelClass": null,
     "bottom": false,
     "fxml": true,

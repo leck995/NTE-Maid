@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import atlantafx.base.controls.ToggleSwitch?>
+<?import java.net.URL?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+
+<StackPane fx:id="root" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cn.tealc.ntemaid.ui.game.manage.GameEnhanceView">
+   <children>
+      <AnchorPane prefHeight="800.0" prefWidth="1200.0" styleClass="game-setting">
+         <children>
+            <ScrollPane fx:id="content" fitToHeight="true" fitToWidth="true" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+               <content>
+                  <HBox prefHeight="100.0" prefWidth="200.0">
+                     <children>
+                        <VBox prefHeight="200.0" prefWidth="100.0" spacing="20.0" styleClass="left" HBox.hgrow="ALWAYS">
+                           <children>
+                              <VBox spacing="10.0">
+                                 <children>
+                                    <Label styleClass="title-3" text="声明" />
+                                    <Label styleClass="title-4" text="功能均使用系统级API进行开发，无任何修改游戏内存行为" />
+                                 </children>
+                              </VBox>
+                              <VBox spacing="10.0">
+                                 <children>
+                                    <Label styleClass="title-3" text="钓鱼优化" />
+                                    <ToggleSwitch fx:id="fishingEnableSwitch" labelPosition="RIGHT" text="开启" />
+                                    <ToggleSwitch fx:id="fishingBaitSwitch" labelPosition="RIGHT" text="上钩自动拉杆" />
+                                    <ToggleSwitch fx:id="fishingFinishSwitch" labelPosition="RIGHT" layoutX="10.0" layoutY="46.0" text="钓鱼结算界面自动关闭" />
+                                    <Label styleClass="text-subtle" text="钓鱼佬慎点，来不及截图" />
+                                 </children>
+                              </VBox>
+                              <VBox layoutX="10.0" layoutY="10.0" spacing="10.0">
+                                 <children>
+                                    <Label styleClass="title-3" text="截图功能" />
+                                    <ToggleSwitch fx:id="snapshotEnableSwitch" labelPosition="RIGHT" text="开启截图" />
+                                    <Label styleClass="text-subtle" text="默认使用 - 键进行截图" />
+                                 </children>
+                              </VBox>
+                              <VBox layoutX="10.0" layoutY="114.0" spacing="10.0">
+                                 <children>
+                                    <Label styleClass="title-3" text="探索指南优化" />
+                                    <ToggleSwitch fx:id="adventureManualSwitch" labelPosition="RIGHT" text="自动跳转到每日任务" />
+                                    <Label styleClass="text-subtle" text="4k屏未适配，如果无法自动跳转，请联系开发者进行适配" />
+                                 </children>
+                              </VBox>
+                           </children>
+                        </VBox>
+                        <VBox maxWidth="350.0" prefHeight="200.0" prefWidth="100.0" spacing="10.0" styleClass="right" HBox.hgrow="ALWAYS" />
+                     </children>
+                  </HBox>
+               </content>
+            </ScrollPane>
+         </children>
+         <padding>
+            <Insets bottom="10.0" />
+         </padding>
+         <stylesheets>
+            <URL value="@../../../css/Setting.css" />
+            <URL value="@../../../css/game/manage/GameAdvanceSetting.css" />
+         </stylesheets>
+      </AnchorPane>
+   </children>
+</StackPane>

@@ -8,8 +8,8 @@ import de.saxsys.mvvmfx.ViewModel;
  * @author: Leck
  * @create: 2025-02-10 19:18
  */
-public class GameSettingParentViewModel implements ViewModel {
-    public GameSettingParentViewModel() {
+public class GameSettingGroupViewModel implements ViewModel {
+    public GameSettingGroupViewModel() {
 
     }
 }

@@ -1,6 +1,7 @@
 package cn.tealc.ntemaid.thread.game.log.event;
 
 import cn.tealc.ntemaid.FXResourcesLoader;
+import cn.tealc.ntemaid.base.Config;
 import cn.tealc.ntemaid.jna.Win32KeySender;
 import cn.tealc.ntemaid.jna.WindowClientSizeUtil;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -71,6 +72,12 @@ public class OtherEvent implements Consumer<String> {
 
     @Override
     public void accept(String row) {
+        adventureManualSkip(row);
+    }
+
+    private void adventureManualSkip(String row) {
+        if (!Config.getSetting().isAdventureManualSkip())
+            return;
         if (row.contains(OPEN_ADVENTURE_MANUAL_FROM_MONSTER)){
             skip = true;
         } else if (row.contains(OPEN_ADVENTURE_MANUAL)){
@@ -91,5 +98,4 @@ public class OtherEvent implements Consumer<String> {
             win32KeySender.clickLeft((int) point2D.getX(), (int) point2D.getY(), Duration.seconds(0.5));
         }
     }
-
 }
