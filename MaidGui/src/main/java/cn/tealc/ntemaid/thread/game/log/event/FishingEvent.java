@@ -33,11 +33,14 @@ public class FishingEvent implements Consumer<String> {
                 win32KeySender.clickKey(Win32KeySender.VirtualKey.F,Duration.millis(500));
             }
         }else if (row.contains(FISHING_FINISH)){
+            System.out.println("钓鱼结束");
             if (Config.getSetting().isFishingFinish() && fishing) {
                 if (finished == 0) {
                     finished += 1;
+                    System.out.println("钓鱼结束 + 1");
                 } else if (finished == 1) {
-                    win32KeySender.clickKey(Win32KeySender.VirtualKey.ESC,Duration.millis(1000));
+                    System.out.println("钓鱼结束 + 2");
+                    win32KeySender.clickKey(Win32KeySender.VirtualKey.ESC,Duration.millis(1800));
                     fishing = false;
                 }
             }
