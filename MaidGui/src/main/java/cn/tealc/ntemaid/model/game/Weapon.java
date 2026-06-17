@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class Weapon {
     private String id;
     private String zh;
+    private String en;
     private String ja;
     private String ko;
     private int rarity;
@@ -59,5 +60,13 @@ public class Weapon {
 
     public void setIcon(String icon) {
         this.icon = icon;
+    }
+
+    public String getEn() {
+        return en;
+    }
+
+    public void setEn(String en) {
+        this.en = en;
     }
 }

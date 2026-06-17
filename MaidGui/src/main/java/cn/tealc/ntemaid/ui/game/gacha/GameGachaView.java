@@ -119,7 +119,7 @@ public class GameGachaView implements FxmlView<GameGachaViewModel>, Initializabl
             }
         });
 
-        viewModel.initialize();
+        viewModel.init();
     }
 
     @FXML
@@ -301,11 +301,11 @@ public class GameGachaView implements FxmlView<GameGachaViewModel>, Initializabl
             if (!b) {
                 iv.setImage(getCharacterImage(item.getCharid()));
                 if (pool.getType() != LocalGachaType.WEAPON_POOL) {
-                    Optional<Character> characterOpt = viewModel.getCharacter(item.getCharid());
+                    Optional<Weapon> characterOpt = viewModel.getCharacter(item.getCharid());
                     characterOpt.ifPresent(character -> name.setText(character.getZh()));
                 } else {
                     Optional<Weapon> weaponOpt = viewModel.getWeapon(item.getCharid());
-                    weaponOpt.ifPresent(weapon -> name.setText(weapon.getZh().replace("「", "").replace("」", "")));
+                    weaponOpt.ifPresent(weapon -> name.setText(weapon.getZh()));
                 }
                 date.setText(DATE_FMT.format(Instant.ofEpochMilli(item.getTimeStamp())));
                 count.setText(String.format("%02d", item.getRareCount()));

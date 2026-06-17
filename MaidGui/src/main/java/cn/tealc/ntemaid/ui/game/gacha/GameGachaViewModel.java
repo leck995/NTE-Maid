@@ -4,6 +4,7 @@ import cn.tealc.ntemaid.model.game.Character;
 import cn.tealc.ntemaid.model.game.Weapon;
 import cn.tealc.ntemaid.model.game.gacha.local.LocalGachaData;
 import cn.tealc.ntemaid.model.taygedo.TaygedoAccount;
+import cn.tealc.ntemaid.repository.GameDataRepository;
 import cn.tealc.ntemaid.service.gacha.LocalGachaAnalysisService;
 import cn.tealc.ntemaid.service.gacha.LocalGachaDataService;
 import cn.tealc.ntemaid.service.TaygedoAccountService;
@@ -35,6 +36,7 @@ public class GameGachaViewModel implements ViewModel {
     private final LocalGachaDataService localGachaDataService;
     private final LocalGachaAnalysisService analysisService;
     private final ImageCacheManager imageCacheManager;
+    private final GameDataRepository gameDataRepository;
 
     private final ObservableList<TaygedoAccount> accountList = FXCollections.observableArrayList();
     private final ObjectProperty<TaygedoAccount> selectedAccount = new SimpleObjectProperty<>();
@@ -50,23 +52,26 @@ public class GameGachaViewModel implements ViewModel {
     private Map<String, Character> characterMap;
     private final ObjectMapper mapper = new ObjectMapper();
 
+
     @Inject
     public GameGachaViewModel(TaygedoAccountService accountService,
                                TaygedoApi api,
                                LocalGachaDataService localGachaDataService,
                                LocalGachaAnalysisService analysisService,
-                               ImageCacheManager imageCacheManager) {
+                               ImageCacheManager imageCacheManager,
+                              GameDataRepository gameDataRepository) {
         this.accountService = accountService;
         this.api = api;
         this.localGachaDataService = localGachaDataService;
         this.analysisService = analysisService;
         this.imageCacheManager = imageCacheManager;
+        this.gameDataRepository = gameDataRepository;
         selectedAccount.addListener((obs, old, val) -> {
             if (val != null) loadGachaData();
         });
     }
 
-    public void initialize() {
+    public void init() {
         loadBaseData();
         refreshAccountList();
     }
@@ -95,15 +100,11 @@ public class GameGachaViewModel implements ViewModel {
     }
 
     public Optional<Weapon> getWeapon(String key) {
-        if (weaponMap != null)
-            return Optional.ofNullable(weaponMap.get(key.toLowerCase()));
-        return Optional.empty();
+        return Optional.ofNullable(gameDataRepository.getWeaponMap().get(key.toLowerCase()));
     }
 
-    public Optional<Character> getCharacter(String key) {
-        if (characterMap != null)
-            return Optional.ofNullable(characterMap.get(key.toLowerCase()));
-        return Optional.empty();
+    public Optional<Weapon> getCharacter(String key) {
+        return Optional.ofNullable(gameDataRepository.getCharacterMap().get(key.toLowerCase()));
     }
 
     private void refreshAccountList() {

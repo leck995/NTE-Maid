@@ -1,5 +1,6 @@
 package cn.tealc.ntemaid.service.gacha;
 
+import cn.tealc.ntemaid.model.game.Weapon;
 import cn.tealc.ntemaid.model.game.gacha.common.CommonGachaData;
 import cn.tealc.ntemaid.model.game.gacha.common.CommonGachaItem;
 import cn.tealc.ntemaid.model.game.gacha.common.CommonGachaPool;
@@ -90,13 +91,12 @@ public class CommonGachaAnalysisService {
             srPity++;
             rPity++;
 
-            int rarity = getRarity(item);
-            item.setRarity(rarity);
 
-            // 优先使用数据文件中的中文名称
-            String dataName = dataRepo.getChineseName(item.getItemId());
-            if (dataName != null) {
-                item.setItemName(dataName);
+            Weapon characterOrWeapon = dataRepo.getCharacterOrWeapon(item.getItemId());
+            int rarity = characterOrWeapon != null ? characterOrWeapon.getRarity() : 3;
+            item.setRarity(rarity);
+            if (characterOrWeapon != null) {
+                item.setItemName(characterOrWeapon.getZh());
             }
 
             if (rarity == 5) {
@@ -196,10 +196,6 @@ public class CommonGachaAnalysisService {
         if (avg < 65) return 3;
         if (avg < 75) return 2;
         return 1;
-    }
-
-    private int getRarity(CommonGachaItem item) {
-        return dataRepo.getRarity(item.getItemId());
     }
 
     // ---- 统计工具 ----

@@ -1,5 +1,7 @@
 package cn.tealc.ntemaid.repository;
 
+import cn.tealc.ntemaid.model.game.Weapon;
+import cn.tealc.ntemaid.model.game.gacha.local.LocalGachaType;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
@@ -25,55 +27,63 @@ public class GameDataRepository {
             "fork_butterfly", "fork_blackBook", "fork_mofeikesi",
             "fork_jingmotingyuan", "fork_wushoutieyu", "fork_bitGame", "fork_rishi",
             "fork_nestBird", "fork_arachne", "fork_whale");
-
-    /** itemId → rarity */
-    private final Map<String, Integer> rarityMap = new HashMap<>();
-    /** itemId → 中文名称 */
-    private final Map<String, String> nameMap = new HashMap<>();
-
+    private Map<String, Weapon> characterMap = new HashMap<>();
+    private Map<String, Weapon> weaponMap = new HashMap<>();
     private final ObjectMapper mapper;
 
     @Inject
     public GameDataRepository(ObjectMapper mapper) {
         this.mapper = mapper;
-        loadFile("resources/data/character.json");
-        loadFile("resources/data/weapon.json");
+        loadCharacter("resources/data/character.json");
+        loadWeapon("resources/data/weapon.json");
     }
 
-    private void loadFile(String filePath) {
+    private void loadWeapon(String filePath) {
         File file = new File(filePath);
         if (!file.exists()) {
             LOG.warn("数据文件不存在: {}", filePath);
             return;
         }
         try {
-            Map<String, Map<String, String>> raw = mapper.readValue(file,
-                    new TypeReference<Map<String, Map<String, String>>>() {});
-            for (Map.Entry<String, Map<String, String>> entry : raw.entrySet()) {
-                Map<String, String> value = entry.getValue();
-                if (value.containsKey("rarity")) {
-                    rarityMap.put(entry.getKey(), Integer.parseInt(value.get("rarity")));
-                }
-                if (value.containsKey("zh")) {
-                    nameMap.put(entry.getKey(), value.get("zh"));
-                }
-            }
+            weaponMap = mapper.readValue(file, new TypeReference<Map<String, Weapon>>() {});
         } catch (IOException | NumberFormatException e) {
             LOG.error("加载数据文件失败: {}", filePath, e);
         }
     }
 
-    /** 查询稀有度，无数据时默认返回 3 */
-    public int getRarity(String itemId) {
-        if (itemId == null) return 3;
-        return rarityMap.getOrDefault(itemId, 3);
+    private void loadCharacter(String filePath) {
+        File file = new File(filePath);
+        if (!file.exists()) {
+            LOG.warn("数据文件不存在: {}", filePath);
+            return;
+        }
+        try {
+            characterMap = mapper.readValue(file, new TypeReference<Map<String, Weapon>>() {});
+        } catch (IOException | NumberFormatException e) {
+            LOG.error("加载数据文件失败: {}", filePath, e);
+        }
     }
 
-    /** 查询中文名称，无数据时返回 null */
-    public String getChineseName(String itemId) {
-        if (itemId == null) return null;
-        return nameMap.get(itemId);
+
+    public Weapon getWeapon(String itemId) {
+        return weaponMap.getOrDefault(itemId.toLowerCase(),null);
     }
+    public Weapon getCharacter(String itemId) {
+        return characterMap.getOrDefault(itemId.toLowerCase(),null);
+    }
+
+    public Weapon getCharacterOrWeapon(String itemId) {
+        String key = itemId.toLowerCase();
+        if (characterMap.containsKey(key)){
+            return characterMap.get(key);
+        }else {
+            if (weaponMap.containsKey(key)){
+                return weaponMap.get(key);
+            }
+        }
+        return null;
+    }
+
 
     /** 判断是否为 UP（限定）物品：不在常驻 5★ 列表中的即为 UP */
     public boolean isUp(String itemId, boolean isFork) {
@@ -82,5 +92,21 @@ public class GameDataRepository {
             return !STANDARD_FORK_5.contains(itemId.toLowerCase());
         }
         return !STANDARD_ROLE_5.contains(itemId);
+    }
+
+    public Map<String, Weapon> getWeaponMap() {
+        return weaponMap;
+    }
+
+    public void setWeaponMap(Map<String, Weapon> weaponMap) {
+        this.weaponMap = weaponMap;
+    }
+
+    public Map<String, Weapon> getCharacterMap() {
+        return characterMap;
+    }
+
+    public void setCharacterMap(Map<String, Weapon> characterMap) {
+        this.characterMap = characterMap;
     }
 }
