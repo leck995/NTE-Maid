@@ -22,7 +22,7 @@ public class WalkKeyEvent implements KeyEvent {
 
     @Override
     public void accept(int keyCode, GlobalKeyListenManager manager) {
-        if (!Config.getSetting().isAutoWalking())
+        if (!Config.getSetting().isGameAutoWalking())
             return;
         if (keyCode == NativeKeyEvent.VC_CAPS_LOCK) {
             if (!isAutoWalking) {

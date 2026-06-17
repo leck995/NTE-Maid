@@ -1,5 +1,6 @@
 package cn.tealc.ntemaid.thread.game.log.event;
 
+import cn.tealc.ntemaid.base.Config;
 import cn.tealc.ntemaid.jna.key.GlobalKeyListenManager;
 import cn.tealc.ntemaid.jna.key.event.BankKeyEvent;
 import org.slf4j.Logger;
@@ -21,6 +22,9 @@ public class BankActivityEvent implements Consumer<String> {
 
     @Override
     public void accept(String s) {
+        if (!Config.getSetting().isGameBankFEnhance())
+            return;
+
         if (s.contains(TRANSFER_1F)){
             log.debug("进入粉爪大劫案");
             GlobalKeyListenManager.getInstance().register(event);

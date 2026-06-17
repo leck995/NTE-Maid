@@ -56,6 +56,13 @@
                                     <Label styleClass="text-subtle" text="按住CapsLk开启自动行走，再按取消" />
                                  </children>
                               </VBox>
+                              <VBox layoutX="10.0" layoutY="520.0" spacing="10.0">
+                                 <children>
+                                    <Label styleClass="title-3" text="粉爪优化" />
+                                    <ToggleSwitch fx:id="bankFEnhanceSwitch" labelPosition="RIGHT" text="按F连续拾取" />
+                                    <Label styleClass="text-subtle" text="粉爪中按住F可以连续拾取物品" />
+                                 </children>
+                              </VBox>
                            </children>
                         </VBox>
                         <VBox maxWidth="350.0" prefHeight="200.0" prefWidth="100.0" spacing="10.0" styleClass="right" HBox.hgrow="ALWAYS" />

@@ -32,15 +32,18 @@ public class GameEnhanceView implements FxmlView<GameEnhanceViewModel>, Initiali
     private ToggleSwitch snapshotEnableSwitch;
     @FXML
     private ToggleSwitch roleAutoWalkingSwitch;
+    @FXML
+    private ToggleSwitch bankFEnhanceSwitch;
 
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         initFishing();
 
-        adventureManualSwitch.selectedProperty().bindBidirectional(Config.getSetting().adventureManualSkipProperty());
+        adventureManualSwitch.selectedProperty().bindBidirectional(Config.getSetting().gameAdventureManualSkipProperty());
         snapshotEnableSwitch.selectedProperty().bindBidirectional(Config.getSetting().snapshotProperty());
-        roleAutoWalkingSwitch.selectedProperty().bindBidirectional(Config.getSetting().autoWalkingProperty());
+        roleAutoWalkingSwitch.selectedProperty().bindBidirectional(Config.getSetting().gameAutoWalkingProperty());
+        bankFEnhanceSwitch.selectedProperty().bindBidirectional(Config.getSetting().gameBankFEnhanceProperty());
     }
 
     private void initFishing() {

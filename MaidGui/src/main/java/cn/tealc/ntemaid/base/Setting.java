@@ -85,12 +85,10 @@ public class Setting {
     private final SimpleBooleanProperty fishingBait = new SimpleBooleanProperty(true);//自动拉杆
     private final SimpleBooleanProperty fishingFinish = new SimpleBooleanProperty(true);//退出结算界面
 
-    private final SimpleBooleanProperty adventureManualSkip = new SimpleBooleanProperty(true);//开启探索指南跳转
-
     private final SimpleBooleanProperty snapshot = new SimpleBooleanProperty(true);//开启截图功能
-
-    private final SimpleBooleanProperty autoWalking = new SimpleBooleanProperty(true);//开启人物自动行走
-
+    private final SimpleBooleanProperty gameAdventureManualSkip = new SimpleBooleanProperty(true);//开启探索指南跳转
+    private final SimpleBooleanProperty gameAutoWalking = new SimpleBooleanProperty(true);//开启人物自动行走
+    private final SimpleBooleanProperty gameBankFEnhance = new SimpleBooleanProperty(true);//开启粉爪拾取
 
     // 自定义序列化器
     public static class ObservableListSerializer extends JsonSerializer<ObservableList<String>> {
@@ -116,17 +114,42 @@ public class Setting {
         }
     }
 
-    public boolean isAutoWalking() {
-        return autoWalking.get();
+    public boolean isGameAdventureManualSkip() {
+        return gameAdventureManualSkip.get();
     }
 
-    public SimpleBooleanProperty autoWalkingProperty() {
-        return autoWalking;
+    public SimpleBooleanProperty gameAdventureManualSkipProperty() {
+        return gameAdventureManualSkip;
     }
 
-    public void setAutoWalking(boolean autoWalking) {
-        this.autoWalking.set(autoWalking);
+    public void setGameAdventureManualSkip(boolean gameAdventureManualSkip) {
+        this.gameAdventureManualSkip.set(gameAdventureManualSkip);
     }
+
+    public boolean isGameAutoWalking() {
+        return gameAutoWalking.get();
+    }
+
+    public SimpleBooleanProperty gameAutoWalkingProperty() {
+        return gameAutoWalking;
+    }
+
+    public void setGameAutoWalking(boolean gameAutoWalking) {
+        this.gameAutoWalking.set(gameAutoWalking);
+    }
+
+    public boolean isGameBankFEnhance() {
+        return gameBankFEnhance.get();
+    }
+
+    public SimpleBooleanProperty gameBankFEnhanceProperty() {
+        return gameBankFEnhance;
+    }
+
+    public void setGameBankFEnhance(boolean gameBankFEnhance) {
+        this.gameBankFEnhance.set(gameBankFEnhance);
+    }
+
 
     public boolean isMusicOutControlByLog() {
         return musicOutControlByLog.get();
@@ -150,18 +173,6 @@ public class Setting {
 
     public void setGamePlayerOpen(boolean gamePlayerOpen) {
         this.gamePlayerOpen.set(gamePlayerOpen);
-    }
-
-    public boolean isAdventureManualSkip() {
-        return adventureManualSkip.get();
-    }
-
-    public SimpleBooleanProperty adventureManualSkipProperty() {
-        return adventureManualSkip;
-    }
-
-    public void setAdventureManualSkip(boolean adventureManualSkip) {
-        this.adventureManualSkip.set(adventureManualSkip);
     }
 
     public boolean isSnapshot() {

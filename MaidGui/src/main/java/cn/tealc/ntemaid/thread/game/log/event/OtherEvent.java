@@ -76,7 +76,7 @@ public class OtherEvent implements Consumer<String> {
     }
 
     private void adventureManualSkip(String row) {
-        if (!Config.getSetting().isAdventureManualSkip())
+        if (!Config.getSetting().isGameAdventureManualSkip())
             return;
         if (row.contains(OPEN_ADVENTURE_MANUAL_FROM_MONSTER)){
             skip = true;
