@@ -197,7 +197,7 @@ public class GameGachaCommonView implements FxmlView<GameGachaCommonViewModel>, 
         HBox.setHgrow(card, Priority.ALWAYS);
 
         VBox header = new VBox(2);
-        Label poolNameLabel = new Label(pool.getPoolName());
+        Label poolNameLabel = new Label(getPoolName(pool.getType()));
         poolNameLabel.getStyleClass().add("pool-title");
         Label luckBadge = new Label(luckyTypeName(pool.getReallyLuckyType()));
         luckBadge.getStyleClass().addAll("pool-luck", "luck-" + pool.getLuckyType());
@@ -241,6 +241,16 @@ public class GameGachaCommonView implements FxmlView<GameGachaCommonViewModel>, 
         card.getChildren().addAll(header, sep, stats, listView);
         return card;
     }
+
+    private String getPoolName(LocalGachaType type){
+        return switch (type){
+            case LocalGachaType.WEAPON_POOL -> "弧盘池";
+            case DEFAULT_ROLE_POOL -> "常驻卡池";
+            case UP_ROLE_POOL -> "限定卡池";
+            default -> "未知";
+        };
+    }
+
 
     private HBox buildStatRow(String label, String value, String styleClass) {
         Label l = new Label(label);

@@ -41,9 +41,10 @@ public class CommonGachaAnalysisService {
                 pools.add(pool);
             }
         }
+        List<CommonGachaPool> gachaPools = pools.stream().sorted(Comparator.comparingInt(o -> o.getType().getCode())).toList();
 
         CommonGachaData data = new CommonGachaData();
-        data.setPools(pools);
+        data.setPools(gachaPools);
 
         if (!pools.isEmpty()) {
             int lucky = (int) pools.stream().mapToInt(CommonGachaPool::getLuckyType).average().orElse(0);
