@@ -5,6 +5,7 @@ import cn.tealc.ntemaid.jna.key.GlobalKeyListenManager;
 import cn.tealc.ntemaid.player.BaseAudioPlayer;
 import cn.tealc.ntemaid.player.MusicPlayerClient;
 import com.github.kwhat.jnativehook.keyboard.NativeKeyEvent;
+import javafx.application.Platform;
 
 import java.util.Set;
 
@@ -19,14 +20,22 @@ public class MusicPlayerKeyEvent implements KeyEvent{
     @Override
     public void accept(int keyCode, GlobalKeyListenManager manager) {
         switch (keyCode) {
-            case NativeKeyEvent.VC_PAUSE -> player.playOrPauseWithFade();
-            case NativeKeyEvent.VC_INSERT -> player.setVolume(player.getVolume() + 0.05);
-            case NativeKeyEvent.VC_DELETE -> player.setVolume(player.getVolume() - 0.05);
-            case NativeKeyEvent.VC_PAGE_UP -> player.pre();
-            case NativeKeyEvent.VC_PAGE_DOWN -> player.next();
+            case NativeKeyEvent.VC_PAUSE -> {
+                Platform.runLater(player::playOrPauseWithFade);
+            }
+            case NativeKeyEvent.VC_INSERT ->   {
+                Platform.runLater(() ->player.setVolume(player.getVolume() + 0.05));
+            }
+            case NativeKeyEvent.VC_DELETE -> {
+                Platform.runLater(() -> player.setVolume(player.getVolume() - 0.05));
+            }
+            case NativeKeyEvent.VC_PAGE_UP ->  Platform.runLater(player::pre);
+            case NativeKeyEvent.VC_PAGE_DOWN -> Platform.runLater(player::next);
             case 3658,NativeKeyEvent.VC_MINUS  -> removePlayerListener();
         }
     }
+
+
     public void removePlayerListener(){
         Config.getSetting().setMusicEnable(!Config.getSetting().isMusicEnable());
     }

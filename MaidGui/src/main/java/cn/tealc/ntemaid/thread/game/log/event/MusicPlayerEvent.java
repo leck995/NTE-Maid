@@ -4,6 +4,7 @@ import cn.tealc.ntemaid.base.Config;
 import cn.tealc.ntemaid.jna.key.Win32KeySender;
 import cn.tealc.ntemaid.player.BaseAudioPlayer;
 import cn.tealc.ntemaid.player.MusicPlayerClient;
+import javafx.application.Platform;
 import javafx.util.Duration;
 
 import java.util.function.Consumer;
@@ -37,11 +38,11 @@ public class MusicPlayerEvent implements Consumer<String> {
         }else if (row.contains(Off_VEHICLE) || row.contains(BEGIN_TRANSFER) || row.contains(ENDPLAY_RACING)){
             if(stopUserPlayer)
                 return;
-            player.pauseWithFadeOut();
+            Platform.runLater(player::pauseWithFadeOut);
         }else if (row.contains(ON_VEHICLE)){
             if (stopUserPlayer)
                 return;
-            player.playWithFadeIn();
+            Platform.runLater(player::playWithFadeIn);
         }else if (row.contains(MUSIC_PLAYING)){
             if (!Config.getSetting().isGamePlayerOpen()){
                 stopGameFirstMusic();

@@ -154,12 +154,7 @@ public class GameBaseSettingView implements FxmlView<GameBaseSettingViewModel>, 
         directoryChooser.setTitle(LanguageManager.getString("ui.setting.file.game_dir.title"));
         File file = directoryChooser.showDialog(gameDirField.getScene().getWindow());
         if (file != null) {
-            File startApp = new File(file.getAbsolutePath() + File.separator + "NTELauncher.exe");
-            if (startApp.exists()) {
-                gameDirField.setText(file.getAbsolutePath());
-            }else {
-                NotificationManager.publish(NotificationKey.MESSAGE, MessageInfo.warning(LanguageManager.getString("ui.setting.message.01")));
-            }
+            gameDirField.setText(file.getAbsolutePath());
         }
     }
 
