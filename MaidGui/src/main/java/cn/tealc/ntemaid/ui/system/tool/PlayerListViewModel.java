@@ -14,9 +14,6 @@ public class PlayerListViewModel implements ViewModel {
 
     public void initialize(){
         players = AppInjector.getInstance(AppRuntimeData.class).getHistoryPlayers();
-        players.add(new Player(1111231231,"名字"));
-        players.add(new Player(2111231231,"名字1"));
-
     }
 
     public ObservableList<Player> getPlayers() {
