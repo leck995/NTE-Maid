@@ -32,18 +32,12 @@ public class TaygedoSignInService {
         try {
             return api.getSigninRewards(account.getAccessToken(), DEFAULT_GAME_ID);
         } catch (TaygedoException e) {
-            LOG.error("获取签到奖励列表失败, phone={}", account.getPhone(), e);
             return Collections.emptyList();
         }
     }
 
-    public SigninState getSigninState(TaygedoAccount account) {
-        try {
-            return api.getSigninState(account.getAccessToken(), DEFAULT_GAME_ID);
-        } catch (TaygedoException e) {
-            LOG.error("获取签到状态失败, phone={}", account.getPhone(), e);
-            return null;
-        }
+    public SigninState getSigninState(TaygedoAccount account) throws TaygedoException  {
+        return api.getSigninState(account.getAccessToken(), DEFAULT_GAME_ID);
     }
 
     public void gameSignin(TaygedoAccount account) throws TaygedoException {

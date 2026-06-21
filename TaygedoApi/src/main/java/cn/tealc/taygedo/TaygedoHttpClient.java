@@ -198,6 +198,9 @@ class TaygedoHttpClient {
     // ==================== JSON & 错误检查 ====================
 
     JsonNode parseJsonBody(HttpResponse<String> response, String endpointName) {
+        if (response.statusCode() == 401)
+            throw new TaygedoException("账号已过期，请重新登录");
+
         String body = response.body();
         if (body == null || body.isBlank()) {
             throw new TaygedoException(endpointName + " 返回了无效 JSON（HTTP " + response.statusCode() + "，响应为空）");

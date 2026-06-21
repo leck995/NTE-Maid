@@ -1,12 +1,14 @@
 package cn.tealc.ntemaid.ui.taygedo.signin;
 
 import cn.tealc.ntemaid.base.Config;
+import cn.tealc.ntemaid.base.notification.NotificationManager;
 import cn.tealc.ntemaid.model.taygedo.TaygedoAccount;
 import cn.tealc.ntemaid.service.TaygedoAccountService;
 import cn.tealc.ntemaid.service.TaygedoSignInService;
 import cn.tealc.taygedo.TaygedoException;
 import cn.tealc.taygedo.model.SigninReward;
 import cn.tealc.taygedo.model.SigninState;
+import cn.tealc.teafx.utils.message.MessageInfo;
 import com.google.inject.Inject;
 import de.saxsys.mvvmfx.ViewModel;
 import de.saxsys.mvvmfx.utils.commands.Action;
@@ -99,7 +101,9 @@ public class TaygedoSignInViewModel implements ViewModel {
                     setStatus(String.format("本月共 %d 天奖励，已签到 %d 天",
                             rewards.size(), state != null ? state.getDays() : 0));
                 });
-            } catch (Exception e) {
+            } catch (TaygedoException e){
+                Platform.runLater(() -> setStatus("签到失败: " + e.getMessage()));
+            }catch (Exception e) {
                 LOG.error("加载签到数据失败", e);
                 Platform.runLater(() -> setStatus("签到失败: " + e.getMessage()));
             }

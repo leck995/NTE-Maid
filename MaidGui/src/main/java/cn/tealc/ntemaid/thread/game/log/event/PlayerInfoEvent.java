@@ -25,9 +25,12 @@ public class PlayerInfoEvent implements Consumer<String> {
     public void accept(String s) {
         if (s.contains("UHTUI_PlayerHeadUpInfo")){
             Player player = parsePlayer(s);
-            Platform.runLater(()->{
-                runtimeData.getHistoryPlayers().add(player);
-            });
+            boolean exists = runtimeData.getHistoryPlayers().stream().anyMatch(p -> p.getId() == player.getId());
+            if (!exists) {
+                Platform.runLater(()->{
+                    runtimeData.getHistoryPlayers().add(player);
+                });
+            }
         }
     }
 
