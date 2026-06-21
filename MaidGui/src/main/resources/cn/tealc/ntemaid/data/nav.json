@@ -37,7 +37,7 @@
     "viewClass": "cn.tealc.ntemaid.ui.game.manage.GameSettingGroupView",
     "viewModelClass": null,
     "bottom": false,
-    "fxml": true,
+    "fxml": false,
     "diy": true,
     "showBg": false
   },
@@ -51,7 +51,7 @@
     "viewClass": "cn.tealc.ntemaid.ui.game.gacha.GameGachaGroupView",
     "viewModelClass": null,
     "bottom": false,
-    "fxml": true,
+    "fxml": false,
     "diy": true,
     "showBg": false
   },
@@ -65,7 +65,7 @@
     "viewClass": "cn.tealc.ntemaid.ui.game.record.GameRecordParentView",
     "viewModelClass": null,
     "bottom": false,
-    "fxml": true,
+    "fxml": false,
     "diy": true,
     "showBg": false
   },
@@ -82,7 +82,20 @@
     "fxml": true,
     "diy": true,
     "showBg": false
-  },
+  },{
+  "id": 1007,
+  "title": "ui.main.button.nav.type17",
+  "icon": "mdal-extension",
+  "visible": true,
+  "order": 6,
+  "bbs": false,
+  "viewClass": "cn.tealc.ntemaid.ui.system.tool.ToolGroupView",
+  "viewModelClass": null,
+  "bottom": false,
+  "fxml": false,
+  "diy": true,
+  "showBg": false
+},
   {
     "id": 1050,
     "title": "ui.main.button.nav.type10",

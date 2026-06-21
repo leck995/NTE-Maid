@@ -12,7 +12,7 @@
 
 <AnchorPane prefHeight="800.0" prefWidth="1300.0" styleClass="account-group" stylesheets="@../../../css/system/Account.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cn.tealc.ntemaid.ui.system.account.AccountGroupView">
    <children>
-      <HBox fx:id="headerPane" layoutX="20.0" layoutY="20.0" prefHeight="35.0" spacing="20.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <HBox fx:id="headerPane" layoutX="20.0" layoutY="20.0" prefHeight="35.0" spacing="20.0" styleClass="tab-header" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
             <Label styleClass="title-2" text="%ui.account.title" />
             <Separator orientation="VERTICAL" />
