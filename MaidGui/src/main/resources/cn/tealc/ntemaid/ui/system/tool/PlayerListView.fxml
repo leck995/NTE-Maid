@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.StackPane?>
+
+<StackPane xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cn.tealc.ntemaid.ui.system.tool.PlayerListView">
+   <children>
+      <AnchorPane prefHeight="720.0" prefWidth="1280.0" styleClass="tool-player-list" stylesheets="@../../../css/system/tool.css">
+         <children>
+            <ListView fx:id="playerlist" prefHeight="200.0" prefWidth="300.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="10.0" />
+            <Label layoutX="1016.0" layoutY="14.0" prefWidth="250.0" styleClass="text-subtle" text="你可以在此本次游玩时在联机玩法中遇到的的路人ID，方便加好友或举报。&#10;&#10;不保证能够查询到所有ID&#10;&#10;联机麻将不可查询" wrapText="true" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="14.0" />
+         </children>
+      </AnchorPane>
+   </children>
+</StackPane>

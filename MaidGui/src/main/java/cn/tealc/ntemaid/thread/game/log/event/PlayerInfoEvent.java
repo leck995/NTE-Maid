@@ -3,6 +3,7 @@ package cn.tealc.ntemaid.thread.game.log.event;
 import cn.tealc.ntemaid.base.AppInjector;
 import cn.tealc.ntemaid.base.AppRuntimeData;
 import cn.tealc.ntemaid.model.game.Player;
+import javafx.application.Platform;
 
 import java.util.function.Consumer;
 import java.util.regex.Matcher;
@@ -24,7 +25,9 @@ public class PlayerInfoEvent implements Consumer<String> {
     public void accept(String s) {
         if (s.contains("UHTUI_PlayerHeadUpInfo")){
             Player player = parsePlayer(s);
-            runtimeData.getHistoryPlayers().add(player);
+            Platform.runLater(()->{
+                runtimeData.getHistoryPlayers().add(player);
+            });
         }
     }
 
