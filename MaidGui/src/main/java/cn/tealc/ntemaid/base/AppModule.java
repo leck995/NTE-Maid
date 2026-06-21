@@ -59,6 +59,7 @@ public class AppModule extends AbstractModule {
 
 
         bind(Win32KeySender.class).in(Singleton.class);
+        bind(AppRuntimeData.class).in(Singleton.class);
     }
 
     @Provides

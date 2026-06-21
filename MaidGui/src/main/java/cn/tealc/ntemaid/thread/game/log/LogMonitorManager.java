@@ -1,9 +1,6 @@
 package cn.tealc.ntemaid.thread.game.log;
 
-import cn.tealc.ntemaid.thread.game.log.event.BankActivityEvent;
-import cn.tealc.ntemaid.thread.game.log.event.FishingEvent;
-import cn.tealc.ntemaid.thread.game.log.event.MusicPlayerEvent;
-import cn.tealc.ntemaid.thread.game.log.event.OtherEvent;
+import cn.tealc.ntemaid.thread.game.log.event.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,6 +33,7 @@ public class LogMonitorManager {
         addListener(new MusicPlayerEvent());
         addListener(new FishingEvent());
         addListener(new OtherEvent());
+        addListener(new PlayerInfoEvent());
         addListener(new BankActivityEvent());
 
         // 默认不启动，或者根据需求选择在这里调用 start();
