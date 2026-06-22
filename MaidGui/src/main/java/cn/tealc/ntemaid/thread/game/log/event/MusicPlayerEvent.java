@@ -6,6 +6,8 @@ import cn.tealc.ntemaid.player.BaseAudioPlayer;
 import cn.tealc.ntemaid.player.MusicPlayerClient;
 import javafx.application.Platform;
 import javafx.util.Duration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.function.Consumer;
 
@@ -18,6 +20,7 @@ public class MusicPlayerEvent implements Consumer<String> {
     private static final String ENDPLAY_RACING = "EndPlay_Racing LEVEL_TYPE_RACING_PVP";
     private static final String ONLINE_TEAM_JOIN = "JoinChannel ChatChannelID";
     private static final String ONLINE_TEAM_QUITE = "DebugChat:QuitTeamChatChannel";
+    private static final Logger log = LoggerFactory.getLogger(MusicPlayerEvent.class);
     private final BaseAudioPlayer player;
 
     private boolean stopUserPlayer = false;
