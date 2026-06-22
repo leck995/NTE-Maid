@@ -270,7 +270,7 @@ public class GameGachaCommonView implements FxmlView<GameGachaCommonViewModel>, 
         boolean fork = itemId != null && itemId.startsWith("fork_");
         String base = fork ? IMG_BASE_FORK : IMG_BASE_TALL;
         String ext = fork ? ".png" : ".PNG";
-        return viewModel.getImageCacheManager().get(base + itemId + ext, 0, 42, true, true);
+        return viewModel.getImageCacheManager().get(base + itemId.toLowerCase() + ext, 0, 42, true, true);
     }
 
     private class SsrItemListCell extends ListCell<CommonGachaItem> {

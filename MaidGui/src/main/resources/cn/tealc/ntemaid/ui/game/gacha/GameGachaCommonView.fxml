@@ -50,7 +50,7 @@
                         </graphic></Button>
                         </children>
                     </HBox>
-               <Label styleClass="text-subtle" text="注：由于弧盘池子机制易歪，故运气只统计限定弧盘">
+               <Label styleClass="text-subtle" text="注：由于弧盘池子机制易歪，故运气只统计限定弧盘；集点赠礼不在统计范围内">
                   <font>
                      <Font size="10.0" />
                   </font></Label>
