@@ -118,7 +118,10 @@ public class UpdateView implements FxmlView<UpdateViewModel>, Initializable {
                     radioButton.setText("镜像源");
                 }else if (row.contains("release")){
                     radioButton.setText("默认源");
+                }else if (row.contains("https://github.com")){
+                    radioButton.setText("Github源");
                 }
+
                 radioButton.setToggleGroup(toggleGroup);
                 if (i == 0){
                     radioButton.setSelected(true);

@@ -14,70 +14,84 @@
 <?import javafx.scene.text.Font?>
 <?import org.kordamp.ikonli.javafx.FontIcon?>
 
-<AnchorPane fx:id="root" prefHeight="600.0" prefWidth="1000.0" styleClass="gacha" stylesheets="@../../../css/system/Account.css,@../../../css/system/Gacha.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cn.tealc.ntemaid.ui.game.gacha.GameGachaCommonView">
 
-    <StackPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-        <children>
-
-            <!-- 正常内容 -->
-            <VBox fx:id="contentPane" alignment="TOP_RIGHT" spacing="10.0">
-                <children>
-                    <!-- 账号选择栏 -->
-                    <HBox spacing="15.0">
-                        <children>
-                            <Label styleClass="title-3" text="选择账号:" />
-                            <ComboBox fx:id="accountCombo" prefWidth="220.0" />
-                            <Spacer />
-                            <Label fx:id="luckLabel" styleClass="player-luck" text="" />
-                     <Spacer layoutX="441.0" layoutY="10.0" />
-                     <Button mnemonicParsing="false" onAction="#onOpenWiki" text="查看教程">
-                        <styleClass>
-                           <String fx:value="flat" />
-                           <String fx:value="text-subtle" />
-                        </styleClass></Button>
-                     <Button fx:id="deleteBtn" mnemonicParsing="false" onAction="#onDelete" text="删除当前账号">
-                        <graphic>
-                           <FontIcon iconLiteral="mdal-delete_outline" />
-                        </graphic>
-                        <styleClass>
-                           <String fx:value="danger" />
-                           <String fx:value="flat" />
-                           <String fx:value="button-icon" />
-                        </styleClass></Button>
-                     <Button mnemonicParsing="false" onAction="#importGachaJsonData" styleClass="accent" text="导入数据">
-                        <graphic>
-                           <FontIcon iconLiteral="mdsal-folder_open" />
-                        </graphic></Button>
-                        </children>
-                    </HBox>
-               <Label styleClass="text-subtle" text="注：由于弧盘池子机制易歪，故运气只统计限定弧盘；集点赠礼不在统计范围内">
-                  <font>
-                     <Font size="10.0" />
-                  </font></Label>
-
-                    <HBox fx:id="poolCardsPane" fillHeight="true" spacing="25.0" VBox.vgrow="ALWAYS">
-                        <padding>
-                            <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-                        </padding>
-                    </HBox>
-                </children>
-                <padding>
-                    <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-                </padding>
-            </VBox>
-
-            <!-- 空状态 -->
-            <VBox fx:id="emptyPane" alignment="CENTER" spacing="15.0">
-                <children>
-                    <FontIcon iconLiteral="mdal-inbox" iconSize="48" styleClass="empty-icon" />
-                    <Label styleClass="title-3" text="暂无抽卡数据" />
-                    <Label text="点击「导入数据」按钮导入抽卡JSON文件" textFill="#666" />
-                </children>
-            </VBox>
-
-            <!-- 加载指示器 -->
-            <ProgressIndicator fx:id="loadingIndicator" maxHeight="40" maxWidth="40" visible="false" />
-
-        </children>
-    </StackPane>
-</AnchorPane>
+<StackPane fx:id="root" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cn.tealc.ntemaid.ui.game.gacha.GameGachaCommonView">
+   <children>
+      <AnchorPane prefHeight="600.0" prefWidth="1000.0" styleClass="gacha" stylesheets="@../../../css/system/Account.css,@../../../css/system/Gacha.css">
+      
+          <StackPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+              <children>
+      
+                  <!-- 正常内容 -->
+                  <VBox fx:id="contentPane" alignment="TOP_RIGHT" spacing="10.0">
+                      <children>
+                          <!-- 账号选择栏 -->
+                          <HBox spacing="15.0">
+                              <children>
+                                  <Label styleClass="title-3" text="选择账号:" />
+                                  <ComboBox fx:id="accountCombo" prefWidth="220.0" />
+                                  <Spacer />
+                                  <Label fx:id="luckLabel" styleClass="player-luck" text="" />
+                           <Spacer layoutX="441.0" layoutY="10.0" />
+                           <Button mnemonicParsing="false" onAction="#onOpenWiki" text="查看教程">
+                              <styleClass>
+                                 <String fx:value="flat" />
+                                 <String fx:value="text-subtle" />
+                              </styleClass>
+                           </Button>
+                           <Button fx:id="deleteBtn" mnemonicParsing="false" onAction="#onDelete" text="删除当前账号">
+                              <graphic>
+                                 <FontIcon iconLiteral="mdal-delete_outline" />
+                              </graphic>
+                              <styleClass>
+                                 <String fx:value="danger" />
+                                 <String fx:value="flat" />
+                                 <String fx:value="button-icon" />
+                              </styleClass>
+                           </Button>
+                           <Button fx:id="captureBtn" mnemonicParsing="false" onAction="#captureGacha" styleClass="accent" text="抓取数据">
+                              <graphic>
+                                 <FontIcon iconLiteral="mdal-desktop_mac" />
+                              </graphic>
+                           </Button>
+                           <Button mnemonicParsing="false" onAction="#importGachaJsonData" visible="false" managed="false" styleClass="accent" text="导入数据">
+                              <graphic>
+                                 <FontIcon  iconLiteral="mdsal-folder_open" />
+                              </graphic>
+                           </Button>
+                              </children>
+                          </HBox>
+                     <Label styleClass="text-subtle" text="注：由于弧盘池子机制易歪，故运气只统计限定弧盘；集点赠礼不在统计范围内">
+                        <font>
+                           <Font size="10.0" />
+                        </font>
+                     </Label>
+      
+                          <HBox fx:id="poolCardsPane" fillHeight="true" spacing="25.0" VBox.vgrow="ALWAYS">
+                              <padding>
+                                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                              </padding>
+                          </HBox>
+                      </children>
+                      <padding>
+                          <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                      </padding>
+                  </VBox>
+      
+                  <!-- 空状态 -->
+                  <VBox fx:id="emptyPane" alignment="CENTER" spacing="15.0">
+                      <children>
+                          <FontIcon iconLiteral="mdal-inbox" iconSize="48" styleClass="empty-icon" />
+                          <Label styleClass="title-3" text="暂无抽卡数据" />
+                          <Label text="点击「导入数据」按钮导入抽卡JSON文件" textFill="#666" />
+                      </children>
+                  </VBox>
+      
+                  <!-- 加载指示器 -->
+                  <ProgressIndicator fx:id="loadingIndicator" maxHeight="40" maxWidth="40" visible="false" />
+      
+              </children>
+          </StackPane>
+      </AnchorPane>
+   </children>
+</StackPane>

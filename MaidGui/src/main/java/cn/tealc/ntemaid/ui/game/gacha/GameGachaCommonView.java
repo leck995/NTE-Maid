@@ -8,32 +8,22 @@ import cn.tealc.ntemaid.model.game.gacha.common.CommonGachaData;
 import cn.tealc.ntemaid.model.game.gacha.common.CommonGachaItem;
 import cn.tealc.ntemaid.model.game.gacha.common.CommonGachaPool;
 import cn.tealc.ntemaid.model.game.gacha.local.LocalGachaType;
+import com.jfoenixN.controls.JFXDialog;
 import com.jfoenixN.controls.JFXDialogLayout;
 import de.saxsys.mvvmfx.FxmlView;
 import de.saxsys.mvvmfx.InjectViewModel;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListCell;
-import javafx.scene.control.ListView;
-import javafx.scene.control.ProgressBar;
-import javafx.scene.control.ProgressIndicator;
-import javafx.scene.control.Separator;
-import javafx.scene.control.TextField;
-import javafx.scene.control.TextFormatter;
+import javafx.scene.Node;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.stage.FileChooser;
 
 import java.awt.Desktop;
@@ -53,7 +43,7 @@ public class GameGachaCommonView implements FxmlView<GameGachaCommonViewModel>, 
     @InjectViewModel
     private GameGachaCommonViewModel viewModel;
 
-    @FXML private AnchorPane root;
+    @FXML private StackPane root;
     @FXML private VBox contentPane;
     @FXML private VBox emptyPane;
     @FXML private Label luckLabel;
@@ -61,6 +51,7 @@ public class GameGachaCommonView implements FxmlView<GameGachaCommonViewModel>, 
     @FXML private ProgressIndicator loadingIndicator;
     @FXML private ComboBox<String> accountCombo;
     @FXML private Button deleteBtn;
+    @FXML private Button captureBtn;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -142,6 +133,22 @@ public class GameGachaCommonView implements FxmlView<GameGachaCommonViewModel>, 
         NotificationManager.dialog(layout);
     }
 
+    @FXML
+    void captureGacha(ActionEvent event) {
+        GachaToolDialog layout = new GachaToolDialog(viewModel);
+        JFXDialog dialog = new JFXDialog(root, layout, JFXDialog.DialogTransition.CENTER);
+        for (Node action : layout.getActions()) {
+            if (action instanceof Button button) {
+                if (button.isCancelButton()) {
+                    button.setOnAction(event2 -> {
+                        dialog.close();
+                    });
+                }
+            }
+        }
+        dialog.setOverlayClose(false);
+        dialog.show();
+    }
     @FXML
     void importGachaJsonData(ActionEvent event) {
         FileChooser fileChooser = new FileChooser();

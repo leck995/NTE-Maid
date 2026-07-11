@@ -6,6 +6,7 @@ import cn.tealc.ntemaid.model.game.gacha.common.CommonGachaItem;
 import cn.tealc.ntemaid.service.ConfigService;
 import cn.tealc.ntemaid.service.gacha.CommonGachaAnalysisService;
 import cn.tealc.ntemaid.service.gacha.CommonGachaService;
+import cn.tealc.ntemaid.thread.gacha.GachaTask;
 import cn.tealc.ntemaid.ui.base.BaseViewModel;
 import cn.tealc.ntemaid.util.ImageCacheManager;
 import cn.tealc.teafx.utils.message.MessageInfo;
@@ -133,6 +134,33 @@ public class GameGachaCommonViewModel extends BaseViewModel {
         });
     }
 
+    /**
+     * 通过 GachaTask 调用控制台程序自动抓取抽卡数据，完成后调用 importAndAnalyze 导入
+     *
+     * @param playerId 玩家ID
+     * @param autoPage 是否启用自动翻页
+     */
+    public GachaTask startGachaCapture(String playerId, boolean autoPage) {
+        loading.set(true);
+
+        GachaTask task = new GachaTask(autoPage);
+        task.setOnSucceeded(e -> {
+            File capturedFile = task.getValue();
+            if (capturedFile != null && capturedFile.exists()) {
+                importAndAnalyze(capturedFile, playerId);
+            } else {
+                loading.set(false);
+                NotificationManager.message(MessageInfo.error("抓取失败：未获取到抽卡数据"));
+            }
+        });
+        task.setOnFailed(e -> {
+            loading.set(false);
+            NotificationManager.message(MessageInfo.error("抓取失败：" + task.getException().getMessage()));
+        });
+        Thread.startVirtualThread(task);
+        return task;
+    }
+
     public void deleteCurrentPlayer(String playerId) {
         if (playerId == null || playerId.isEmpty()) return;
 
@@ -164,4 +192,8 @@ public class GameGachaCommonViewModel extends BaseViewModel {
     public BooleanProperty loadingProperty() { return loading; }
     public BooleanProperty hasDataProperty() { return hasData; }
     public StringProperty selectedPlayerIdProperty() { return selectedPlayerId; }
+
+    public String getSelectedPlayerId() {
+        return selectedPlayerId.get();
+    }
 }

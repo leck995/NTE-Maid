@@ -2,7 +2,7 @@ package cn.tealc.ntemaid.base;
 
 public final class AppConstants {
     private AppConstants() {}
-    public static final String VERSION = "1.2.1";
+    public static final String VERSION = "1.2.2";
     public static final String APP_AUTHOR = "Leck";
     public static final String URL_APP_UPDATE = "https://cdn.999758.xyz/nte/release.json";
     public static final String URL_APP_UPDATE_DEV = "https://cdn.999758.xyz/nte/release-dev.json";

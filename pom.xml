@@ -16,7 +16,7 @@
     </modules>
 
     <properties>
-        <revision>1.2.1</revision>
+        <revision>1.2.2</revision>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <junit.version>5.10.0</junit.version>
         <javafx.version>25</javafx.version>
@@ -98,6 +98,7 @@
             </dependency>
 
             <!-- MVVM -->
+            <!-- 版本不对，可以Maven最新版本使用，无区别，其他同理 -->
             <dependency>
                 <groupId>de.saxsys</groupId>
                 <artifactId>mvvmfx</artifactId>
