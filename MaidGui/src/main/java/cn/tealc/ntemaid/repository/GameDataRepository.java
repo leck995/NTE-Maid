@@ -26,7 +26,8 @@ public class GameDataRepository {
     private static final Set<String> STANDARD_FORK_5 = Set.of(
             "fork_butterfly","fork_blackbook", "fork_mofeikesi",
             "fork_jingmotingyuan", "fork_wushoutieyu", "fork_bitgame", "fork_rishi",
-            "fork_nestbird", "fork_arachne", "fork_whale");
+            "fork_nestbird", "fork_arachne", "fork_whale",
+            "fork_nakupeda", "fork_policerat", "fork_mamen");
     private Map<String, Weapon> characterMap = new HashMap<>();
     private Map<String, Weapon> weaponMap = new HashMap<>();
     private final ObjectMapper mapper;

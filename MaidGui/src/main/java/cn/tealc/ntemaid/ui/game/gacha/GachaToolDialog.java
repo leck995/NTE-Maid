@@ -16,6 +16,7 @@ public class GachaToolDialog extends JFXDialogLayout {
 
     private final GameGachaCommonViewModel viewModel;
     private GachaTask currentTask;
+    private final Label statusLabel = new Label();
 
     public GachaToolDialog(GameGachaCommonViewModel viewModel) {
         this.viewModel = viewModel;
@@ -70,6 +71,9 @@ public class GachaToolDialog extends JFXDialogLayout {
         principleLabel.setStyle("-fx-font-size: 1em;");
         principleLabel.setWrapText(true);
 
+        statusLabel.getStyleClass().addAll(Styles.TEXT_SUBTLE);
+        statusLabel.setWrapText(true);
+        statusLabel.setStyle("-fx-font-size: 0.9em;");
 
         VBox body = new VBox(8.0,
                 id,
@@ -77,7 +81,7 @@ public class GachaToolDialog extends JFXDialogLayout {
                 new VBox(4.0, manualRadio, manualDesc),
                 new VBox(4.0, autoRadio, autoDesc),
                 new Separator(),
-                tipLabel, principleLabel);
+                tipLabel, principleLabel, statusLabel);
         setBody(body);
 
         // 按钮
@@ -95,6 +99,7 @@ public class GachaToolDialog extends JFXDialogLayout {
 
             boolean autoPage = autoRadio.isSelected();
             currentTask = viewModel.startGachaCapture(playerId, autoPage);
+            statusLabel.textProperty().bind(currentTask.messageProperty());
 
             // 运行时按钮状态绑定
             startBtn.disableProperty().unbind();
@@ -136,5 +141,7 @@ public class GachaToolDialog extends JFXDialogLayout {
         startBtn.disableProperty().bind(field.textProperty().isEmpty());
         stopBtn.disableProperty().unbind();
         stopBtn.setDisable(true);
+        statusLabel.textProperty().unbind();
+        statusLabel.setText("");
     }
 }
