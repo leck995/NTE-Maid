@@ -2,146 +2,132 @@ package cn.tealc.ntemaid.ui.game.gacha;
 
 import atlantafx.base.controls.Spacer;
 import atlantafx.base.theme.Styles;
-import cn.tealc.ntemaid.thread.gacha.GachaTask;
-import com.jfoenixN.controls.JFXDialogLayout;
-import javafx.beans.binding.Bindings;
-import javafx.scene.control.*;
+import cn.tealc.ntemaid.model.game.Player;
+import cn.tealc.ntemaid.thread.game.log.LoginPlayerGetTask;
+import cn.tealc.ntemaid.ui.component.dialog.NewDialog;
+import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.Label;
+import javafx.scene.control.Separator;
+import javafx.scene.control.TextField;
+import javafx.scene.control.TextFormatter;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
+import javafx.stage.Stage;
 
 /**
- * 抓取抽卡数据对话框，提供开始/结束抓取按钮控制 GachaTask 的执行
+ * 抽卡抓取配置对话框：仅负责玩家ID输入与使用说明展示。
+ * 继承 {@link NewDialog}，采用 shadcn 风格皮肤。点击「确定」后
+ * 由本对话框内部创建并显示 {@link GachaControlDialog}，
+ * 由后者接管抓取控制（自动/手动模式选择与开始/结束）。
  */
-public class GachaToolDialog extends JFXDialogLayout {
+public class GachaToolDialog extends NewDialog<Void> {
 
     private final GameGachaCommonViewModel viewModel;
-    private GachaTask currentTask;
-    private final Label statusLabel = new Label();
+    private final TextField playerIdField;
+    private final Label playerNameLabel;
 
     public GachaToolDialog(GameGachaCommonViewModel viewModel) {
+        super();
         this.viewModel = viewModel;
 
-        Label title = new Label("抓取抽卡数据");
-        title.getStyleClass().add(Styles.TITLE_3);
-        setHeading(title);
-
-        // 抓取方式选择
-        RadioButton manualRadio = new RadioButton("手动抓取");
-        RadioButton autoRadio = new RadioButton("自动抓取");
-        ToggleGroup modeGroup = new ToggleGroup();
-        manualRadio.setToggleGroup(modeGroup);
-        autoRadio.setToggleGroup(modeGroup);
-        autoRadio.setSelected(true);
-
-        // 模式描述
-        Label manualDesc = new Label("玩家需要手动进入角色与弧盘抽卡历史界面一页一页翻取，然后点击结束按钮完成");
-        manualDesc.getStyleClass().addAll(Styles.TEXT_SUBTLE);
-        manualDesc.setStyle("-fx-font-size: 0.85em;");
-        manualDesc.setWrapText(true);
-        manualDesc.visibleProperty().bind(manualRadio.selectedProperty());
-        manualDesc.managedProperty().bind(manualRadio.selectedProperty());
-
-        Label autoDesc = new Label("全程由程序自动操作，一旦点击开始抓取，请勿操作鼠标或键盘；若是获取增量数据，可手动结束来快速完成");
-        autoDesc.getStyleClass().addAll(Styles.TEXT_SUBTLE);
-        autoDesc.setStyle("-fx-font-size: 0.85em;");
-        autoDesc.setWrapText(true);
-        autoDesc.visibleProperty().bind(autoRadio.selectedProperty());
-        autoDesc.managedProperty().bind(autoRadio.selectedProperty());
+        setWidth(480.0);
+        setTitle("确认");
 
         // 玩家ID输入
-        Label id = new Label("设置游戏ID");
-        id.getStyleClass().add(Styles.TITLE_3);
+        Label id = new Label("设置游戏UID");
+        id.setFont(Font.font(null, FontWeight.BOLD, 15));
+        playerNameLabel = new Label();
+        playerNameLabel.setFont(Font.font( 14));
+        playerNameLabel.getStyleClass().add(Styles.TEXT_SUBTLE);
+        HBox group = new HBox(id,new Spacer(),playerNameLabel);
 
-        TextField field = new TextField();
+
+
+        playerIdField = new TextField();
         if (viewModel.getSelectedPlayerId() != null) {
-            field.setText(viewModel.getSelectedPlayerId());
+            playerIdField.setText(viewModel.getSelectedPlayerId());
         }
-        field.setPromptText("输入玩家ID（必填，仅数字）");
-        field.setTextFormatter(new TextFormatter<>(change ->
+        playerIdField.setPromptText("输入玩家UID（必填，仅数字）");
+        playerIdField.setTextFormatter(new TextFormatter<>(change ->
                 change.getControlNewText().matches("\\d*") ? change : null));
 
-        Label tipLabel = new Label("开始前请进入抽卡界面（大世界按F3），否则自动抓取无法工作；若自动抓取在当前分辨率无法正常工作，请将游戏切换到1920*1080分辨率");
+        Label tipLabel02 = new Label("UID是您保存的凭证，用于维护后续数据的更新，请确认填写是否正确");
+        tipLabel02.getStyleClass().addAll(Styles.TEXT_SUBTLE);
+        tipLabel02.setPrefWidth(420);
+        tipLabel02.setWrapText(true);
+
+
+        Label manualLabel = new Label("使用说明");
+        manualLabel.setFont(Font.font(null, FontWeight.BOLD, 15));
+        manualLabel.setPrefWidth(420);
+        manualLabel.setWrapText(true);
+
+        Label tipLabel = new Label("""
+                关于自动抓取：
+                    开始前请进入抽卡界面（大世界按F3），否则自动抓取无法工作；推荐将游戏切换到1920*1080分辨率，并确保使用管理员权限启动助手。
+                    自动抓取若停在武器历史的最后一页，说明完成抓取，可回到助手查看记录；
+                关于手动抓取：
+                    你需要对每个角色和武器卡池的历史记录手动翻页，程序会自动记录该页的记录，翻页结束后点击结束按钮完成抓取，可回到助手查看记录；更适合抓取新增数据部分。
+                """);
         tipLabel.getStyleClass().addAll(Styles.TEXT_SUBTLE, Styles.TEXT_BOLD);
-        tipLabel.setStyle("-fx-font-size: 1em;");
+        tipLabel.setPrefWidth(420);
         tipLabel.setWrapText(true);
 
         // 原理说明
         Label principleLabel = new Label("原理：通过抓包游戏数据，获取抽卡记录，只读取不修改，更不涉及游戏内存修改，安全性请自行判断");
         principleLabel.getStyleClass().addAll(Styles.TEXT_SUBTLE, Styles.TEXT_BOLD);
-        principleLabel.setStyle("-fx-font-size: 1em;");
         principleLabel.setWrapText(true);
-
-        statusLabel.getStyleClass().addAll(Styles.TEXT_SUBTLE);
-        statusLabel.setWrapText(true);
-        statusLabel.setStyle("-fx-font-size: 0.9em;");
-
+        principleLabel.setPrefWidth(420);
         VBox body = new VBox(8.0,
-                id,
-                field,
-                new VBox(4.0, manualRadio, manualDesc),
-                new VBox(4.0, autoRadio, autoDesc),
+                group,
+                playerIdField,
+                tipLabel02,
                 new Separator(),
-                tipLabel, principleLabel, statusLabel);
-        setBody(body);
+                manualLabel,
+                tipLabel, principleLabel);
+        getDialogPane().setContent(body);
 
-        // 按钮
-        Button startBtn = new Button("开始抓取");
-        startBtn.getStyleClass().add(Styles.ACCENT);
-        startBtn.disableProperty().bind(field.textProperty().isEmpty());
+        // 按钮：确定 / 取消
+        getDialogPane().getButtonTypes().setAll(ButtonType.OK, ButtonType.CANCEL);
 
-        Button stopBtn = new Button("结束抓取");
-        stopBtn.getStyleClass().add(Styles.DANGER);
-        stopBtn.setDisable(true);
+        // 确定按钮：玩家ID为空时禁用
+        Button okButton = (Button) getDialogPane().lookupButton(ButtonType.OK);
+        okButton.getStyleClass().add(Styles.ACCENT);
+        okButton.disableProperty().bind(playerIdField.textProperty().isEmpty());
 
-        startBtn.setOnAction(e -> {
-            String playerId = field.getText().trim();
-            if (playerId.isEmpty()) return;
-
-            boolean autoPage = autoRadio.isSelected();
-            currentTask = viewModel.startGachaCapture(playerId, autoPage);
-            statusLabel.textProperty().bind(currentTask.messageProperty());
-
-            // 运行时按钮状态绑定
-            startBtn.disableProperty().unbind();
-            startBtn.textProperty().bind(
-                    Bindings.when(currentTask.runningProperty())
-                            .then("正在运行...")
-                            .otherwise("开始抓取"));
-            startBtn.disableProperty().bind(currentTask.runningProperty());
-            stopBtn.disableProperty().bind(currentTask.runningProperty().not());
-
-            // 任务结束时重置按钮
-            currentTask.runningProperty().addListener((obs, old, running) -> {
-                if (!running) {
-                    resetButtons(startBtn, stopBtn, field);
+        // 确定 → 创建并显示抓取控制窗
+        setResultConverter(buttonType -> {
+            if (buttonType == ButtonType.OK) {
+                String pid = playerIdField.getText().trim();
+                if (!pid.isEmpty()) {
+                    Stage owner = (Stage) getOwner();
+                    owner.setIconified(true);
+                    GachaControlDialog control = GachaControlDialog.getInstance();
+                    control.configure(viewModel, pid);
+                    control.show();
                 }
-            });
-        });
-
-        stopBtn.setOnAction(e -> {
-            if (currentTask != null) {
-                currentTask.stop();
             }
+            return null;
         });
 
-        Button backBtn = new Button("返回");
-        backBtn.setCancelButton(true);
-
-
-        setActions(startBtn, stopBtn, backBtn);
+        checkAndSetPlayerId();
     }
 
-    /**
-     * 重置按钮到初始状态
-     */
-    private void resetButtons(Button startBtn, Button stopBtn, TextField field) {
-        startBtn.textProperty().unbind();
-        startBtn.setText("开始抓取");
-        startBtn.disableProperty().unbind();
-        startBtn.disableProperty().bind(field.textProperty().isEmpty());
-        stopBtn.disableProperty().unbind();
-        stopBtn.setDisable(true);
-        statusLabel.textProperty().unbind();
-        statusLabel.setText("");
+    /** 返回当前输入的玩家ID（已 trim） */
+    public String getPlayerId() {
+        return playerIdField.getText().trim();
+    }
+
+    private void checkAndSetPlayerId() {
+        LoginPlayerGetTask task = new LoginPlayerGetTask();
+        task.setOnSucceeded(event -> {
+            Player value = task.getValue();
+            playerIdField.setText(String.valueOf(value.getId()));
+            playerNameLabel.setText(String.format("已自动识别玩家：%s",value.getName()));
+        });
+        Thread.startVirtualThread(task);
     }
 }

@@ -8,6 +8,7 @@ import cn.tealc.ntemaid.model.game.gacha.common.CommonGachaData;
 import cn.tealc.ntemaid.model.game.gacha.common.CommonGachaItem;
 import cn.tealc.ntemaid.model.game.gacha.common.CommonGachaPool;
 import cn.tealc.ntemaid.model.game.gacha.local.LocalGachaType;
+import cn.tealc.ntemaid.ui.component.dialog.NewDialog;
 import com.jfoenixN.controls.JFXDialog;
 import com.jfoenixN.controls.JFXDialogLayout;
 import de.saxsys.mvvmfx.FxmlView;
@@ -135,18 +136,8 @@ public class GameGachaCommonView implements FxmlView<GameGachaCommonViewModel>, 
 
     @FXML
     void captureGacha(ActionEvent event) {
-        GachaToolDialog layout = new GachaToolDialog(viewModel);
-        JFXDialog dialog = new JFXDialog(root, layout, JFXDialog.DialogTransition.CENTER);
-        for (Node action : layout.getActions()) {
-            if (action instanceof Button button) {
-                if (button.isCancelButton()) {
-                    button.setOnAction(event2 -> {
-                        dialog.close();
-                    });
-                }
-            }
-        }
-        dialog.setOverlayClose(false);
+        GachaToolDialog dialog = new GachaToolDialog(viewModel);
+        dialog.initOwner(root.getScene().getWindow());
         dialog.show();
     }
     @FXML

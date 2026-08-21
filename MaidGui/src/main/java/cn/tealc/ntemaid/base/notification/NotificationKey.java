@@ -23,6 +23,8 @@ public class NotificationKey {
 
     public static final String CARD_POOL_USER_UPDATE="CARD_POOL_USER_UPDATE"; //当抽卡页面选中用户切换时使用
     public static final String CARD_POOL_USER_EMPTY="CARD_POOL_USER_EMPTY"; //当抽卡页面选中无用户时使用
+    public static final String GACHA_CAPTURE_FINISHED="GACHA_CAPTURE_FINISHED"; //抽卡抓取结束
+
 
     public static final String APP_EXIT="APP_EXIT"; //程序退出
     public static final String APP_HIDE="APP_HIDE"; //程序退出

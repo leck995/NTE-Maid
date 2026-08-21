@@ -46,7 +46,7 @@ public class PlayerInfoEvent implements Consumer<String> {
         if (matcher.find()) {
             String name = matcher.group(1);  // 第一个捕获组：名称
             long id = Long.parseLong(matcher.group(2));    // 第二个捕获组：ID
-            return new Player(id,name);
+            return new Player(id,name,false);
         }
         return null;
     }

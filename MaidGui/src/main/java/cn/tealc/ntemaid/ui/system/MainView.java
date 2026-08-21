@@ -190,7 +190,7 @@ public class MainView implements Initializable, FxmlView<MainViewModel> {
 
         leadingBox.getChildren().addAll(titleLabel);
         leadingBox.getStyleClass().add("leading");
-        headerbar.setLeading(leadingBox);
+        headerbar.setLeft(leadingBox);
 
         //右侧
         Button closeBtn = new Button(null,new FontIcon(Material2OutlinedAL.CLOSE));
@@ -211,7 +211,7 @@ public class MainView implements Initializable, FxmlView<MainViewModel> {
         systemBox.getStyleClass().add("system-func");
         HBox trailingBox = new HBox(systemBox);
         trailingBox.getStyleClass().add("trailing");
-        headerbar.setTrailing(trailingBox);
+        headerbar.setRight(trailingBox);
 
 
 

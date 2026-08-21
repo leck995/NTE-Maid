@@ -12,6 +12,7 @@ import java.util.List;
 public class AppRuntimeData {
     private final ObservableList<Player> historyPlayers = FXCollections.observableArrayList();
 
+
     public ObservableList<Player> getHistoryPlayers() {
         return historyPlayers;
     }

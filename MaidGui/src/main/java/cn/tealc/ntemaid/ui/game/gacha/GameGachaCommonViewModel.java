@@ -1,16 +1,18 @@
 package cn.tealc.ntemaid.ui.game.gacha;
 
+import cn.tealc.ntemaid.base.notification.NotificationKey;
 import cn.tealc.ntemaid.base.notification.NotificationManager;
 import cn.tealc.ntemaid.model.game.gacha.common.CommonGachaData;
 import cn.tealc.ntemaid.model.game.gacha.common.CommonGachaItem;
 import cn.tealc.ntemaid.service.ConfigService;
 import cn.tealc.ntemaid.service.gacha.CommonGachaAnalysisService;
 import cn.tealc.ntemaid.service.gacha.CommonGachaService;
-import cn.tealc.ntemaid.thread.gacha.GachaTask;
 import cn.tealc.ntemaid.ui.base.BaseViewModel;
 import cn.tealc.ntemaid.util.ImageCacheManager;
 import cn.tealc.teafx.utils.message.MessageInfo;
 import com.google.inject.Inject;
+import de.saxsys.mvvmfx.SceneLifecycle;
+import de.saxsys.mvvmfx.utils.notifications.NotificationObserver;
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
@@ -26,7 +28,7 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.util.List;
 
-public class GameGachaCommonViewModel extends BaseViewModel {
+public class GameGachaCommonViewModel extends BaseViewModel implements SceneLifecycle {
     private static final Logger LOG = LoggerFactory.getLogger(GameGachaCommonViewModel.class);
     private static final String GACHA_COMMON_SELECTED = "GACHA_COMMON_SELECTED";
 
@@ -41,6 +43,18 @@ public class GameGachaCommonViewModel extends BaseViewModel {
     private final BooleanProperty hasData = new SimpleBooleanProperty(false);
     private final StringProperty selectedPlayerId = new SimpleStringProperty("");
 
+    /** 监听 GachaControlDialog 抓取完成事件，接收结果文件并导入分析 */
+    private final NotificationObserver captureFinishedObserver = (key, objects) -> {
+        String pid = (String) objects[0];
+        File file =(File) objects[1];
+        if (file == null || !file.exists() || pid == null || pid.isEmpty()) {
+            loading.set(false);
+            NotificationManager.message(MessageInfo.error("抓取失败：未获取到抽卡数据"));
+            return;
+        }
+        importAndAnalyze(file, pid);
+    };
+
     @Inject
     public GameGachaCommonViewModel(CommonGachaAnalysisService analysisService,
                                     CommonGachaService commonGachaService,
@@ -50,6 +64,7 @@ public class GameGachaCommonViewModel extends BaseViewModel {
         this.commonGachaService = commonGachaService;
         this.configService = configService;
         this.imageCacheManager = imageCacheManager;
+
     }
 
     public ImageCacheManager getImageCacheManager() { return imageCacheManager; }
@@ -134,33 +149,6 @@ public class GameGachaCommonViewModel extends BaseViewModel {
         });
     }
 
-    /**
-     * 通过 GachaTask 调用控制台程序自动抓取抽卡数据，完成后调用 importAndAnalyze 导入
-     *
-     * @param playerId 玩家ID
-     * @param autoPage 是否启用自动翻页
-     */
-    public GachaTask startGachaCapture(String playerId, boolean autoPage) {
-        loading.set(true);
-
-        GachaTask task = new GachaTask(autoPage);
-        task.setOnSucceeded(e -> {
-            File capturedFile = task.getValue();
-            if (capturedFile != null && capturedFile.exists()) {
-                importAndAnalyze(capturedFile, playerId);
-            } else {
-                loading.set(false);
-                NotificationManager.message(MessageInfo.error("抓取失败：未获取到抽卡数据"));
-            }
-        });
-        task.setOnFailed(e -> {
-            loading.set(false);
-            NotificationManager.message(MessageInfo.error("抓取失败：" + task.getException().getMessage()));
-        });
-        Thread.startVirtualThread(task);
-        return task;
-    }
-
     public void deleteCurrentPlayer(String playerId) {
         if (playerId == null || playerId.isEmpty()) return;
 
@@ -183,6 +171,15 @@ public class GameGachaCommonViewModel extends BaseViewModel {
                         NotificationManager.message(MessageInfo.error("删除失败: " + e.getMessage())));
             }
         });
+    }
+
+    @Override
+    public void onViewAdded() {
+        NotificationManager.subscribe(NotificationKey.GACHA_CAPTURE_FINISHED, captureFinishedObserver);
+    }
+
+    public void onViewRemoved() {
+        NotificationManager.unsubscribe(NotificationKey.GACHA_CAPTURE_FINISHED, captureFinishedObserver);
     }
 
     // ---- properties ----

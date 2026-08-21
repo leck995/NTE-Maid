@@ -3,10 +3,12 @@ package cn.tealc.ntemaid.model.game;
 public class Player {
     private long id;
     private String name;
+    private boolean isOwner;//是否是自己账号
 
-    public Player(long id, String name) {
+    public Player(long id, String name,boolean isOwner) {
         this.id = id;
         this.name = name;
+        this.isOwner = isOwner;
     }
 
     public Player() {
