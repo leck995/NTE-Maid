@@ -52,6 +52,7 @@ public class GameGachaCommonViewModel extends BaseViewModel implements SceneLife
             NotificationManager.message(MessageInfo.error("抓取失败：未获取到抽卡数据"));
             return;
         }
+        selectedPlayerId.set(pid);
         importAndAnalyze(file, pid);
     };
 

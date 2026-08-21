@@ -35,6 +35,7 @@ public class LogMonitorManager {
         addListener(new OtherEvent());
         addListener(new PlayerInfoEvent());
         addListener(new BankActivityEvent());
+        addListener(new PremiumMonthlyPassEvent());
 
         // 默认不启动，或者根据需求选择在这里调用 start();
         start();

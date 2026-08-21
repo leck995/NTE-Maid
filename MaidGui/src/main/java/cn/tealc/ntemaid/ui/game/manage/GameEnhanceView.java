@@ -19,6 +19,9 @@ public class GameEnhanceView implements FxmlView<GameEnhanceViewModel>, Initiali
     private ToggleSwitch adventureManualSwitch;
 
     @FXML
+    private ToggleSwitch monthlyPassSwitch;
+
+    @FXML
     private ScrollPane content;
 
     @FXML
@@ -41,6 +44,7 @@ public class GameEnhanceView implements FxmlView<GameEnhanceViewModel>, Initiali
         initFishing();
 
         adventureManualSwitch.selectedProperty().bindBidirectional(Config.getSetting().gameAdventureManualSkipProperty());
+        monthlyPassSwitch.selectedProperty().bindBidirectional(Config.getSetting().gameMonthlyPassSkipProperty());
         snapshotEnableSwitch.selectedProperty().bindBidirectional(Config.getSetting().snapshotProperty());
         roleAutoWalkingSwitch.selectedProperty().bindBidirectional(Config.getSetting().gameAutoWalkingProperty());
         bankFEnhanceSwitch.selectedProperty().bindBidirectional(Config.getSetting().gameBankFEnhanceProperty());

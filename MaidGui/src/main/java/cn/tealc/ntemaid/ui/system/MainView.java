@@ -18,6 +18,7 @@ import cn.tealc.ntemaid.ui.system.update.UpdateViewModel;
 import cn.tealc.ntemaid.util.LanguageManager;
 import cn.tealc.ntemaid.util.LocalResourcesManager;
 import cn.tealc.ntemaid.util.NavLoader;
+import cn.tealc.ntemaid.thread.gacha.GachaCLIExportTask;
 import cn.tealc.teafx.utils.AnchorPaneUtil;
 import cn.tealc.teafx.utils.message.MessageInfo;
 import com.jfoenixN.controls.JFXDialog;
@@ -118,6 +119,9 @@ public class MainView implements Initializable, FxmlView<MainViewModel> {
         initNav();
         initContent();
         initGlobalEvent();
+
+        // 启动时后台校验/替换 gacha CLI 组件（虚拟线程，异常不阻断启动）
+        Thread.startVirtualThread(new GachaCLIExportTask());
     }
 
     private void initGlobalEvent() {

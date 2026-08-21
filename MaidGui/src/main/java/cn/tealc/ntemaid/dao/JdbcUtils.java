@@ -152,10 +152,46 @@ public class JdbcUtils {
                 if (!s.trim().isEmpty()) st.execute(s);
             }
 
+            // 迁移：历史 data.db 中曾将 idx_common_gacha_unique 错误地建在 common_gacha 表上，
+            // 由于 CREATE ... IF NOT EXISTS 按索引名判定，导致 game_common_gacha 上的同名索引被静默跳过、
+            // INSERT OR IGNORE 去重失效、第二次抓取的记录被叠加入库。
+            // 这里在普通建表流程之外补建正确的索引，并清理已产生的重复行。
+            migrateCommonGachaUniqueIndex(st);
+
             LOG.info("数据库初始化完成，外键级联删除已启用");
         } catch (SQLException e) {
             throw new RuntimeException("数据库初始化失败", e);
         }
+    }
+
+    /**
+     * 修复 game_common_gacha 的唯一索引缺失问题。
+     * <p>历史数据库中 {@code idx_common_gacha_unique} 曾被建在已废弃的 {@code common_gacha}
+     * 表上，使得 {@code CREATE UNIQUE INDEX IF NOT EXISTS ... ON game_common_gacha} 因索引名
+     * 已存在而静默跳过，{@code INSERT OR IGNORE} 失去去重作用，导致重复抓取入库。
+     * <p>本方法：<ol>
+     *   <li>删除挂在错误表（common_gacha）上的同名索引；</li>
+     *   <li>清理 game_common_gacha 中 (player_id, time, sort) 重复的行，仅保留最小 id；</li>
+     *   <li>在 game_common_gacha 上重建唯一索引。</li>
+     * </ol>
+     * 重复行存在时直接 CREATE UNIQUE INDEX 会失败，故必须先清理。整个操作幂等，可重复执行。
+     */
+    private static void migrateCommonGachaUniqueIndex(Statement st) throws SQLException {
+        // 删除可能错挂在 common_gacha（或任何表）上的同名旧索引，确保后续按表名重建不被名字挡住
+        st.execute("DROP INDEX IF EXISTS idx_common_gacha_unique");
+
+        // 清理重复行：对同一 (player_id, time, sort) 保留最小 id，删除其余
+        st.execute("""
+            DELETE FROM game_common_gacha
+            WHERE id NOT IN (
+                SELECT MIN(id) FROM game_common_gacha
+                GROUP BY player_id, time, sort
+            )
+            """);
+
+        // 在正确的表上重建唯一索引
+        st.execute("CREATE UNIQUE INDEX IF NOT EXISTS idx_common_gacha_unique " +
+                   "ON game_common_gacha(player_id, time, sort)");
     }
 
     public static Connection getConnection() throws SQLException {

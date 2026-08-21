@@ -11,17 +11,14 @@ public class GameGachaGroupView extends AbstractGroupView<GameGachaGroupViewMode
     private GameGachaGroupViewModel viewModel;
 
     public GameGachaGroupView() {
-        super("ui.account.title");
-
-        ToggleButton taygedoBtn = addTab("ui.gacha.tab.taygedo", GameGachaView.class, false);
+        super("ui.gacha.title");
         ToggleButton commonBtn = addTab("ui.gacha.tab.common", GameGachaCommonView.class, false);
+        ToggleButton taygedoBtn = addTab("ui.gacha.tab.taygedo", GameGachaView.class, false);
 
-        if (Config.getSetting().isEnableTaygedo()) {
-            selectTab(taygedoBtn);
-        } else {
+        if (!Config.getSetting().isEnableTaygedo()) {
             taygedoBtn.setVisible(false);
             taygedoBtn.setManaged(false);
-            selectTab(commonBtn);
         }
+        selectTab(commonBtn);
     }
 }

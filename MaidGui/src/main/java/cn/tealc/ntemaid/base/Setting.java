@@ -87,6 +87,7 @@ public class Setting {
 
     private final SimpleBooleanProperty snapshot = new SimpleBooleanProperty(true);//开启截图功能
     private final SimpleBooleanProperty gameAdventureManualSkip = new SimpleBooleanProperty(true);//开启探索指南跳转
+    private final SimpleBooleanProperty gameMonthlyPassSkip = new SimpleBooleanProperty(true);//开启通行证优化
     private final SimpleBooleanProperty gameAutoWalking = new SimpleBooleanProperty(true);//开启人物自动行走
     private final SimpleBooleanProperty gameBankFEnhance = new SimpleBooleanProperty(true);//开启粉爪拾取
 
@@ -124,6 +125,18 @@ public class Setting {
 
     public void setGameAdventureManualSkip(boolean gameAdventureManualSkip) {
         this.gameAdventureManualSkip.set(gameAdventureManualSkip);
+    }
+
+    public boolean isGameMonthlyPassSkip() {
+        return gameMonthlyPassSkip.get();
+    }
+
+    public SimpleBooleanProperty gameMonthlyPassSkipProperty() {
+        return gameMonthlyPassSkip;
+    }
+
+    public void setGameMonthlyPassSkip(boolean gameMonthlyPassSkip) {
+        this.gameMonthlyPassSkip.set(gameMonthlyPassSkip);
     }
 
     public boolean isGameAutoWalking() {

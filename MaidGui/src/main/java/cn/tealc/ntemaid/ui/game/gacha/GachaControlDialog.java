@@ -10,9 +10,9 @@ import cn.tealc.teafx.utils.message.MessageInfo;
 import com.sun.jna.platform.win32.User32;
 import com.sun.jna.platform.win32.WinDef;
 import com.sun.jna.platform.win32.WinUser;
-import javafx.beans.binding.Bindings;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.concurrent.Worker;
+import javafx.animation.RotateTransition;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -25,6 +25,7 @@ import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.stage.WindowEvent;
+import javafx.util.Duration;
 import org.kordamp.ikonli.javafx.FontIcon;
 import org.kordamp.ikonli.material2.Material2AL;
 import org.kordamp.ikonli.material2.Material2MZ;
@@ -72,6 +73,10 @@ public class GachaControlDialog extends Stage {
     private final Button closeBtn = new Button(null, new FontIcon(Material2OutlinedAL.CLOSE));
 
     private GachaTask currentTask;
+    /** 运行中图标旋转动画 */
+    private final RotateTransition iconSpin = new RotateTransition(Duration.millis(1000), statusIcon);
+    /** 标记本次抓取是否由用户手动停止 */
+    private boolean manualStopped = false;
 
     public static GachaControlDialog getInstance() {
         if (instance == null) {
@@ -121,10 +126,17 @@ public class GachaControlDialog extends Stage {
         autoRadio.setToggleGroup(modeGroup);
         manualRadio.setToggleGroup(modeGroup);
         autoRadio.setSelected(true);
+        // 切换模式时若处于就绪态，同步更新提示文本
+        autoRadio.selectedProperty().addListener((obs, wasAuto, isAuto) -> {
+            if (currentTask == null || !currentTask.isRunning()) {
+                updateReadyText();
+            }
+        });
 
         closeBtn.getStyleClass().add("gacha-control-close");
         closeBtn.setFocusTraversable(false);
         closeBtn.setOnAction(e -> {
+            iconSpin.stop();
             if (currentTask != null && currentTask.isRunning()) {
                 currentTask.stop();
             }
@@ -139,10 +151,12 @@ public class GachaControlDialog extends Stage {
         statusIcon.getStyleClass().add("gacha-control-icon");
         statusIcon.setIconCode(Material2MZ.RADIO_BUTTON_UNCHECKED);
 
-        modeText.textProperty().bind(
-                Bindings.when(autoRadio.selectedProperty())
-                        .then("自动抓取运行")
-                        .otherwise("手动抓取运行"));
+        // 运行中图标旋转动画（无限循环，停止后手动停掉）
+        iconSpin.setByAngle(360);
+        iconSpin.setCycleCount(RotateTransition.INDEFINITE);
+        iconSpin.setInterpolator(javafx.animation.Interpolator.LINEAR);
+
+        updateReadyText();
 
         startBtn.getStyleClass().add(Styles.ACCENT);
         startBtn.setOnAction(e -> startCapture());
@@ -151,6 +165,8 @@ public class GachaControlDialog extends Stage {
         stopBtn.setDisable(true);
         stopBtn.setOnAction(e -> {
             if (currentTask != null) {
+                manualStopped = true;
+                modeText.setText("正在停止...");
                 currentTask.stop();
             }
         });
@@ -221,6 +237,7 @@ public class GachaControlDialog extends Stage {
             return;
         }
         boolean autoPage = autoRadio.isSelected();
+        manualStopped = false;
 
         // 任务由本控制窗直接创建与驱动，完成时通过通知把结果文件交给 ViewModel 导入
         currentTask = new GachaTask(autoPage);
@@ -239,6 +256,8 @@ public class GachaControlDialog extends Stage {
         // 运行态：图标/按钮/模式锁定
         setStatusClass(STATUS_RUNNING);
         statusIcon.setIconCode(Material2AL.AUTORENEW);
+        iconSpin.playFromStart();
+        modeText.setText("正在抓取...");
         startBtn.setDisable(true);
         stopBtn.setDisable(false);
         autoRadio.setDisable(true);
@@ -247,27 +266,36 @@ public class GachaControlDialog extends Stage {
         // 任务结束时按结果复位
         currentTask.runningProperty().addListener((obs, wasRunning, running) -> {
             if (!running) {
+                iconSpin.stop();
                 resetToReady();
                 Worker.State state = currentTask.getState();
                 if (state == Worker.State.SUCCEEDED) {
                     setStatusClass(STATUS_DONE);
                     statusIcon.setIconCode(Material2AL.CHECK_CIRCLE);
+                    modeText.setText(manualStopped ? "已手动停止" : "抓取完成");
                 } else if (state == Worker.State.FAILED || state == Worker.State.CANCELLED) {
                     setStatusClass(STATUS_FAILED);
                     statusIcon.setIconCode(Material2AL.CANCEL);
+                    modeText.setText("抓取失败");
                 }
             }
         });
     }
 
-    /** 恢复为就绪态：图标/按钮/模式解锁，但保留成功的状态色由调用方覆盖 */
+    /** 恢复为就绪态：图标/按钮/模式解锁，并显示就绪提示 */
     private void resetToReady() {
         statusIcon.setIconCode(Material2MZ.RADIO_BUTTON_UNCHECKED);
         setStatusClass(STATUS_READY);
+        updateReadyText();
         startBtn.setDisable(false);
         stopBtn.setDisable(true);
         autoRadio.setDisable(false);
         manualRadio.setDisable(false);
+    }
+
+    /** 根据当前选中的模式显示就绪文本 */
+    private void updateReadyText() {
+        modeText.setText(autoRadio.isSelected() ? "自动抓取就绪" : "手动抓取就绪");
     }
 
     private void setStatusClass(String statusClass) {

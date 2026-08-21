@@ -5,13 +5,28 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.StackPane?>
 
+<?import org.kordamp.ikonli.javafx.FontIcon?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
 <StackPane xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cn.tealc.ntemaid.ui.system.tool.PlayerListView">
    <children>
-      <AnchorPane prefHeight="720.0" prefWidth="1280.0" styleClass="tool-player-list" stylesheets="@../../../css/system/tool.css">
+      <AnchorPane fx:id="contentPane" prefHeight="720.0" prefWidth="1280.0" styleClass="tool-player-list" stylesheets="@../../../css/system/tool.css">
          <children>
             <ListView fx:id="playerlist" prefHeight="200.0" prefWidth="300.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="10.0" />
             <Label layoutX="1016.0" layoutY="14.0" prefWidth="250.0" styleClass="text-subtle" text="你可以在此本次游玩时在联机玩法中遇到的的路人ID，方便加好友或举报。&#10;&#10;不保证能够查询到所有ID&#10;&#10;联机麻将不可查询" wrapText="true" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="14.0" />
          </children>
       </AnchorPane>
+      <!-- 无账号提示 -->
+      <VBox fx:id="emptyPane" alignment="CENTER" spacing="15.0" visible="false">
+         <children>
+            <FontIcon iconLiteral="mdmz-person_add_disabled" iconSize="48" />
+            <Label styleClass="title-3" text="暂无玩家记录" />
+            <Label text="你可以在游玩时查看联机玩法中遇到的的路人ID" textFill="#666" />
+         </children>
+         <padding>
+            <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+         </padding>
+      </VBox>
    </children>
 </StackPane>

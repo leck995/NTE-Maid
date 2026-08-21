@@ -5,6 +5,7 @@ import cn.tealc.ntemaid.base.notification.NotificationKey;
 import cn.tealc.ntemaid.model.taygedo.TaygedoAccount;
 import com.jfoenixN.controls.JFXDialogLayout;
 import de.saxsys.mvvmfx.*;
+import javafx.beans.binding.Bindings;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -13,6 +14,7 @@ import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
@@ -30,8 +32,21 @@ public class TaygedoAccountView implements FxmlView<TaygedoAccountViewModel>, In
     private TaygedoAccountViewModel viewModel;
     @FXML
     private ListView<TaygedoAccount> accountListView;
+    @FXML
+    private Button addUserBtn;
+    @FXML
+    private VBox emptyPane;
+    @FXML
+    private AnchorPane contentPane;
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        contentPane.visibleProperty().bind(Bindings.isNotEmpty(viewModel.getAccountList()));
+        contentPane.managedProperty().bind(Bindings.isNotEmpty(viewModel.getAccountList()));
+        emptyPane.visibleProperty().bind(Bindings.isEmpty(viewModel.getAccountList()));
+        emptyPane.managedProperty().bind(Bindings.isEmpty(viewModel.getAccountList()));
+
+
+        addUserBtn.setTranslateY(-45);
         accountListView.setItems(viewModel.getAccountList());
         accountListView.setCellFactory((ListView<TaygedoAccount> listView) -> new AccountCell());
     }

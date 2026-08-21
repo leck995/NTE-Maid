@@ -54,7 +54,6 @@
                   <FontIcon iconLiteral="mdmz-person_add_disabled" iconSize="48" />
                   <Label styleClass="title-3" text="暂无账号" />
                   <Label text="请先在账号管理中登录塔吉多账号" textFill="#666" />
-                  <Button mnemonicParsing="false" onAction="#onGoToAccount" styleClass="accent" text="前往账号管理" visible="false" />
                </children>
                <padding>
                   <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />

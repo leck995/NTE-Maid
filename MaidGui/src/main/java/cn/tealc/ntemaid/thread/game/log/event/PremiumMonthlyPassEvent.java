@@ -2,8 +2,8 @@ package cn.tealc.ntemaid.thread.game.log.event;
 
 import cn.tealc.ntemaid.FXResourcesLoader;
 import cn.tealc.ntemaid.base.Config;
-import cn.tealc.ntemaid.jna.key.Win32KeySender;
 import cn.tealc.ntemaid.jna.WindowClientSizeUtil;
+import cn.tealc.ntemaid.jna.key.Win32KeySender;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import javafx.geometry.Point2D;
@@ -17,21 +17,20 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
+/*
+* 大月卡
+* */
+public class PremiumMonthlyPassEvent implements Consumer<String> {
+    private static final Logger log = LoggerFactory.getLogger(PremiumMonthlyPassEvent.class);
+    private static final String OPEN_PREMIUM_MONTHLY_PASS = "HideMainform BindFunction by UI UI_CombatAwardSpecialAward Construct";
 
-public class OtherEvent implements Consumer<String> {
-    private static final Logger log = LoggerFactory.getLogger(OtherEvent.class);
-    private static final String OPEN_ADVENTURE_MANUAL = "OnUIOpened ResetbIgnoreInputing UIName:AdventureManual";
-    private static final String OPEN_ADVENTURE_MANUAL_FROM_MONSTER = "LogHTMonsterManual: Warning: IsMonsterAllKilled, Guid";
-    private static final String OPEN_Premium_Monthly_Pass = "HideMainform BindFunction by UI UI_CombatAwardSpecialAward Construct";
-
-    private static final String RESOURCE_PATH = "/cn/tealc/ntemaid/data/event/AdventureManual.json";
-    private static final String EXTERNAL_PATH = "data/event/AdventureManual.json";
+    private static final String RESOURCE_PATH = "/cn/tealc/ntemaid/data/event/PremiumMonthlyPass.json";
+    private static final String EXTERNAL_PATH = "data/event/PremiumMonthlyPass.json";
     private final Win32KeySender win32KeySender;
     private final Map<String, Point2D> screenMap;
 
-    private boolean skip = false;
 
-    public OtherEvent() {
+    public PremiumMonthlyPassEvent() {
         win32KeySender = new Win32KeySender();
         screenMap = loadScreenMap();
     }
@@ -73,19 +72,13 @@ public class OtherEvent implements Consumer<String> {
 
     @Override
     public void accept(String row) {
-        adventureManualSkip(row);
+        monthlyPassSkip(row);
     }
 
-    private void adventureManualSkip(String row) {
-        if (!Config.getSetting().isGameAdventureManualSkip())
+    private void monthlyPassSkip(String row) {
+        if (!Config.getSetting().isGameMonthlyPassSkip())
             return;
-        if (row.contains(OPEN_ADVENTURE_MANUAL_FROM_MONSTER)){
-            skip = true;
-        } else if (row.contains(OPEN_ADVENTURE_MANUAL)){
-            if (skip){
-                skip = false;
-                return;
-            }
+      if (row.contains(OPEN_PREMIUM_MONTHLY_PASS)){
             win32KeySender.reGetHwnd();
             Point2D size = WindowClientSizeUtil.getSize(win32KeySender.getGameHwnd());
             int width = (int) size.getX();

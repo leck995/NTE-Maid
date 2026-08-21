@@ -43,7 +43,7 @@ public final class GachaExporterManager {
      * v1.2.4 适配游戏 1.3：新增残红（ForkLottery_Zhenhong）、伊洛伊卡池与
      * 娜娜莉复刻（monopoly_limited_Nanali）等卡池映射。
      */
-    public static final String REQUIRED_VERSION = "1.2.4";
+    public static final String REQUIRED_VERSION = "1.2.5";
 
     /** 上游发布包下载地址模板 */
     private static final String DOWNLOAD_URL_TEMPLATE =

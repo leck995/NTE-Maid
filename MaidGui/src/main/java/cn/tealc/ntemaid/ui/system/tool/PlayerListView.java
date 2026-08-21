@@ -7,6 +7,8 @@ import cn.tealc.teafx.utils.message.MessageInfo;
 import de.saxsys.mvvmfx.FxmlView;
 import de.saxsys.mvvmfx.InjectViewModel;
 import de.saxsys.mvvmfx.MvvmFX;
+import javafx.beans.binding.Bindings;
+import javafx.collections.ListChangeListener;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
@@ -17,6 +19,7 @@ import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
@@ -33,12 +36,20 @@ public class PlayerListView implements FxmlView<PlayerListViewModel>, Initializa
 
     @FXML
     private ListView<Player> playerlist;
-
+    @FXML
+    private VBox emptyPane;
+    @FXML
+    private AnchorPane contentPane;
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         playerlist.setItems(viewModel.getPlayers());
         playerlist.setPlaceholder(new Label("当前无数据"));
         playerlist.setCellFactory(lv -> new PlayerCell());
+
+        contentPane.visibleProperty().bind(Bindings.isNotEmpty(viewModel.getPlayers()));
+        contentPane.managedProperty().bind(Bindings.isNotEmpty(viewModel.getPlayers()));
+        emptyPane.visibleProperty().bind(Bindings.isEmpty(viewModel.getPlayers()));
+        emptyPane.managedProperty().bind(Bindings.isEmpty(viewModel.getPlayers()));
     }
 
     class PlayerCell extends ListCell<Player> {

@@ -49,6 +49,13 @@
                                     <Label styleClass="text-subtle" text="4k屏未适配，如果无法自动跳转，请联系开发者进行适配" />
                                  </children>
                               </VBox>
+                              <VBox layoutX="10.0" layoutY="257.0" spacing="10.0">
+                                 <children>
+                                    <Label styleClass="title-3" text="通行证优化" />
+                                    <ToggleSwitch fx:id="monthlyPassSwitch" labelPosition="RIGHT" text="自动跳过通行证界面" />
+                                    <Label styleClass="text-subtle" text="4k屏未适配，如果无法自动跳转，请联系开发者进行适配" />
+                                 </children>
+                              </VBox>
                               <VBox layoutX="10.0" layoutY="401.0" spacing="10.0">
                                  <children>
                                     <Label styleClass="title-3" text="人物自动行走" />
