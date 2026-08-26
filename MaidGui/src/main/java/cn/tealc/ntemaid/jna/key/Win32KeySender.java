@@ -2,12 +2,11 @@ package cn.tealc.ntemaid.jna.key;
 
 import cn.tealc.ntemaid.base.Config;
 import cn.tealc.ntemaid.jna.GameAppListener;
-import com.sun.jna.Native;
+import cn.tealc.ntemaid.jna.User32Ext;
 import com.sun.jna.platform.win32.WinDef.HWND;
 import com.sun.jna.platform.win32.WinDef.LPARAM;
 import com.sun.jna.platform.win32.WinDef.WPARAM;
 import com.sun.jna.platform.win32.WinUser;
-import com.sun.jna.win32.StdCallLibrary;
 import javafx.util.Duration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -204,13 +203,5 @@ public class Win32KeySender {
             this.vkCode = vkCode;
             this.scanCode = scanCode;
         }
-    }
-
-    private interface User32Ext extends StdCallLibrary {
-        User32Ext INSTANCE = Native.load("user32", User32Ext.class);
-
-        HWND FindWindowW(String lpClassName, String lpWindowName);
-
-        boolean PostMessageW(HWND hWnd, int Msg, WPARAM wParam, LPARAM lParam);
     }
 }

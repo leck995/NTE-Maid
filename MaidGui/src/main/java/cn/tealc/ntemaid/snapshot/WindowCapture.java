@@ -1,6 +1,7 @@
 package cn.tealc.ntemaid.snapshot;
 
 import cn.tealc.ntemaid.base.Config;
+import cn.tealc.ntemaid.jna.User32Ext;
 import com.sun.jna.Memory;
 import com.sun.jna.Native;
 import com.sun.jna.platform.win32.*;
@@ -15,11 +16,6 @@ public class WindowCapture {
 
     private static final User32 user32 = User32.INSTANCE;
     private static final GDI32 gdi32 = GDI32.INSTANCE;
-    // 扩展 User32 以支持 PrintWindow
-    public interface User32Ext extends User32 {
-        User32Ext INSTANCE = Native.load("user32", User32Ext.class);
-        boolean PrintWindow(HWND hwnd, HDC hdcBlt, int nFlags);
-    }
     private static final User32Ext user32Ext = User32Ext.INSTANCE;
     // Windows API 常量定义
     private static final int PW_CLIENTONLY = 0x00000001;       // 只截取客户区（不要标题栏和边框）

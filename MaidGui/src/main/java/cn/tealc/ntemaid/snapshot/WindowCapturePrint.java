@@ -1,12 +1,12 @@
 package cn.tealc.ntemaid.snapshot;
 
 import cn.tealc.ntemaid.base.Config;
+import cn.tealc.ntemaid.jna.User32Ext;
 import com.sun.jna.Memory;
 import com.sun.jna.Native;
 import com.sun.jna.platform.win32.*;
 import com.sun.jna.platform.win32.WinDef.*;
 import com.sun.jna.platform.win32.WinGDI.BITMAPINFO;
-import com.sun.jna.win32.W32APIOptions;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -14,14 +14,7 @@ import java.io.File;
 
 public class WindowCapturePrint {
 
-    // 扩展 User32 以支持 PW_RENDERFULLCONTENT 标志
-    public interface MyUser32 extends User32 {
-        MyUser32 INSTANCE = Native.load("user32", MyUser32.class, W32APIOptions.DEFAULT_OPTIONS);
-        // nFlags: 0 表示默认, 2 表示 PW_RENDERFULLCONTENT (抓取硬件加速窗口)
-        boolean PrintWindow(HWND hwnd, HDC hdcBlt, int nFlags);
-    }
-
-    private static final MyUser32 user32 = MyUser32.INSTANCE;
+    private static final User32Ext user32 = User32Ext.INSTANCE;
     private static final GDI32 gdi32 = GDI32.INSTANCE;
 
     public static BufferedImage captureWindow(HWND hwnd) {
