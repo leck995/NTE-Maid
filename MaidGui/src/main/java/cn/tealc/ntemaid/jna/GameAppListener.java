@@ -145,6 +145,13 @@ public class GameAppListener implements WinUser.WinEventProc {
         return 0;
     }
 
+    /**
+     * 游戏是否处于前台运行状态（基于 WinEvent 事件驱动维护，读取为 O(1)）
+     */
+    public boolean isRunning() {
+        return start;
+    }
+
     public WinDef.HWND getGameHWND() {
         if (game != null && !user32.IsWindow(game)) {
             // 重新查找：遍历配置的标题候选列表，取第一个有效窗口

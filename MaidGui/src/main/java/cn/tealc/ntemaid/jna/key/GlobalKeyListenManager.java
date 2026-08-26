@@ -1,6 +1,7 @@
 package cn.tealc.ntemaid.jna.key;
 
 import cn.tealc.ntemaid.base.Config;
+import cn.tealc.ntemaid.jna.GameAppListener;
 import cn.tealc.ntemaid.jna.key.event.KeyEvent;
 import cn.tealc.ntemaid.jna.key.event.MusicPlayerKeyEvent;
 import cn.tealc.ntemaid.jna.key.event.OtherKeyEvent;
@@ -87,10 +88,18 @@ public class GlobalKeyListenManager implements NativeKeyListener {
         // 通常不需要处理
     }
 
+    /**
+     * 判断游戏是否处于前台。
+     * 复用 GameAppListener 维护的游戏窗口 HWND，直接与前台窗口 HWND 对比，
+     * 避免每次按键都 GetWindowText + 字符串构造 + 列表匹配的开销。
+     */
     private boolean isGameActive() {
-        return getForegroundWindowTitle()
-                .map(t -> Config.getSetting().getGameWindowTitles().contains(t))
-                .orElse(false);
+        WinDef.HWND gameHwnd = GameAppListener.getInstance().getGameHWND();
+        if (gameHwnd == null) {
+            return false;
+        }
+        WinDef.HWND foreground = User32.INSTANCE.GetForegroundWindow();
+        return gameHwnd.equals(foreground);
     }
 
     public Optional<String> getForegroundWindowTitle() {
