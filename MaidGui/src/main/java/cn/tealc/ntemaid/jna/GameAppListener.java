@@ -23,26 +23,33 @@ import java.time.LocalDateTime;
 public class GameAppListener implements WinUser.WinEventProc {
     private final Logger LOG = LoggerFactory.getLogger(GameAppListener.class);
 
-    private static GameAppListener gameAppListener;
+    // 单例持有者，利用 JVM 类加载机制保证线程安全的延迟初始化
+    private static class Holder {
+        private static final GameAppListener INSTANCE = new GameAppListener();
+    }
+
     private final GameTimeService gameTimeService = AppInjector.getInstance(GameTimeService.class);
     private final User32 user32 = User32.INSTANCE;
 
-    private WinDef.HWND game;
-    private WinNT.HANDLE hKey;
-    private boolean start = false;
-    private LocalDateTime startGameTime;
+    // 跨线程读写的状态字段，使用 volatile 保证可见性（callback 由 WinEvent 钩子线程写，UI/虚拟线程读）
+    private volatile WinDef.HWND game;
+    private volatile WinNT.HANDLE hKey;
+    private volatile boolean start = false;
+    private volatile LocalDateTime startGameTime;
 
     private GameAppListener() {}
 
-    public static synchronized GameAppListener getInstance() {
-        if (gameAppListener == null) gameAppListener = new GameAppListener();
-        return gameAppListener;
+    /**
+     * 获取单例实例（基于 holder 模式，线程安全且延迟加载）
+     */
+    public static GameAppListener getInstance() {
+        return Holder.INSTANCE;
     }
 
     /**
      * 开启监听
      */
-    public void startListening() {
+    public synchronized void startListening() {
         // 1. 挂载前台切换钩子（处理应用运行期间，游戏切换、启动、或关闭后切回其他窗体的事件）
         if (hKey == null) {
             hKey = User32.INSTANCE.SetWinEventHook(0x0003, 0x0003, null, this, 0, 0, 0);
@@ -72,7 +79,10 @@ public class GameAppListener implements WinUser.WinEventProc {
         }
     }
 
-    public void stopListening() {
+    /**
+     * 停止监听
+     */
+    public synchronized void stopListening() {
         if (hKey != null) {
             User32.INSTANCE.UnhookWinEvent(hKey);
             hKey = null;
