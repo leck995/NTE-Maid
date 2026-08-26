@@ -44,6 +44,11 @@ public class Setting {
     private final SimpleStringProperty gameRootDir = new SimpleStringProperty();//游戏根目录
     private final SimpleStringProperty gameStarAppPath = new SimpleStringProperty("NTELauncher.exe");//游戏启动文件
     private final SimpleBooleanProperty gameStartAppCustom = new SimpleBooleanProperty(false); //自定义启动程序
+    /** 游戏窗口标题候选列表，用于识别不同语言/区服的游戏窗口（如中文"异环  "、英文"NTE  "） */
+    @JsonSerialize(using = ObservableListSerializer.class)
+    @JsonDeserialize(using = ObservableListDeserializer.class)
+    private final ObservableList<String> gameWindowTitles =
+            FXCollections.observableArrayList("异环  ", "NTE  ");
 
     /*=================设置-基础设置===================*/
     private final SimpleBooleanProperty diyHomeBg = new SimpleBooleanProperty(false); //启用自定义背景
@@ -466,6 +471,20 @@ public class Setting {
 
     public ObservableList<String> getStartUpParams() {
         return startUpParams;
+    }
+
+    /**
+     * 获取游戏窗口标题候选列表
+     */
+    public ObservableList<String> getGameWindowTitles() {
+        return gameWindowTitles;
+    }
+
+    /**
+     * 设置游戏窗口标题候选列表（使用 setAll 保留可观察性）
+     */
+    public void setGameWindowTitles(ObservableList<String> gameWindowTitles) {
+        this.gameWindowTitles.setAll(gameWindowTitles);
     }
 
     public String getSkipVersion() {

@@ -1,5 +1,6 @@
 package cn.tealc.ntemaid.jna.key;
 
+import cn.tealc.ntemaid.base.Config;
 import cn.tealc.ntemaid.jna.GameAppListener;
 import com.sun.jna.Native;
 import com.sun.jna.platform.win32.WinDef.HWND;
@@ -20,7 +21,6 @@ import java.util.concurrent.TimeUnit;
  */
 public class Win32KeySender {
     private static final Logger log = LoggerFactory.getLogger(Win32KeySender.class);
-    private static final String GAME_WINDOW_TITLE = "异环  ";
     private static final ScheduledExecutorService scheduler =
             Executors.newSingleThreadScheduledExecutor(r -> {
                 Thread t = new Thread(r, "key-sender");
@@ -42,7 +42,7 @@ public class Win32KeySender {
     public void reGetHwnd() {
         this.hwnd = GameAppListener.getInstance().getGameHWND();
         if (this.hwnd == null) {
-            log.warn("未找到游戏窗口: {}", GAME_WINDOW_TITLE);
+            log.warn("未找到游戏窗口: {}", Config.getSetting().getGameWindowTitles());
         }
     }
 
@@ -103,7 +103,7 @@ public class Win32KeySender {
         int lParamUp = (scanCode << 16) | (1 << 30) | (1 << 31) | 1;
         User32Ext.INSTANCE.PostMessageW(hwnd, WinUser.WM_KEYDOWN, new WPARAM(vkCode), new LPARAM(lParamDown));
         User32Ext.INSTANCE.PostMessageW(hwnd, WinUser.WM_KEYUP, new WPARAM(vkCode), new LPARAM(lParamUp));
-        log.debug("PostMessage 按键 VK=0x{} SC=0x{} -> {}", Integer.toHexString(vkCode), Integer.toHexString(scanCode), GAME_WINDOW_TITLE);
+        log.debug("PostMessage 按键 VK=0x{} SC=0x{} -> {}", Integer.toHexString(vkCode), Integer.toHexString(scanCode), Config.getSetting().getGameWindowTitles());
     }
 
     private void pressKey(int vkCode, int scanCode) {
@@ -131,7 +131,7 @@ public class Win32KeySender {
 
         User32Ext.INSTANCE.PostMessageW(hwnd, downMsg, new WPARAM(0), new LPARAM(lParam));
         User32Ext.INSTANCE.PostMessageW(hwnd, upMsg, new WPARAM(0), new LPARAM(lParam));
-        log.debug("PostMessage 鼠标点击 ({}, {}) -> {}", x, y, GAME_WINDOW_TITLE);
+        log.debug("PostMessage 鼠标点击 ({}, {}) -> {}", x, y, Config.getSetting().getGameWindowTitles());
     }
 
     // ---- VirtualKey 枚举 ----

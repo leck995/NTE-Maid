@@ -1,5 +1,6 @@
 package cn.tealc.ntemaid.snapshot;
 
+import cn.tealc.ntemaid.base.Config;
 import com.sun.jna.Memory;
 import com.sun.jna.Native;
 import com.sun.jna.platform.win32.*;
@@ -87,17 +88,24 @@ public class WindowCapturePrint {
 
     public static void main(String[] args) {
         long start = System.currentTimeMillis();
-        // 请确保标题完全一致，或者改用 FindWindow(null, null) 遍历
-        String windowTitle = "异环  ";
-        HWND hwnd = user32.FindWindow(null, windowTitle);
+        // 遍历配置的标题候选列表，兼容中英文等多语言游戏窗口
+        HWND hwnd = null;
+        String matchedTitle = null;
+        for (String title : Config.getSetting().getGameWindowTitles()) {
+            hwnd = user32.FindWindow(null, title);
+            if (hwnd != null) {
+                matchedTitle = title;
+                break;
+            }
+        }
 
         if (hwnd == null) {
-            System.err.println("找不到窗口，请检查标题是否包含多余空格: [" + windowTitle + "]");
+            System.err.println("找不到窗口，请检查配置的标题是否包含多余空格: " + Config.getSetting().getGameWindowTitles());
             return;
         }
 
         try {
-            System.out.println("正在截取...");
+            System.out.println("正在截取... 匹配标题: [" + matchedTitle + "]");
             BufferedImage img = captureWindow(hwnd);
             long end = System.currentTimeMillis();
             System.out.println(end - start);

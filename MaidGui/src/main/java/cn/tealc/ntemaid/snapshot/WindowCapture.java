@@ -1,5 +1,6 @@
 package cn.tealc.ntemaid.snapshot;
 
+import cn.tealc.ntemaid.base.Config;
 import com.sun.jna.Memory;
 import com.sun.jna.Native;
 import com.sun.jna.platform.win32.*;
@@ -85,7 +86,12 @@ public class WindowCapture {
     }
 
     public static void snapshot(String[] args) {
-        HWND hwnd = user32.FindWindow(null, "异环  ");
+        // 遍历配置的标题候选列表，兼容中英文等多语言游戏窗口
+        HWND hwnd = null;
+        for (String title : Config.getSetting().getGameWindowTitles()) {
+            hwnd = user32.FindWindow(null, title);
+            if (hwnd != null) break;
+        }
 
         if (hwnd == null) {
             System.out.println("未找到窗口，请确认游戏已启动且窗口标题正确。");

@@ -1,5 +1,6 @@
 package cn.tealc.ntemaid.jna.key;
 
+import cn.tealc.ntemaid.base.Config;
 import cn.tealc.ntemaid.jna.key.event.KeyEvent;
 import cn.tealc.ntemaid.jna.key.event.MusicPlayerKeyEvent;
 import cn.tealc.ntemaid.jna.key.event.OtherKeyEvent;
@@ -19,7 +20,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class GlobalKeyListenManager implements NativeKeyListener {
-    private static final String GAME_NAME = "异环  ";
     private static final Logger log = LoggerFactory.getLogger(GlobalKeyListenManager.class);
     private final List<KeyEvent> eventList = new CopyOnWriteArrayList<>();
     //使用线程安全的 Set 记录当前所有被按住的键
@@ -84,7 +84,7 @@ public class GlobalKeyListenManager implements NativeKeyListener {
 
     private boolean isGameActive() {
         return getForegroundWindowTitle()
-                .map(t -> t.equals(GAME_NAME))
+                .map(t -> Config.getSetting().getGameWindowTitles().contains(t))
                 .orElse(false);
     }
 

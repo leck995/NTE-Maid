@@ -23,7 +23,6 @@ import java.time.LocalDateTime;
 public class GameAppListener implements WinUser.WinEventProc {
     private final Logger LOG = LoggerFactory.getLogger(GameAppListener.class);
 
-    private static final String GAME_WINDOW_TITLE = "异环  ";
     private static GameAppListener gameAppListener;
     private final GameTimeService gameTimeService = AppInjector.getInstance(GameTimeService.class);
     private final User32 user32 = User32.INSTANCE;
@@ -60,13 +59,16 @@ public class GameAppListener implements WinUser.WinEventProc {
     private void checkGameStatusOnStart() {
         if (start) return;
 
-        // 主动去系统的所有顶级窗口中寻找“异环”
-        WinDef.HWND hwnd = user32.FindWindow(null, GAME_WINDOW_TITLE);
-        if (hwnd != null && user32.IsWindow(hwnd)) {
-            game = hwnd;
-            start = true;
-            startGameTime = LocalDateTime.now(); // 如果是补录，也可以考虑通过进程创建时间来获取更精准的startGameTime
-            LOG.info("【同步成功】检测到游戏已经在前台运行，自动激活监听状态");
+        // 主动去系统的所有顶级窗口中寻找游戏窗口（遍历配置的标题候选列表，兼容中英文等多语言标题）
+        for (String title : Config.getSetting().getGameWindowTitles()) {
+            WinDef.HWND hwnd = user32.FindWindow(null, title);
+            if (hwnd != null && user32.IsWindow(hwnd)) {
+                game = hwnd;
+                start = true;
+                startGameTime = LocalDateTime.now(); // 如果是补录，也可以考虑通过进程创建时间来获取更精准的startGameTime
+                LOG.info("【同步成功】检测到游戏已经在前台运行，自动激活监听状态");
+                return;
+            }
         }
     }
 
@@ -85,7 +87,7 @@ public class GameAppListener implements WinUser.WinEventProc {
         user32.GetWindowText(hwnd, buffer, buffer.length);
         String title = Native.toString(buffer);
 
-        if (title.equals(GAME_WINDOW_TITLE)) {
+        if (Config.getSetting().getGameWindowTitles().contains(title)) {
             if (!start) {
                 game = hwnd;
                 start = true;
@@ -135,7 +137,15 @@ public class GameAppListener implements WinUser.WinEventProc {
 
     public WinDef.HWND getGameHWND() {
         if (game != null && !user32.IsWindow(game)) {
-            game = user32.FindWindow(null, GAME_WINDOW_TITLE);
+            // 重新查找：遍历配置的标题候选列表，取第一个有效窗口
+            game = null;
+            for (String title : Config.getSetting().getGameWindowTitles()) {
+                WinDef.HWND hwnd = user32.FindWindow(null, title);
+                if (hwnd != null && user32.IsWindow(hwnd)) {
+                    game = hwnd;
+                    break;
+                }
+            }
         }
         return game;
     }
