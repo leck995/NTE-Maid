@@ -27,7 +27,10 @@ public class GlobalKeyListenManager implements NativeKeyListener {
     // 是否是由我们自己代码触发的虚拟按键标记
     private volatile boolean isRobotOperating = false;
 
-    private static GlobalKeyListenManager manager;
+    // 单例持有者，利用 JVM 类加载机制保证线程安全的延迟初始化
+    private static class Holder {
+        private static final GlobalKeyListenManager INSTANCE = new GlobalKeyListenManager();
+    }
 
     public GlobalKeyListenManager() {
         eventList.add(new MusicPlayerKeyEvent());
@@ -35,9 +38,11 @@ public class GlobalKeyListenManager implements NativeKeyListener {
         eventList.add(new WalkKeyEvent());
     }
 
+    /**
+     * 获取单例实例（基于 holder 模式，线程安全且延迟加载）
+     */
     public static GlobalKeyListenManager getInstance() {
-        if (manager == null) manager = new GlobalKeyListenManager();
-        return manager;
+        return Holder.INSTANCE;
     }
 
 
@@ -61,7 +66,7 @@ public class GlobalKeyListenManager implements NativeKeyListener {
             //log.debug("Key Pressed: " + NativeKeyEvent.getKeyText(keyCode));
         }
 
-        eventList.forEach(keyCodeConsumer -> keyCodeConsumer.accept(keyCode, manager));
+        eventList.forEach(keyCodeConsumer -> keyCodeConsumer.accept(keyCode, this));
     }
 
     @Override
