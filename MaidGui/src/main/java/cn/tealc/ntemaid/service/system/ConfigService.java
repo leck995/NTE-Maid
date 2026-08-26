@@ -1,4 +1,4 @@
-package cn.tealc.ntemaid.service;
+package cn.tealc.ntemaid.service.system;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import javafx.util.Pair;

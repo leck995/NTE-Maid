@@ -1,7 +1,7 @@
-package cn.tealc.ntemaid.service.impl;
+package cn.tealc.ntemaid.service.system.impl;
 
 import cn.tealc.ntemaid.dao.ConfigDao;
-import cn.tealc.ntemaid.service.ConfigService;
+import cn.tealc.ntemaid.service.system.ConfigService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;

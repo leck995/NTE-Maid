@@ -5,7 +5,7 @@ import cn.tealc.ntemaid.base.AppInjector;
 import cn.tealc.ntemaid.base.Config;
 import cn.tealc.ntemaid.model.system.resources.Resource;
 import cn.tealc.ntemaid.model.system.resources.RootResource;
-import cn.tealc.ntemaid.service.ConfigService;
+import cn.tealc.ntemaid.service.system.ConfigService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import javafx.concurrent.Task;
 import org.apache.commons.codec.binary.Base64;

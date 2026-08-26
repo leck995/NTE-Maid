@@ -6,7 +6,7 @@ import cn.tealc.ntemaid.model.game.gacha.local.LocalGachaItem;
 import cn.tealc.ntemaid.model.game.gacha.local.LocalGachaType;
 import cn.tealc.ntemaid.model.taygedo.TaygedoAccount;
 import cn.tealc.ntemaid.service.gacha.LocalGachaDataService;
-import cn.tealc.ntemaid.service.TaygedoAccountService;
+import cn.tealc.ntemaid.service.taygedo.TaygedoAccountService;
 import cn.tealc.taygedo.TaygedoApi;
 import cn.tealc.taygedo.TaygedoException;
 import cn.tealc.taygedo.model.GameGachaPool;

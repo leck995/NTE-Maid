@@ -5,7 +5,7 @@ import cn.tealc.ntemaid.base.Config;
 import cn.tealc.ntemaid.base.notification.NotificationKey;
 import cn.tealc.ntemaid.base.notification.NotificationManager;
 import cn.tealc.ntemaid.jna.GameAppListener;
-import cn.tealc.ntemaid.service.GameTimeService;
+import cn.tealc.ntemaid.service.system.GameTimeService;
 import cn.tealc.ntemaid.util.LanguageManager;
 import com.google.inject.Inject;
 import cn.tealc.teafx.utils.message.MessageInfo;

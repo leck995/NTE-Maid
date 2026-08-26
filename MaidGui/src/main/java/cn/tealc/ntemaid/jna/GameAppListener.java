@@ -4,7 +4,7 @@ import cn.tealc.ntemaid.base.AppInjector;
 import cn.tealc.ntemaid.base.Config;
 import cn.tealc.ntemaid.base.notification.NotificationKey;
 import cn.tealc.ntemaid.base.notification.NotificationManager;
-import cn.tealc.ntemaid.service.GameTimeService;
+import cn.tealc.ntemaid.service.system.GameTimeService;
 import cn.tealc.ntemaid.service.NativeProcessService;
 import com.sun.jna.Native;
 import com.sun.jna.platform.win32.User32;

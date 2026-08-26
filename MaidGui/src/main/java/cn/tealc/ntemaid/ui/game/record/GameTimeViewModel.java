@@ -1,13 +1,12 @@
 package cn.tealc.ntemaid.ui.game.record;
 
 import cn.tealc.ntemaid.model.game.GameTime;
-import cn.tealc.ntemaid.service.GameTimeService;
+import cn.tealc.ntemaid.service.system.GameTimeService;
 import cn.tealc.ntemaid.util.LanguageManager;
 import com.google.inject.Inject;
 import de.saxsys.mvvmfx.ViewModel;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleDoubleProperty;
-import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;

@@ -1,8 +1,8 @@
-package cn.tealc.ntemaid.service.impl;
+package cn.tealc.ntemaid.service.system.impl;
 
 import cn.tealc.ntemaid.dao.GameTimeDao;
 import cn.tealc.ntemaid.model.game.GameTime;
-import cn.tealc.ntemaid.service.GameTimeService;
+import cn.tealc.ntemaid.service.system.GameTimeService;
 import com.google.inject.Inject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

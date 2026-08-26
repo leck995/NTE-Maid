@@ -1,14 +1,12 @@
 package cn.tealc.ntemaid.ui.taygedo.signin;
 
 import cn.tealc.ntemaid.base.Config;
-import cn.tealc.ntemaid.base.notification.NotificationManager;
 import cn.tealc.ntemaid.model.taygedo.TaygedoAccount;
-import cn.tealc.ntemaid.service.TaygedoAccountService;
-import cn.tealc.ntemaid.service.TaygedoSignInService;
+import cn.tealc.ntemaid.service.taygedo.TaygedoAccountService;
+import cn.tealc.ntemaid.service.taygedo.TaygedoSignInService;
 import cn.tealc.taygedo.TaygedoException;
 import cn.tealc.taygedo.model.SigninReward;
 import cn.tealc.taygedo.model.SigninState;
-import cn.tealc.teafx.utils.message.MessageInfo;
 import com.google.inject.Inject;
 import de.saxsys.mvvmfx.ViewModel;
 import de.saxsys.mvvmfx.utils.commands.Action;

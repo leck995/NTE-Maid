@@ -1,4 +1,4 @@
-package cn.tealc.ntemaid.service;
+package cn.tealc.ntemaid.service.system.player;
 
 import cn.tealc.ntemaid.dao.PlaylistDao;
 import cn.tealc.ntemaid.model.game.music.Music;
@@ -8,7 +8,6 @@ import com.google.inject.Inject;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 public class PlaylistService {

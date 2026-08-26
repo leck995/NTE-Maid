@@ -17,7 +17,7 @@ import java.util.Date;
  * @create: 2024-12-22 15:20
  */
 public class ReleaseCreateUtil {
-    private static final String JAR_PATH = "D:\\Code\\Reposities\\JavaFX\\NTEMaid\\MaidGui\\target\\NTEMaid-1.2.2.jar";
+    private static final String JAR_PATH = "H:\\Projects\\Java\\owner\\NTEMaid\\MaidGui\\target\\NTEMaid-1.2.3.jar";
     private static final String RELEASE_FILE="release/release.json";
     public static void main(String[] args) throws IOException {
         Release latestRelease = latestRelease();
@@ -31,13 +31,17 @@ public class ReleaseCreateUtil {
     }
 
     private static Release latestRelease() throws IOException {
-        String latestVersion = "1.2.2";
+        String latestVersion = "1.2.3";
         String latestName = "正式版";
         String latestDescription = """
                 若无法自动更新，请前往发布页或者群手动下载最新版程序。
                 
                 更新日志：
-                1. 修复并优化抽空分析
+                1. 增强抽卡抓取功能
+                2. 游戏优化新增通行证界面跳转
+                3. 优化部分UI界面
+                4. 修复BUG
+                
                 
                 """;
         boolean latestForce = false; //是否是强制更新
@@ -49,9 +53,9 @@ public class ReleaseCreateUtil {
         //https://api.github.com/repos/leck995/WutheringWavesTool/releases/latest
         //如果有github,则第一个放github下载链接
         String[] latestUrls = {
-                "https://release.999758.xyz/nte/NTEMaid-1.2.2.zip",
-                "https://cdn.999758.xyz/nte/NTEMaid-1.2.2.zip",
-                "https://github.com/leck995/NTE-Maid/releases/download/1.2.2/NTEMaid-windows-x64-1.2.2.zip"
+                "https://release.999758.xyz/nte/NTEMaid-1.2.3.zip",
+                "https://cdn.999758.xyz/nte/NTEMaid-1.2.3.zip",
+                "https://github.com/leck995/NTE-Maid/releases/download/1.2.2/NTEMaid-windows-x64-1.2.3.zip"
         };
         String warning = "更新警告";//强制更新警告
         boolean isPre = false;

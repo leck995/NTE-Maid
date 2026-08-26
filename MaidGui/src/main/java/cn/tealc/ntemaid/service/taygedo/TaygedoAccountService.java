@@ -1,4 +1,4 @@
-package cn.tealc.ntemaid.service;
+package cn.tealc.ntemaid.service.taygedo;
 
 import cn.tealc.ntemaid.dao.TaygedoAccountDao;
 import cn.tealc.ntemaid.model.taygedo.TaygedoAccount;

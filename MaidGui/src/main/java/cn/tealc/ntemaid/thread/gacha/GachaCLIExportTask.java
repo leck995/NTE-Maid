@@ -2,7 +2,7 @@ package cn.tealc.ntemaid.thread.gacha;
 
 import cn.tealc.ntemaid.FXResourcesLoader;
 import cn.tealc.ntemaid.base.AppInjector;
-import cn.tealc.ntemaid.service.ConfigService;
+import cn.tealc.ntemaid.service.system.ConfigService;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

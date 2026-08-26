@@ -2,8 +2,8 @@ package cn.tealc.ntemaid.player;
 
 import cn.tealc.ntemaid.base.AppInjector;
 import cn.tealc.ntemaid.model.game.music.Music;
-import cn.tealc.ntemaid.service.ConfigService;
-import cn.tealc.ntemaid.service.PlayingListService;
+import cn.tealc.ntemaid.service.system.ConfigService;
+import cn.tealc.ntemaid.service.system.player.PlayingListService;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.util.Duration;

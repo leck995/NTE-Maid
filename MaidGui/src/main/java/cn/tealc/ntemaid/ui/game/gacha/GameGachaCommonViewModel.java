@@ -4,7 +4,7 @@ import cn.tealc.ntemaid.base.notification.NotificationKey;
 import cn.tealc.ntemaid.base.notification.NotificationManager;
 import cn.tealc.ntemaid.model.game.gacha.common.CommonGachaData;
 import cn.tealc.ntemaid.model.game.gacha.common.CommonGachaItem;
-import cn.tealc.ntemaid.service.ConfigService;
+import cn.tealc.ntemaid.service.system.ConfigService;
 import cn.tealc.ntemaid.service.gacha.CommonGachaAnalysisService;
 import cn.tealc.ntemaid.service.gacha.CommonGachaService;
 import cn.tealc.ntemaid.ui.base.BaseViewModel;

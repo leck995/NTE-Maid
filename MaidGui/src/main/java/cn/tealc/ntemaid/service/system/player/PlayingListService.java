@@ -1,4 +1,4 @@
-package cn.tealc.ntemaid.service;
+package cn.tealc.ntemaid.service.system.player;
 
 import cn.tealc.ntemaid.dao.PlayingListDao;
 import cn.tealc.ntemaid.model.game.music.Music;

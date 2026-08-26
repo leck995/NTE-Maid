@@ -6,8 +6,8 @@ import cn.tealc.ntemaid.player.BaseAudioPlayer;
 import cn.tealc.ntemaid.model.game.music.LrcBean;
 import cn.tealc.ntemaid.model.game.music.Music;
 import cn.tealc.ntemaid.player.MusicPlayerClient;
-import cn.tealc.ntemaid.service.MusicService;
-import cn.tealc.ntemaid.service.PlayingListService;
+import cn.tealc.ntemaid.service.system.player.MusicService;
+import cn.tealc.ntemaid.service.system.player.PlayingListService;
 import cn.tealc.teafx.utils.message.MessageInfo;
 import com.google.inject.Inject;
 import de.saxsys.mvvmfx.SceneLifecycle;
@@ -22,11 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.List;
-import java.util.stream.Stream;
 
 public class MusicPlayerViewModel implements ViewModel, SceneLifecycle {
     private static final Logger log = LoggerFactory.getLogger(MusicPlayerViewModel.class);

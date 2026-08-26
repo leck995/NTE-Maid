@@ -1,4 +1,4 @@
-package cn.tealc.ntemaid.service;
+package cn.tealc.ntemaid.service.system;
 
 import cn.tealc.ntemaid.model.game.GameTime;
 

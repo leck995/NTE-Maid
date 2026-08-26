@@ -3,7 +3,7 @@ package cn.tealc.ntemaid.ui.taygedo.account;
 import cn.tealc.ntemaid.base.notification.NotificationKey;
 import cn.tealc.ntemaid.base.notification.NotificationManager;
 import cn.tealc.ntemaid.model.taygedo.TaygedoAccount;
-import cn.tealc.ntemaid.service.TaygedoLoginService;
+import cn.tealc.ntemaid.service.taygedo.TaygedoLoginService;
 import cn.tealc.taygedo.TaygedoException;
 import com.google.inject.Inject;
 import de.saxsys.mvvmfx.SceneLifecycle;

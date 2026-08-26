@@ -7,7 +7,7 @@ import cn.tealc.ntemaid.model.taygedo.TaygedoAccount;
 import cn.tealc.ntemaid.repository.GameDataRepository;
 import cn.tealc.ntemaid.service.gacha.LocalGachaAnalysisService;
 import cn.tealc.ntemaid.service.gacha.LocalGachaDataService;
-import cn.tealc.ntemaid.service.TaygedoAccountService;
+import cn.tealc.ntemaid.service.taygedo.TaygedoAccountService;
 import cn.tealc.ntemaid.util.ImageCacheManager;
 import cn.tealc.taygedo.TaygedoApi;
 import cn.tealc.taygedo.TaygedoException;
