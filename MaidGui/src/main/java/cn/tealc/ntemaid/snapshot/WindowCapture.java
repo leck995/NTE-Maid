@@ -1,6 +1,6 @@
 package cn.tealc.ntemaid.snapshot;
 
-import cn.tealc.ntemaid.base.Config;
+import cn.tealc.ntemaid.jna.GameAppListener;
 import cn.tealc.ntemaid.jna.User32Ext;
 import com.sun.jna.Memory;
 import com.sun.jna.Native;
@@ -82,12 +82,8 @@ public class WindowCapture {
     }
 
     public static void snapshot(String[] args) {
-        // 遍历配置的标题候选列表，兼容中英文等多语言游戏窗口
-        HWND hwnd = null;
-        for (String title : Config.getSetting().getGameWindowTitles()) {
-            hwnd = user32.FindWindow(null, title);
-            if (hwnd != null) break;
-        }
+        // 复用 GameAppListener 统一封装的窗口查找逻辑
+        HWND hwnd = GameAppListener.getInstance().findGameWindow();
 
         if (hwnd == null) {
             System.out.println("未找到窗口，请确认游戏已启动且窗口标题正确。");

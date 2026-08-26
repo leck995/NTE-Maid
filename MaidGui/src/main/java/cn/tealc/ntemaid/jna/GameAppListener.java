@@ -67,15 +67,12 @@ public class GameAppListener implements WinUser.WinEventProc {
         if (start) return;
 
         // 主动去系统的所有顶级窗口中寻找游戏窗口（遍历配置的标题候选列表，兼容中英文等多语言标题）
-        for (String title : Config.getSetting().getGameWindowTitles()) {
-            WinDef.HWND hwnd = user32.FindWindow(null, title);
-            if (hwnd != null && user32.IsWindow(hwnd)) {
-                game = hwnd;
-                start = true;
-                startGameTime = LocalDateTime.now(); // 如果是补录，也可以考虑通过进程创建时间来获取更精准的startGameTime
-                LOG.info("【同步成功】检测到游戏已经在前台运行，自动激活监听状态");
-                return;
-            }
+        WinDef.HWND hwnd = findGameWindow();
+        if (hwnd != null) {
+            game = hwnd;
+            start = true;
+            startGameTime = LocalDateTime.now(); // 如果是补录，也可以考虑通过进程创建时间来获取更精准的startGameTime
+            LOG.info("【同步成功】检测到游戏已经在前台运行，自动激活监听状态");
         }
     }
 
@@ -154,16 +151,25 @@ public class GameAppListener implements WinUser.WinEventProc {
 
     public WinDef.HWND getGameHWND() {
         if (game != null && !user32.IsWindow(game)) {
-            // 重新查找：遍历配置的标题候选列表，取第一个有效窗口
-            game = null;
-            for (String title : Config.getSetting().getGameWindowTitles()) {
-                WinDef.HWND hwnd = user32.FindWindow(null, title);
-                if (hwnd != null && user32.IsWindow(hwnd)) {
-                    game = hwnd;
-                    break;
-                }
-            }
+            // 窗口已失效，重新查找
+            game = findGameWindow();
         }
         return game;
+    }
+
+    /**
+     * 遍历配置的标题候选列表查找游戏窗口，返回第一个有效 HWND。
+     * 统一封装，供 GameAppListener 内部及截图等外部调用方复用。
+     *
+     * @return 第一个有效游戏窗口句柄，未找到返回 null
+     */
+    public WinDef.HWND findGameWindow() {
+        for (String title : Config.getSetting().getGameWindowTitles()) {
+            WinDef.HWND hwnd = user32.FindWindow(null, title);
+            if (hwnd != null && user32.IsWindow(hwnd)) {
+                return hwnd;
+            }
+        }
+        return null;
     }
 }
