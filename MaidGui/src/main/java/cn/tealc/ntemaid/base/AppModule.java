@@ -11,6 +11,7 @@ import cn.tealc.ntemaid.service.gacha.CommonGachaService;
 import cn.tealc.ntemaid.service.gacha.LocalGachaAnalysisService;
 import cn.tealc.ntemaid.service.gacha.LocalGachaDataService;
 import cn.tealc.ntemaid.service.system.ConfigService;
+import cn.tealc.ntemaid.service.system.GameServerService;
 import cn.tealc.ntemaid.service.system.impl.ConfigServiceImpl;
 import cn.tealc.ntemaid.service.system.impl.GameTimeServiceImpl;
 import cn.tealc.ntemaid.service.system.GameTimeService;
@@ -58,6 +59,7 @@ public class AppModule extends AbstractModule {
         bind(PlaylistService.class).in(Singleton.class);
         bind(MusicService.class).in(Singleton.class);
         bind(NativeProcessService.class).in(Singleton.class);
+        bind(GameServerService.class).in(Singleton.class);
         bind(AsyncRunner.class).in(Singleton.class);
         bind(GameDataRepository.class).in(Singleton.class);
         bind(NavRepository.class).in(Singleton.class);

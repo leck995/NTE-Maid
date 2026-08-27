@@ -1,7 +1,10 @@
 package cn.tealc.ntemaid.thread.game.log;
 
+import cn.tealc.ntemaid.base.AppInjector;
 import cn.tealc.ntemaid.base.Config;
 import cn.tealc.ntemaid.model.game.Player;
+import cn.tealc.ntemaid.service.system.GameServerService;
+import cn.tealc.ntemaid.util.GameClientType;
 import javafx.concurrent.Task;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,7 +25,7 @@ public class LoginPlayerGetTask extends Task<Player> {
     private static final Logger log = LoggerFactory.getLogger(LoginPlayerGetTask.class);
 
     private static final String MARKER = "CHDGamePlayerMgr::setRoleInfo";
-    /** 游戏日志在中文 Windows 下默认为 GBK 编码 */
+    /** 游戏日志默认为 GBK 编码（国服与国际服一致） */
     private static final Charset LOG_CHARSET = Charset.forName("GBK");
     private static final Pattern ROLE_ID_PATTERN =
             Pattern.compile("\"roleId\"\\s*:\\s*\"?(\\d+)\"?");
@@ -33,7 +36,16 @@ public class LoginPlayerGetTask extends Task<Player> {
     private final String logPath;
 
     public LoginPlayerGetTask() {
-        logPath = Config.getSetting().getGameRootDir() + "/NTELauncher/UserData/Log/NTEGame.log";
+        GameServerService serverService = AppInjector.getInstance(GameServerService.class);
+        GameClientType serverType = serverService.detectServer();
+
+        if (serverType == GameClientType.GLOBAL) {
+            // 国际服：日志位于 NTEGlobal 目录
+            logPath = Config.getSetting().getGameRootDir() + "/NTEGlobal/UserData/Log/NTEGlobalGame.log";
+        } else {
+            // 国服（含官服/B服）：日志位于 NTELauncher 目录
+            logPath = Config.getSetting().getGameRootDir() + "/NTELauncher/UserData/Log/NTEGame.log";
+        }
     }
 
     @Override
