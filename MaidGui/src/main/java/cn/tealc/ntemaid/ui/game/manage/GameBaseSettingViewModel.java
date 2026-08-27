@@ -1,7 +1,9 @@
 package cn.tealc.ntemaid.ui.game.manage;
 
+import cn.tealc.ntemaid.base.AppInjector;
 import cn.tealc.ntemaid.base.Config;
 import cn.tealc.ntemaid.base.notification.NotificationManager;
+import cn.tealc.ntemaid.service.system.GameServerService;
 import cn.tealc.ntemaid.util.GameClientType;
 import cn.tealc.teafx.utils.message.MessageInfo;
 import de.saxsys.mvvmfx.SceneLifecycle;
@@ -48,7 +50,8 @@ public class GameBaseSettingViewModel implements ViewModel, SceneLifecycle {
             String gameInstallPath = getGameInstallPath();
             if (gameInstallPath != null){
                 gameDir.set(gameInstallPath);
-                gameAppStartPath.set(gameInstallPath + File.separator + "NTELauncher.exe");
+                String launcherName = AppInjector.getInstance(GameServerService.class).getLauncherFileName();
+                gameAppStartPath.set(gameInstallPath + File.separator + launcherName);
             }
         }
     }

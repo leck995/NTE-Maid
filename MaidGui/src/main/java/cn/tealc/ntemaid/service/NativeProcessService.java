@@ -1,15 +1,23 @@
 package cn.tealc.ntemaid.service;
 
+import cn.tealc.ntemaid.service.system.GameServerService;
 import com.google.inject.Inject;
 
 import java.util.Optional;
 
 public class NativeProcessService {
-    @Inject
-    public NativeProcessService() {}
+    private final GameServerService gameServerService;
 
+    @Inject
+    public NativeProcessService(GameServerService gameServerService) {
+        this.gameServerService = gameServerService;
+    }
+
+    /**
+     * 结束当前服务器的游戏进程（国服 NTEGame.exe / 国际服 NTEGlobalGame.exe）
+     */
     public void killOfficialLauncher(){
-        killProcessByName("NTEGame.exe",false);
+        killProcessByName(gameServerService.getGameProcessName(), false);
     }
 
 

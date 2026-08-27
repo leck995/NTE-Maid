@@ -28,19 +28,6 @@ public class GameResourcesManager {
         return Optional.empty();
     }
 
-
-    public static File getGameExeBase() {
-        String dir = Config.getSetting().getGameRootDir();
-        File exe = null;
-        if (dir != null) {
-            exe = new File(dir + File.separator + "NTELauncher.exe");
-            if (!exe.exists()) {
-                return null;
-            }
-        }
-        return exe;
-    }
-
     public static Optional<File> getGameEngineIni() {
         String localAppData = System.getenv("LOCALAPPDATA");
         Path logPath = Paths.get(localAppData, "HT", "Saved", "Config", "Windows","Engine.ini");

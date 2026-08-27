@@ -2,10 +2,11 @@ package cn.tealc.ntemaid.ui.game.manage;
 
 import atlantafx.base.controls.ToggleSwitch;
 import atlantafx.base.theme.Styles;
+import cn.tealc.ntemaid.base.AppInjector;
 import cn.tealc.ntemaid.base.Config;
 import cn.tealc.ntemaid.base.notification.NotificationKey;
 import cn.tealc.ntemaid.base.notification.NotificationManager;
-import cn.tealc.ntemaid.util.GameResourcesManager;
+import cn.tealc.ntemaid.service.system.GameServerService;
 import cn.tealc.ntemaid.util.LanguageManager;
 import cn.tealc.ntemaid.util.GameClientType;
 import cn.tealc.teafx.utils.message.MessageInfo;
@@ -183,11 +184,12 @@ public class GameBaseSettingView implements FxmlView<GameBaseSettingViewModel>, 
             switch (button.getAccessibleText()) {
                 case "default" -> {
                     Config.getSetting().setGameStartAppCustom(false);
-                    File gameExeClient = GameResourcesManager.getGameExeBase();
+                    GameServerService serverService = AppInjector.getInstance(GameServerService.class);
+                    File gameExeClient = serverService.getGameExeFile();
                     if (gameExeClient != null) {
                         gameStartAppField.setText(gameExeClient.getAbsolutePath());
                     }else {
-                        gameStartAppField.setText("NTELauncher.exe");
+                        gameStartAppField.setText(serverService.getLauncherFileName());
                     }
                     gameStartAppField.positionCaret(gameStartAppField.getText().length());
                 }

@@ -1,10 +1,12 @@
 package cn.tealc.ntemaid.ui.system;
 
 
+import cn.tealc.ntemaid.base.AppInjector;
 import cn.tealc.ntemaid.base.Config;
 import cn.tealc.ntemaid.base.notification.NotificationKey;
 import cn.tealc.ntemaid.base.notification.NotificationManager;
 import cn.tealc.ntemaid.jna.GameAppListener;
+import cn.tealc.ntemaid.service.system.GameServerService;
 import cn.tealc.ntemaid.service.system.GameTimeService;
 import cn.tealc.ntemaid.util.LanguageManager;
 import com.google.inject.Inject;
@@ -216,7 +218,9 @@ public class HomeViewModel implements ViewModel, SceneLifecycle {
                     return;
                 }
             } else {
-                exe = new File(dir, "NTELauncher.exe");
+                // 根据服务器类型获取对应启动器文件名
+                String launcherName = AppInjector.getInstance(GameServerService.class).getLauncherFileName();
+                exe = new File(dir, launcherName);
                 if (!exe.exists()) {
                     MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
                             MessageInfo.warning(String.format(

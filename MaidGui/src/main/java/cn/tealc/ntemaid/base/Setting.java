@@ -42,7 +42,7 @@ public class Setting {
     /*=================设置-首选===================*/
     private final SimpleObjectProperty<GameClientType> gameRootDirSource = new SimpleObjectProperty<>(GameClientType.DEFAULT); //游戏来源类型
     private final SimpleStringProperty gameRootDir = new SimpleStringProperty();//游戏根目录
-    private final SimpleStringProperty gameStarAppPath = new SimpleStringProperty("NTELauncher.exe");//游戏启动文件
+    private final SimpleStringProperty gameStarAppPath = new SimpleStringProperty();//游戏启动文件，由 GameBaseSettingViewModel 按服务器类型回填
     private final SimpleBooleanProperty gameStartAppCustom = new SimpleBooleanProperty(false); //自定义启动程序
     /** 游戏窗口标题候选列表，用于识别不同语言/区服的游戏窗口（如中文"异环  "、英文"NTE  "） */
     @JsonSerialize(using = ObservableListSerializer.class)

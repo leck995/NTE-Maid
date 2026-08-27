@@ -7,6 +7,7 @@ import com.google.inject.Singleton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -40,8 +41,49 @@ public class GameServerService {
     /** CN B 服的 Branch 标识 */
     private static final String BRANCH_BILIBILI = "publish_ob_B";
 
+    /** 国际服启动器文件名 */
+    private static final String GLOBAL_LAUNCHER = "NTEGlobalLauncher.exe";
+    /** 国服启动器文件名 */
+    private static final String CN_LAUNCHER = "NTELauncher.exe";
+    /** 国际服游戏进程名 */
+    private static final String GLOBAL_GAME_PROCESS = "NTEGlobalGame.exe";
+    /** 国服游戏进程名 */
+    private static final String CN_GAME_PROCESS = "NTEGame.exe";
+
     @Inject
     public GameServerService() {}
+
+    /**
+     * 获取当前服务器对应的启动器文件名。
+     *
+     * @return 国际服返回 NTEGlobalLauncher.exe，国服返回 NTELauncher.exe
+     */
+    public String getLauncherFileName() {
+        return detectServer() == GameClientType.GLOBAL ? GLOBAL_LAUNCHER : CN_LAUNCHER;
+    }
+
+    /**
+     * 获取当前服务器对应的游戏进程名。
+     *
+     * @return 国际服返回 NTEGlobalGame.exe，国服返回 NTEGame.exe
+     */
+    public String getGameProcessName() {
+        return detectServer() == GameClientType.GLOBAL ? GLOBAL_GAME_PROCESS : CN_GAME_PROCESS;
+    }
+
+    /**
+     * 获取游戏启动器可执行文件（游戏根目录 + 启动器文件名）。
+     *
+     * @return 启动器文件，若游戏目录未配置或文件不存在则返回 null
+     */
+    public File getGameExeFile() {
+        String dir = Config.getSetting().getGameRootDir();
+        if (dir == null || dir.isBlank()) {
+            return null;
+        }
+        File exe = new File(dir, getLauncherFileName());
+        return exe.exists() ? exe : null;
+    }
 
     /**
      * 根据游戏安装目录下的 Config.ini 判断当前游戏服务器类型。

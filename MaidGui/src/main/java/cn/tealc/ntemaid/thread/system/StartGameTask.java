@@ -1,8 +1,10 @@
 package cn.tealc.ntemaid.thread.system;
 
+import cn.tealc.ntemaid.base.AppInjector;
 import cn.tealc.ntemaid.base.Config;
 import cn.tealc.ntemaid.base.notification.NotificationKey;
 import cn.tealc.ntemaid.base.notification.NotificationManager;
+import cn.tealc.ntemaid.service.system.GameServerService;
 import cn.tealc.ntemaid.util.LanguageManager;
 import cn.tealc.teafx.utils.message.MessageInfo;
 import de.saxsys.mvvmfx.MvvmFX;
@@ -45,7 +47,9 @@ public class StartGameTask extends Task<Boolean> {
                     return;
                 }
             } else {
-                exe = new File(dir, "NTELauncher.exe");
+                // 根据服务器类型获取对应启动器文件名
+                String launcherName = AppInjector.getInstance(GameServerService.class).getLauncherFileName();
+                exe = new File(dir, launcherName);
                 if (!exe.exists()) {
                     NotificationManager.message(
                             MessageInfo.warning(String.format(

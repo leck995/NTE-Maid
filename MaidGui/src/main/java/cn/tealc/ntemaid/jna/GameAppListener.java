@@ -125,7 +125,7 @@ public class GameAppListener implements WinUser.WinEventProc {
 
             if (Config.getSetting().isAutoKillOfficialLauncher()){
                 LOG.info("游戏结束，自动退出官方启动器");
-                new NativeProcessService().killOfficialLauncher();
+                AppInjector.getInstance(NativeProcessService.class).killOfficialLauncher();
             }
 
             if (Config.getSetting().isExitWhenGameOver()){
