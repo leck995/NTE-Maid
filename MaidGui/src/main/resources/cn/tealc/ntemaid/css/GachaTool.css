@@ -1,0 +1,76 @@
+/* GachaControlDialog: 置顶抓取控制小窗 */
+.gacha-control-root {
+    -fx-background-color: -color-bg-default;
+    -fx-background-radius: 10px;
+    -fx-border-color: -color-border-default;
+    -fx-border-width: 1px;
+    -fx-border-radius: 10px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.22), 18, 0.18, 0, 6);
+    -fx-padding: 8px 12px;
+    -fx-spacing: 8px;
+}
+
+/* GachaControlFloatDialog: 标准窗口模式下的 content 容器（DialogPane 已提供背景，此处仅设内边距与间距） */
+.gacha-control-content {
+    -fx-padding: 8px 12px;
+    -fx-spacing: 8px;
+}
+
+.gacha-control-header {
+    -fx-alignment: center-left;
+    -fx-spacing: 8px;
+}
+
+.gacha-control-title {
+    -fx-text-fill: -color-fg-default;
+    -fx-font-size: 1.05em;
+    -fx-font-weight: bold;
+}
+
+.gacha-control-row {
+    -fx-alignment: center-left;
+    -fx-spacing: 8px;
+}
+
+.gacha-control-icon {
+    -fx-icon-size: 18px;
+}
+
+.gacha-control-status-running .gacha-control-icon {
+    -fx-icon-color: -color-accent-fg;
+    -fx-fill: -color-accent-fg;
+}
+
+.gacha-control-status-ready .gacha-control-icon {
+    -fx-icon-color: -color-fg-muted;
+    -fx-fill: -color-fg-muted;
+}
+
+.gacha-control-status-done .gacha-control-icon {
+    -fx-icon-color: -color-success-fg;
+    -fx-fill: -color-success-fg;
+}
+
+.gacha-control-status-failed .gacha-control-icon {
+    -fx-icon-color: -color-danger-fg;
+    -fx-fill: -color-danger-fg;
+}
+
+.gacha-control-close {
+    -fx-content-display: graphic-only;
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-background-insets: 0;
+    -fx-border-insets: 0;
+    -fx-background-radius: 6px;
+    -fx-border-radius: 6px;
+    -fx-padding: 4px;
+}
+
+.gacha-control-close:hover {
+    -fx-background-color: -color-bg-subtle;
+}
+
+.gacha-control-close:pressed {
+    -fx-background-color: -color-base-1;
+}
