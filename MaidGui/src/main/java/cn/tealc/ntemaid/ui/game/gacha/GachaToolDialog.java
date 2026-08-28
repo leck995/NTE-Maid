@@ -41,7 +41,7 @@ public class GachaToolDialog extends NewDialog<Void> {
     private final Label playerNameLabel;
     /** 抓取模式选择：悬浮窗模式（兼容） / 标准窗口模式（稳定） */
     private final ToggleGroup captureModeGroup = new ToggleGroup();
-    private final RadioButton floatModeRadio = new RadioButton("悬浮窗模式（兼容）");
+    private final RadioButton floatModeRadio = new RadioButton("悬浮窗模式（推荐）");
     private final RadioButton standardModeRadio = new RadioButton("标准窗口模式（稳定）");
 
     public GachaToolDialog(GameGachaCommonViewModel viewModel) {

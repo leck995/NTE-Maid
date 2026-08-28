@@ -2,6 +2,10 @@ package cn.tealc.ntemaid.ui.game.gacha;
 
 import atlantafx.base.controls.Spacer;
 import atlantafx.base.theme.Styles;
+import cn.tealc.ntemaid.MainApp;
+import cn.tealc.ntemaid.base.AppConstants;
+import cn.tealc.ntemaid.base.AppInjector;
+import cn.tealc.ntemaid.base.AppRuntimeData;
 import cn.tealc.ntemaid.base.notification.NotificationKey;
 import cn.tealc.ntemaid.base.notification.NotificationManager;
 import cn.tealc.ntemaid.thread.gacha.GachaTask;
@@ -69,9 +73,10 @@ public class GachaControlFloatDialog extends NewDialog<Void> {
         super();
 
         // 非模态：不阻塞主窗口，与 GachaControlDialog（独立 Stage）行为一致
-        initModality(Modality.NONE);
+        //initModality(Modality.NONE);
         setTitle("异环抽卡记录抓取工具");
         setWidth(420.0);
+        initOwner(MainApp.window);
 
         // 保留一个 CANCEL 类型按钮以满足 Dialog.close() 的关闭许可校验
         // （DialogPane 无 ButtonType 时 close() 会被拦截，导致窗口无法关闭），
