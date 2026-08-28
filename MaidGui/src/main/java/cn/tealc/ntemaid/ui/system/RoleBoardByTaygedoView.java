@@ -37,8 +37,8 @@ public class RoleBoardByTaygedoView implements FxmlView<RoleBoardByTaygedoViewMo
     @InjectViewModel
     private RoleBoardByTaygedoViewModel viewModel;
 
+    @FXML private VBox root;
     @FXML private VBox contentPane;
-    @FXML private VBox emptyPane;
     @FXML private Label statusLabel;
 
     // 顶部：个人标识
@@ -70,6 +70,10 @@ public class RoleBoardByTaygedoView implements FxmlView<RoleBoardByTaygedoViewMo
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        // 根节点显示/隐藏绑定（默认隐藏，ViewModel 异步判断条件后显示）
+        root.visibleProperty().bind(viewModel.visibleProperty());
+        root.managedProperty().bind(viewModel.visibleProperty());
+
         // 头像绑定
         avatarView.imageProperty().bind(viewModel.avatarImageProperty());
         // 角色名绑定
@@ -78,12 +82,7 @@ public class RoleBoardByTaygedoView implements FxmlView<RoleBoardByTaygedoViewMo
         staminaIconView.imageProperty().bind(viewModel.staminaIconProperty());
         cityStaminaIconView.imageProperty().bind(viewModel.cityStaminaIconProperty());
 
-        // 内容区/空状态切换
-        contentPane.visibleProperty().bind(viewModel.roleHomeProperty().isNotNull());
-        contentPane.managedProperty().bind(viewModel.roleHomeProperty().isNotNull());
-        emptyPane.visibleProperty().bind(viewModel.roleHomeProperty().isNull());
-        emptyPane.managedProperty().bind(viewModel.roleHomeProperty().isNull());
-
+        // 内容区始终显示
         statusLabel.textProperty().bind(viewModel.statusMessageProperty());
 
         // 监听 roleHome 数据变化，更新界面

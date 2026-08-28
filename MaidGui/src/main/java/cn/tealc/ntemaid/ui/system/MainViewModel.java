@@ -2,6 +2,7 @@ package cn.tealc.ntemaid.ui.system;
 
 
 import cn.tealc.ntemaid.base.AppInjector;
+import cn.tealc.ntemaid.base.AppRuntimeData;
 import cn.tealc.ntemaid.base.Config;
 import cn.tealc.ntemaid.base.notification.NotificationKey;
 import cn.tealc.ntemaid.base.notification.NotificationManager;
@@ -54,6 +55,7 @@ public class MainViewModel implements ViewModel, SceneLifecycle {
     private final TaygedoSignInService signInService;
     private final NavRepository navRepo;
     private final AsyncRunner asyncRunner;
+    private final AppRuntimeData appRuntimeData;
     private final AtomicBoolean started = new AtomicBoolean(false);
 
     @Inject
@@ -61,12 +63,14 @@ public class MainViewModel implements ViewModel, SceneLifecycle {
                          TaygedoLoginService loginService,
                          TaygedoSignInService signInService,
                          NavRepository navRepo,
-                         AsyncRunner asyncRunner) {
+                         AsyncRunner asyncRunner,
+                         AppRuntimeData appRuntimeData) {
         this.accountService = accountService;
         this.loginService = loginService;
         this.signInService = signInService;
         this.navRepo = navRepo;
         this.asyncRunner = asyncRunner;
+        this.appRuntimeData = appRuntimeData;
     }
 
     @Override
@@ -140,7 +144,8 @@ public class MainViewModel implements ViewModel, SceneLifecycle {
                 );
             }
         }
-        // 通知首页角色面板刷新数据
+        // 标记 token 刷新完成，通知首页角色面板刷新数据
+        appRuntimeData.setTaygedoTokenRefreshed(true);
         NotificationManager.publish(NotificationKey.HOME_ROLE_DATA_REFRESH);
     }
 

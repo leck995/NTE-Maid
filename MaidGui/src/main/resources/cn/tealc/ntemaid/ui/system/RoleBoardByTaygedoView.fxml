@@ -17,7 +17,7 @@
   顶部：个人标识区  中部：核心数据网格  底部：实时动态卡片
   整个面板被一个外层背景容器包裹
 -->
-<VBox styleClass="role-board" stylesheets="@../../css/Home.css"
+<VBox fx:id="root" styleClass="role-board" stylesheets="@../../css/Home.css"
       xmlns="http://javafx.com/javafx/23.0.1"
       xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="cn.tealc.ntemaid.ui.system.RoleBoardByTaygedoView">
@@ -27,11 +27,6 @@
 
       <!-- 状态提示 -->
       <Label fx:id="statusLabel" styleClass="status-label" wrapText="true" visible="false" />
-
-      <!-- 空状态 -->
-      <VBox fx:id="emptyPane" alignment="CENTER" spacing="10.0" VBox.vgrow="ALWAYS">
-         <Label text="选择账号以加载角色数据" styleClass="empty-hint" />
-      </VBox>
 
       <!-- 内容区 -->
       <VBox fx:id="contentPane" spacing="10.0">

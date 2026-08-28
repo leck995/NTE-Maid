@@ -1,11 +1,16 @@
 package cn.tealc.ntemaid.ui.system;
 
 import cn.tealc.ntemaid.FXResourcesLoader;
+import cn.tealc.ntemaid.base.AppInjector;
+import cn.tealc.ntemaid.base.AppRuntimeData;
+import cn.tealc.ntemaid.base.Config;
 import cn.tealc.ntemaid.base.notification.NotificationKey;
 import cn.tealc.ntemaid.base.notification.NotificationManager;
 import cn.tealc.ntemaid.model.taygedo.TaygedoAccount;
+import cn.tealc.ntemaid.service.system.GameServerService;
 import cn.tealc.ntemaid.service.taygedo.TaygedoAccountService;
 import cn.tealc.ntemaid.service.taygedo.TaygedoRoleService;
+import cn.tealc.ntemaid.util.GameClientType;
 import cn.tealc.ntemaid.util.ImageCacheManager;
 import cn.tealc.taygedo.TaygedoException;
 import cn.tealc.taygedo.model.RoleHome;
@@ -37,6 +42,7 @@ public class RoleBoardByTaygedoViewModel implements ViewModel {
     private final TaygedoRoleService roleService;
     private final TaygedoAccountService accountService;
     private final ImageCacheManager imageCacheManager;
+    private final AppRuntimeData appRuntimeData;
 
     private final ObservableList<TaygedoAccount> accountList = FXCollections.observableArrayList();
     private final ObjectProperty<TaygedoAccount> selectedAccount = new SimpleObjectProperty<>();
@@ -47,6 +53,7 @@ public class RoleBoardByTaygedoViewModel implements ViewModel {
     private final StringProperty roleDisplay = new SimpleStringProperty("");
     private final ObjectProperty<Image> staminaIcon = new SimpleObjectProperty<>();
     private final ObjectProperty<Image> cityStaminaIcon = new SimpleObjectProperty<>();
+    private final BooleanProperty visible = new SimpleBooleanProperty(false);
 
     /** 默认头像（程序图标），在本地头像缺失时使用 */
     private final Image defaultAvatar;
@@ -57,10 +64,12 @@ public class RoleBoardByTaygedoViewModel implements ViewModel {
     @Inject
     public RoleBoardByTaygedoViewModel(TaygedoRoleService roleService,
                                         TaygedoAccountService accountService,
-                                        ImageCacheManager imageCacheManager) {
+                                        ImageCacheManager imageCacheManager,
+                                        AppRuntimeData appRuntimeData) {
         this.roleService = roleService;
         this.accountService = accountService;
         this.imageCacheManager = imageCacheManager;
+        this.appRuntimeData = appRuntimeData;
         this.defaultAvatar = new Image(FXResourcesLoader.load("image/icon.png"), 40, 40, true, true);
         this.staminaIcon.set(new Image(FXResourcesLoader.load("image/game/stamina.png"), 32, 32, true, true));
         this.cityStaminaIcon.set(new Image(FXResourcesLoader.load("image/game/citystamina.png"), 32, 32, true, true));
@@ -73,7 +82,22 @@ public class RoleBoardByTaygedoViewModel implements ViewModel {
      * 账号列表加载和角色数据加载延迟到收到 HOME_ROLE_DATA_REFRESH 通知后执行。
      */
     public void initialize() {
-        NotificationManager.subscribe(NotificationKey.HOME_ROLE_DATA_REFRESH, tokenRefreshObserver);
+        // 异步判断是否显示角色面板：需开启塔吉多 + 国服 + 有账号
+        Thread.startVirtualThread(() -> {
+            boolean enable = Config.getSetting().isEnableTaygedo();
+            boolean isCN = AppInjector.getInstance(GameServerService.class).detectServer() != GameClientType.GLOBAL;
+            boolean hasAccount = AppInjector.getInstance(TaygedoAccountService.class).getFirst().isPresent();
+            Platform.runLater(() -> visible.set(enable && isCN && hasAccount));
+        });
+
+        // 如果 token 已刷新完成（ViewModel 加载时刷新已结束），直接加载数据
+        if (appRuntimeData.isTaygedoTokenRefreshed()) {
+            onTokenRefreshed();
+        } else {
+            // 等待 token 刷新完成通知
+            NotificationManager.subscribe(NotificationKey.HOME_ROLE_DATA_REFRESH, tokenRefreshObserver);
+        }
+
         selectedAccount.addListener((obs, old, val) -> {
             if (val != null) loadRoleHome();
         });
@@ -109,9 +133,6 @@ public class RoleBoardByTaygedoViewModel implements ViewModel {
         }
         loading.set(true);
         statusMessage.set("");
-        roleHome.set(null);
-        roleDisplay.set("");
-        avatarImage.set(defaultAvatar);
 
         Thread.ofVirtual().start(() -> {
             try {
@@ -188,4 +209,6 @@ public class RoleBoardByTaygedoViewModel implements ViewModel {
     public ObjectProperty<Image> staminaIconProperty() { return staminaIcon; }
 
     public ObjectProperty<Image> cityStaminaIconProperty() { return cityStaminaIcon; }
+
+    public BooleanProperty visibleProperty() { return visible; }
 }
