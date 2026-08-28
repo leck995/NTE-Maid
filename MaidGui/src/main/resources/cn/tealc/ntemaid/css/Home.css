@@ -163,10 +163,7 @@
 
 /* 外层背景容器，包裹所有子内容 */
 .role-board .board-container {
-    -fx-background-color: -color-bg-default-90;
-    -fx-background-radius: 10px;
-    -fx-padding: 10px;
-    -fx-spacing: 10px;
+
 }
 
 .role-board .status-label {
@@ -190,15 +187,15 @@
 }
 
 .role-board .avatar-image {
-    -fx-fit-width: 40px;
-    -fx-fit-height: 40px;
+    -fx-fit-width: 42px;
+    -fx-fit-height: 42px;
     -fx-clip: true;
     -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.3), 3, 0.5, 0, 1);
 }
 
 .role-board .role-name {
     -fx-text-fill: -color-font-muted;
-    -fx-font-size: 1.0em;
+    -fx-font-size: 1.2em;
     -fx-font-weight: bold;
 }
 
@@ -294,7 +291,7 @@
 .role-board .realtime-card {
     -fx-background-color: -color-bg-default-90;
     -fx-background-radius: 10px;
-    -fx-padding: 0 0 10px 0;
+    -fx-padding: 10px;
     -fx-spacing: 8px;
     -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.04), 8, 0, 0, 2);
 }
@@ -330,29 +327,38 @@
     -fx-font-size: 0.7857em;
 }
 
-/* 深色胶囊条 */
+/* 胶囊条 */
 
 .role-board .capsule {
-    -fx-background-color: rgba(0, 0, 0, 0.72);
+    -fx-background-color: -color-bg-default-90;
     -fx-background-radius: 20px;
     -fx-padding: 6px 12px 6px 12px;
     -fx-alignment: CENTER;
 }
 
 .role-board .capsule .capsule-value {
-    -fx-text-fill: derive(white, 0%);
+    -fx-text-fill: -color-font-muted;
     -fx-font-size: 1.0714em;
     -fx-font-weight: bold;
 }
 
 .role-board .capsule .capsule-label {
-    -fx-text-fill: derive(white, -40%);
+    -fx-text-fill: -color-font-subtle;
     -fx-font-size: 0.7857em;
 }
 
 /* 活跃度满值时数字变红 */
 .role-board .capsule.full .capsule-value {
     -fx-text-fill: #ef5350;
+}
+
+/* 数据来源说明 */
+.role-board .data-source-hint {
+    -fx-text-fill: -color-font-subtle;
+    -fx-font-size: 0.7143em;
+    -fx-alignment: CENTER;
+    -fx-text-alignment: CENTER;
+    -fx-wrap-text: true;
 }
 
 /* ---- 刷新按钮 ---- */

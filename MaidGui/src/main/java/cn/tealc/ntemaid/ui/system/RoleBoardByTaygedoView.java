@@ -84,6 +84,8 @@ public class RoleBoardByTaygedoView implements FxmlView<RoleBoardByTaygedoViewMo
 
         // 内容区始终显示
         statusLabel.textProperty().bind(viewModel.statusMessageProperty());
+        statusLabel.visibleProperty().bind(viewModel.statusMessageProperty().isNotEmpty());
+        statusLabel.managedProperty().bind(viewModel.statusMessageProperty().isNotEmpty());
 
         // 监听 roleHome 数据变化，更新界面
         viewModel.roleHomeProperty().addListener((obs, old, result) -> {

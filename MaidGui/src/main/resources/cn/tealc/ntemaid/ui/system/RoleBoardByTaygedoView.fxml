@@ -3,13 +3,12 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Separator?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
-<?import javafx.scene.image.ImageView?>
 <?import org.kordamp.ikonli.javafx.FontIcon?>
 
 <!--
@@ -17,16 +16,14 @@
   顶部：个人标识区  中部：核心数据网格  底部：实时动态卡片
   整个面板被一个外层背景容器包裹
 -->
-<VBox fx:id="root" styleClass="role-board" stylesheets="@../../css/Home.css"
-      xmlns="http://javafx.com/javafx/23.0.1"
-      xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="cn.tealc.ntemaid.ui.system.RoleBoardByTaygedoView">
+
+<VBox fx:id="root" styleClass="role-board" stylesheets="@../../css/Home.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cn.tealc.ntemaid.ui.system.RoleBoardByTaygedoView">
 
    <!-- 外层背景容器，包裹所有子内容 -->
    <VBox styleClass="board-container">
 
       <!-- 状态提示 -->
-      <Label fx:id="statusLabel" styleClass="status-label" wrapText="true" visible="false" />
+      <Label fx:id="statusLabel" styleClass="status-label" visible="false" wrapText="true" />
 
       <!-- 内容区 -->
       <VBox fx:id="contentPane" spacing="10.0">
@@ -37,7 +34,7 @@
          <VBox styleClass="identity-section">
             <HBox alignment="CENTER_LEFT" spacing="10.0">
                <!-- 头像 -->
-               <ImageView fx:id="avatarView" styleClass="avatar-image" fitWidth="40" fitHeight="40" />
+               <ImageView fx:id="avatarView" fitHeight="42" fitWidth="42" styleClass="avatar-image" />
                <VBox spacing="2.0" HBox.hgrow="ALWAYS">
                   <Label fx:id="roleDisplayLabel" styleClass="role-name" text="" />
                   <Label fx:id="levelLabel" styleClass="level-badge" text="" />
@@ -82,37 +79,37 @@
            </rowConstraints>
 
            <!-- 第一行 -->
-           <VBox styleClass="data-cell" alignment="CENTER" GridPane.columnIndex="0" GridPane.rowIndex="0">
+           <VBox alignment="CENTER" styleClass="data-cell" GridPane.columnIndex="0" GridPane.rowIndex="0">
               <Label fx:id="loginDaysLabel" styleClass="data-value" text="" />
-              <Label text="活跃天数" styleClass="data-name" />
+              <Label styleClass="data-name" text="活跃天数" />
            </VBox>
-           <VBox styleClass="data-cell" alignment="CENTER" GridPane.columnIndex="1" GridPane.rowIndex="0">
+           <VBox alignment="CENTER" styleClass="data-cell" GridPane.columnIndex="1" GridPane.rowIndex="0">
               <Label fx:id="charCountLabel" styleClass="data-value" text="" />
               <HBox alignment="CENTER" spacing="2.0">
-                 <Label text="已有角色" styleClass="data-name" />
+                 <Label styleClass="data-name" text="已有角色" />
                  <FontIcon iconLiteral="mdmz-play_arrow" styleClass="arrow" />
               </HBox>
            </VBox>
-           <VBox styleClass="data-cell" alignment="CENTER" GridPane.columnIndex="2" GridPane.rowIndex="0">
+           <VBox alignment="CENTER" styleClass="data-cell" GridPane.columnIndex="2" GridPane.rowIndex="0">
               <Label fx:id="achievementLabel" styleClass="data-value" text="" />
               <HBox alignment="CENTER" spacing="2.0">
-                 <Label text="达成成就" styleClass="data-name" />
+                 <Label styleClass="data-name" text="达成成就" />
                  <FontIcon iconLiteral="mdmz-play_arrow" styleClass="arrow" />
               </HBox>
            </VBox>
 
            <!-- 第二行 -->
-           <VBox styleClass="data-cell" alignment="CENTER" GridPane.columnIndex="0" GridPane.rowIndex="1">
+           <VBox alignment="CENTER" styleClass="data-cell" GridPane.columnIndex="0" GridPane.rowIndex="1">
               <Label fx:id="worldLevelLabel" styleClass="data-value" text="" />
-              <Label text="猎人等级" styleClass="data-name" />
+              <Label styleClass="data-name" text="猎人等级" />
            </VBox>
-           <VBox styleClass="data-cell" alignment="CENTER" GridPane.columnIndex="1" GridPane.rowIndex="1">
+           <VBox alignment="CENTER" styleClass="data-cell" GridPane.columnIndex="1" GridPane.rowIndex="1">
               <Label fx:id="tycoonLevelLabel" styleClass="data-value" text="" />
-              <Label text="大亨等级" styleClass="data-name" />
+              <Label styleClass="data-name" text="大亨等级" />
            </VBox>
-           <VBox styleClass="data-cell" alignment="CENTER" GridPane.columnIndex="2" GridPane.rowIndex="1">
+           <VBox alignment="CENTER" styleClass="data-cell" GridPane.columnIndex="2" GridPane.rowIndex="1">
               <Label fx:id="serverLabel" styleClass="data-value" text="" />
-              <Label text="服务器" styleClass="data-name" />
+              <Label styleClass="data-name" text="服务器" />
            </VBox>
          </GridPane>
 
@@ -120,9 +117,7 @@
          <!-- 底部：实时动态卡片               -->
          <!-- ============================== -->
          <VBox styleClass="realtime-card">
-            <!-- 卡片顶部灰色横杆 -->
-            <Region styleClass="card-rod" />
-            <Label text="实时信息" styleClass="realtime-title" />
+            <Label styleClass="realtime-title" text="实时信息" />
 
             <!-- 体力 / 活力 两列 -->
             <HBox alignment="CENTER" spacing="10.0">
@@ -130,7 +125,7 @@
                   <ImageView fx:id="staminaIconView" styleClass="realtime-icon" />
                   <VBox alignment="CENTER_LEFT" spacing="2.0">
                      <Label fx:id="staminaLabel" styleClass="realtime-value" text="" />
-                     <Label text="体力" styleClass="realtime-label" />
+                     <Label styleClass="realtime-label" text="体力" />
                   </VBox>
                </HBox>
                <Separator orientation="VERTICAL" styleClass="cell-separator" />
@@ -138,23 +133,26 @@
                   <ImageView fx:id="cityStaminaIconView" styleClass="realtime-icon" />
                   <VBox alignment="CENTER_LEFT" spacing="2.0">
                      <Label fx:id="cityStaminaLabel" styleClass="realtime-value" text="" />
-                     <Label text="活力" styleClass="realtime-label" />
+                     <Label styleClass="realtime-label" text="活力" />
                   </VBox>
                </HBox>
             </HBox>
 
             <!-- 活跃度 / 周本 深色胶囊 -->
             <HBox alignment="CENTER" spacing="8.0">
-               <HBox fx:id="activityCapsule" styleClass="capsule" alignment="CENTER" spacing="5.0" HBox.hgrow="ALWAYS">
+               <HBox fx:id="activityCapsule" alignment="CENTER" spacing="5.0" styleClass="capsule" HBox.hgrow="ALWAYS">
                   <Label fx:id="activityLabel" styleClass="capsule-value" text="" />
-                  <Label text="活跃度" styleClass="capsule-label" />
+                  <Label styleClass="capsule-label" text="活跃度" />
                </HBox>
-               <HBox fx:id="weeklyCapsule" styleClass="capsule" alignment="CENTER" spacing="5.0" HBox.hgrow="ALWAYS">
+               <HBox fx:id="weeklyCapsule" alignment="CENTER" spacing="5.0" styleClass="capsule" HBox.hgrow="ALWAYS">
                   <Label fx:id="weeklyCountLabel" styleClass="capsule-value" text="" />
-                  <Label text="周本" styleClass="capsule-label" />
+                  <Label styleClass="capsule-label" text="周本" />
                </HBox>
             </HBox>
          </VBox>
+
+               <!-- 数据来源说明 -->
+         <Label styleClass="data-source-hint" text="数据来自于塔吉多，部分数据错误与Maid无关" />
       </VBox>
    </VBox>
 </VBox>

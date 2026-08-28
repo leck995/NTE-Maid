@@ -6,10 +6,12 @@ import cn.tealc.ntemaid.base.AppRuntimeData;
 import cn.tealc.ntemaid.base.Config;
 import cn.tealc.ntemaid.base.notification.NotificationKey;
 import cn.tealc.ntemaid.base.notification.NotificationManager;
+import cn.tealc.ntemaid.model.game.Player;
 import cn.tealc.ntemaid.model.taygedo.TaygedoAccount;
 import cn.tealc.ntemaid.service.system.GameServerService;
 import cn.tealc.ntemaid.service.taygedo.TaygedoAccountService;
 import cn.tealc.ntemaid.service.taygedo.TaygedoRoleService;
+import cn.tealc.ntemaid.thread.game.log.LoginPlayerGetTask;
 import cn.tealc.ntemaid.util.GameClientType;
 import cn.tealc.ntemaid.util.ImageCacheManager;
 import cn.tealc.taygedo.TaygedoException;
@@ -70,7 +72,7 @@ public class RoleBoardByTaygedoViewModel implements ViewModel {
         this.accountService = accountService;
         this.imageCacheManager = imageCacheManager;
         this.appRuntimeData = appRuntimeData;
-        this.defaultAvatar = new Image(FXResourcesLoader.load("image/icon.png"), 40, 40, true, true);
+        this.defaultAvatar = new Image(FXResourcesLoader.load("image/icon.png"), 46, 46, true, true);
         this.staminaIcon.set(new Image(FXResourcesLoader.load("image/game/stamina.png"), 32, 32, true, true));
         this.cityStaminaIcon.set(new Image(FXResourcesLoader.load("image/game/citystamina.png"), 32, 32, true, true));
 
@@ -87,16 +89,19 @@ public class RoleBoardByTaygedoViewModel implements ViewModel {
             boolean enable = Config.getSetting().isEnableTaygedo();
             boolean isCN = AppInjector.getInstance(GameServerService.class).detectServer() != GameClientType.GLOBAL;
             boolean hasAccount = AppInjector.getInstance(TaygedoAccountService.class).getFirst().isPresent();
-            Platform.runLater(() -> visible.set(enable && isCN && hasAccount));
+            boolean shouldShow = enable && isCN && hasAccount;
+            Platform.runLater(() -> {
+                visible.set(shouldShow);
+                if (shouldShow) {
+                    // 订阅通知（如果通知已发过，用标记判断直接加载）
+                    NotificationManager.subscribe(NotificationKey.HOME_ROLE_DATA_REFRESH, tokenRefreshObserver);
+                    // 如果 token 已刷新完成，直接加载（防止通知已发过、subscribe 漏接）
+                    if (appRuntimeData.isTaygedoTokenRefreshed()) {
+                        onTokenRefreshed();
+                    }
+                }
+            });
         });
-
-        // 如果 token 已刷新完成（ViewModel 加载时刷新已结束），直接加载数据
-        if (appRuntimeData.isTaygedoTokenRefreshed()) {
-            onTokenRefreshed();
-        } else {
-            // 等待 token 刷新完成通知
-            NotificationManager.subscribe(NotificationKey.HOME_ROLE_DATA_REFRESH, tokenRefreshObserver);
-        }
 
         selectedAccount.addListener((obs, old, val) -> {
             if (val != null) loadRoleHome();
@@ -109,11 +114,27 @@ public class RoleBoardByTaygedoViewModel implements ViewModel {
     private void onTokenRefreshed() {
         Thread.startVirtualThread(() -> {
             List<TaygedoAccount> accounts = accountService.getAll();
+            // 获取当前登录角色，用于匹配账号
+            final Player[] playerHolder = new Player[1];
+            LoginPlayerGetTask task = new LoginPlayerGetTask();
+            task.setOnSucceeded(e -> playerHolder[0] = task.getValue());
+            Thread taskThread = Thread.ofVirtual().start(task);
+            try { taskThread.join(); } catch (InterruptedException ignored) {}
+            final Player player = playerHolder[0];
             Platform.runLater(() -> {
                 accountList.setAll(accounts);
                 if (!accounts.isEmpty()) {
                     if (selectedAccount.get() == null) {
-                        selectedAccount.set(accounts.getFirst());
+                        // 优先匹配当前登录角色的 roleId
+                        if (player != null) {
+                            String roleId = String.valueOf(player.getId());
+                            TaygedoAccount matched = accounts.stream()
+                                    .filter(a -> roleId.equals(a.getRoleId()))
+                                    .findFirst().orElse(null);
+                            selectedAccount.set(matched != null ? matched : accounts.getFirst());
+                        } else {
+                            selectedAccount.set(accounts.getFirst());
+                        }
                     } else {
                         loadRoleHome();
                     }
@@ -126,6 +147,8 @@ public class RoleBoardByTaygedoViewModel implements ViewModel {
      * 加载当前选中账号的角色综合面板数据
      */
     private void loadRoleHome() {
+        // 防止正在加载时重复请求
+        if (loading.get()) return;
         TaygedoAccount account = selectedAccount.get();
         if (account == null || account.getAccessToken() == null) {
             statusMessage.set("账号未登录，无有效令牌");
