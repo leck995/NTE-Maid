@@ -211,16 +211,21 @@ public class TaygedoApi {
      * @throws TaygedoException 登录失败时抛出
      */
     public UserCenterLoginResult userCenterLogin(String token, String userId, String deviceId) {
+        // 请求头对齐官方 1.2.x 客户端（参照 taygedo Rust official profile），
+        // 旧的 1.1.0 兼容头会被服务端拒绝并返回 code:22 invalid request
         String body = TaygedoHttpClient.formEncode(Map.of("token", token, "userIdentity", userId, "appId", "10551"));
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(TAYGEDO_BASE_URL + "/usercenter/api/login"))
-                .header("platform", "android")
-                .header("deviceid", deviceId)
+                .header("Accept", "application/json, text/plain, */*")
                 .header("authorization", "")
-                .header("appversion", "1.1.0")
-                .header("uid", "10000000")
+                .header("appversion", TAYGEDO_APP_VER)
+                .header("platform", "android")
+                .header("uid", "0")
+                .header("debug-uid", "3")
+                .header("deviceId", deviceId)
+                .header("ds", TaygedoCrypto.makeDs())
                 .header("Content-Type", "application/x-www-form-urlencoded")
-                .header("User-Agent", "okhttp/4.12.0")
+                .header("User-Agent", NATIVE_USER_AGENT)
                 .POST(HttpRequest.BodyPublishers.ofString(body))
                 .build();
 
@@ -247,13 +252,15 @@ public class TaygedoApi {
      * @throws TaygedoException 刷新失败时抛出，HTTP 402表示令牌已失效需要重新登录
      */
     public RefreshTokenResult refreshToken(String refreshToken, String deviceId) {
+        // 请求头与 userCenterLogin 保持一致，使用 1.2.x 版本与原生 UA，
+        // 避免因版本割裂被服务端拒绝（旧 1.1.0 头会导致 code:22 invalid request）
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(TAYGEDO_BASE_URL + "/usercenter/api/refreshToken"))
                 .header("authorization", refreshToken)
                 .header("deviceid", deviceId)
-                .header("appversion", "1.1.0")
+                .header("appversion", TAYGEDO_APP_VER)
                 .header("Content-Type", "application/x-www-form-urlencoded")
-                .header("User-Agent", "okhttp/4.12.0")
+                .header("User-Agent", NATIVE_USER_AGENT)
                 .POST(HttpRequest.BodyPublishers.noBody())
                 .build();
 
