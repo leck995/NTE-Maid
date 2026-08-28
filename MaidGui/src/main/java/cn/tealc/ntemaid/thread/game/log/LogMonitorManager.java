@@ -1,5 +1,7 @@
 package cn.tealc.ntemaid.thread.game.log;
 
+import cn.tealc.ntemaid.base.AppInjector;
+import cn.tealc.ntemaid.service.system.GameServerService;
 import cn.tealc.ntemaid.thread.game.log.event.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,10 +17,12 @@ public class LogMonitorManager {
     private static volatile LogMonitorManager instance;
 
     private final LogMonitorWatchService service;
-    private final Path LOG_PATH = Paths.get(System.getenv("LOCALAPPDATA"), "HT/Saved/Logs/HT.log");
+    private final Path LOG_PATH;
     private final List<Consumer<String>> listeners = new CopyOnWriteArrayList<>();
 
     private LogMonitorManager() {
+        String savedDir = AppInjector.getInstance(GameServerService.class).getEngineSavedDirName();
+        this.LOG_PATH = Paths.get(System.getenv("LOCALAPPDATA"), "HT", savedDir, "Logs", "HT.log");
         this.service = new LogMonitorWatchService(LOG_PATH, event -> {
             for (Consumer<String> listener : listeners) {
                 try {

@@ -49,9 +49,22 @@ public class GameServerService {
     private static final String GLOBAL_GAME_PROCESS = "NTEGlobalGame.exe";
     /** 国服游戏进程名 */
     private static final String CN_GAME_PROCESS = "NTEGame.exe";
+    /** 国际服引擎层 Saved 目录名 */
+    private static final String GLOBAL_SAVED_DIR = "Saved_Global";
+    /** 国服引擎层 Saved 目录名 */
+    private static final String CN_SAVED_DIR = "Saved";
 
     @Inject
     public GameServerService() {}
+
+    /**
+     * 获取引擎层 Saved 目录名。
+     *
+     * @return 国际服返回 Saved_Global，国服返回 Saved
+     */
+    public String getEngineSavedDirName() {
+        return detectServer() == GameClientType.GLOBAL ? GLOBAL_SAVED_DIR : CN_SAVED_DIR;
+    }
 
     /**
      * 获取当前服务器对应的启动器文件名。

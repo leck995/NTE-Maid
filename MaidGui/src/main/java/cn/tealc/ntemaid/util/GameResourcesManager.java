@@ -1,6 +1,8 @@
 package cn.tealc.ntemaid.util;
 
+import cn.tealc.ntemaid.base.AppInjector;
 import cn.tealc.ntemaid.base.Config;
+import cn.tealc.ntemaid.service.system.GameServerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.io.File;
@@ -30,7 +32,8 @@ public class GameResourcesManager {
 
     public static Optional<File> getGameEngineIni() {
         String localAppData = System.getenv("LOCALAPPDATA");
-        Path logPath = Paths.get(localAppData, "HT", "Saved", "Config", "Windows","Engine.ini");
+        String savedDir = AppInjector.getInstance(GameServerService.class).getEngineSavedDirName();
+        Path logPath = Paths.get(localAppData, "HT", savedDir, "Config", "Windows","Engine.ini");
         if (Files.exists(logPath)){
             return Optional.of(logPath.toFile());
         }
@@ -63,7 +66,8 @@ public class GameResourcesManager {
     }
     public static Optional<File> getGameScreenShoot2() {
         String localAppData = System.getenv("LOCALAPPDATA");
-        Path logPath = Paths.get(localAppData, "HT", "Saved", "Screenshots", "Windows");
+        String savedDir = AppInjector.getInstance(GameServerService.class).getEngineSavedDirName();
+        Path logPath = Paths.get(localAppData, "HT", savedDir, "Screenshots", "Windows");
         if (Files.exists(logPath)){
             return Optional.of(logPath.toFile());
         }
