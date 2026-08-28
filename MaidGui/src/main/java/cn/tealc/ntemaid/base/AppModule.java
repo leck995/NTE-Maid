@@ -23,6 +23,7 @@ import cn.tealc.ntemaid.service.taygedo.TaygedoLoginService;
 import cn.tealc.ntemaid.service.taygedo.TaygedoRoleService;
 import cn.tealc.ntemaid.service.taygedo.TaygedoSignInService;
 import cn.tealc.ntemaid.ui.tray.TrayIconManager;
+import cn.tealc.ntemaid.util.SingleInstanceServer;
 import cn.tealc.taygedo.TaygedoApi;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
@@ -67,6 +68,7 @@ public class AppModule extends AbstractModule {
         bind(NavRepository.class).in(Singleton.class);
         bind(ShutdownManager.class).in(Singleton.class);
         bind(TrayIconManager.class).in(Singleton.class);
+        bind(SingleInstanceServer.class).in(Singleton.class);
         bind(StageInitializer.class).in(Singleton.class);
 
 

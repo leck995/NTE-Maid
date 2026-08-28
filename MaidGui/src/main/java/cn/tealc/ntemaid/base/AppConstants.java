@@ -22,5 +22,9 @@ public final class AppConstants {
     public static final String URL_GACHA_FILE_LIST = URL_HOST_SERVER + "/api/mc/gacha/listByUser";
     public static final String URL_GACHA_FILE_DELETE = URL_HOST_SERVER + "/api/mc/gacha/deleteByUser/";
 
+    /** 单实例 IPC：本地监听地址与端口，用于多开时唤起已运行实例 */
+    public static final String IPC_HOST = "127.0.0.1";
+    public static final int IPC_PORT = 52871;
+
 
 }

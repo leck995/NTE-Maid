@@ -12,6 +12,7 @@ import cn.tealc.ntemaid.thread.game.log.LogMonitorManager;
 import cn.tealc.ntemaid.thread.system.StartGameTask;
 import cn.tealc.ntemaid.ui.tray.TrayIconManager;
 import cn.tealc.ntemaid.util.AppLocked;
+import cn.tealc.ntemaid.util.SingleInstanceServer;
 import de.saxsys.mvvmfx.MvvmFX;
 import de.saxsys.mvvmfx.internal.viewloader.DependencyInjector;
 import com.github.kwhat.jnativehook.GlobalScreen;
@@ -32,6 +33,7 @@ public class MainApp extends Application {
     private TrayIconManager trayIconManager;
     private StageInitializer stageInitializer;
     private AppLocked appLocked;
+    private SingleInstanceServer ipcServer;
 
     public MainApp() {
         MvvmFX.setGlobalResourceBundle(Config.language);
@@ -50,15 +52,15 @@ public class MainApp extends Application {
         window = stage;
 
         shutdownManager = AppInjector.getInstance(ShutdownManager.class);
-        shutdownManager.setContext(window, appLocked);
-
         trayIconManager = AppInjector.getInstance(TrayIconManager.class);
         stageInitializer = AppInjector.getInstance(StageInitializer.class);
+        ipcServer = AppInjector.getInstance(SingleInstanceServer.class);
 
         Thread.setDefaultUncaughtExceptionHandler((thread, throwable) ->
                 LOG.error("检测到未捕获的异常: ", throwable));
 
         try {
+            shutdownManager.setContext(window, appLocked, ipcServer);
             stageInitializer.init(stage);
             initKeyHook();
             initAppListener();
@@ -66,6 +68,7 @@ public class MainApp extends Application {
             trayIconManager.create(stage);
             autoStartGame();
             LogMonitorManager.getInstance().start();
+            ipcServer.start();
             LOG.info("应用启动成功");
         } catch (Exception e) {
             LOG.error("启动过程中发生严重错误", e);
@@ -89,7 +92,11 @@ public class MainApp extends Application {
         NotificationManager.subscribe(NotificationKey.APP_HIDE,
                 ((s, objects) -> window.hide()));
         NotificationManager.subscribe(NotificationKey.APP_SHOW,
-                ((s, objects) -> window.show()));
+                ((s, objects) -> Platform.runLater(() -> {
+                    window.setIconified(false);
+                    window.show();
+                    window.toFront();
+                })));
     }
 
     private void initKeyHook() {
