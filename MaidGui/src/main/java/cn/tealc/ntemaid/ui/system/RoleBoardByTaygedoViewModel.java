@@ -115,31 +115,30 @@ public class RoleBoardByTaygedoViewModel implements ViewModel {
         Thread.startVirtualThread(() -> {
             List<TaygedoAccount> accounts = accountService.getAll();
             // 获取当前登录角色，用于匹配账号
-            final Player[] playerHolder = new Player[1];
             LoginPlayerGetTask task = new LoginPlayerGetTask();
-            task.setOnSucceeded(e -> playerHolder[0] = task.getValue());
-            Thread taskThread = Thread.ofVirtual().start(task);
-            try { taskThread.join(); } catch (InterruptedException ignored) {}
-            final Player player = playerHolder[0];
-            Platform.runLater(() -> {
-                accountList.setAll(accounts);
-                if (!accounts.isEmpty()) {
-                    if (selectedAccount.get() == null) {
-                        // 优先匹配当前登录角色的 roleId
-                        if (player != null) {
-                            String roleId = String.valueOf(player.getId());
-                            TaygedoAccount matched = accounts.stream()
-                                    .filter(a -> roleId.equals(a.getRoleId()))
-                                    .findFirst().orElse(null);
-                            selectedAccount.set(matched != null ? matched : accounts.getFirst());
+            task.setOnSucceeded(e -> {
+                Player player = (Player) e.getSource().getValue();
+                Platform.runLater(() -> {
+                    accountList.setAll(accounts);
+                    if (!accounts.isEmpty()) {
+                        if (selectedAccount.get() == null) {
+                            // 优先匹配当前登录角色的 roleId
+                            if (player != null) {
+                                String roleId = String.valueOf(player.getId());
+                                TaygedoAccount matched = accounts.stream()
+                                        .filter(a -> roleId.equals(a.getRoleId()))
+                                        .findFirst().orElse(null);
+                                selectedAccount.set(matched != null ? matched : accounts.getFirst());
+                            } else {
+                                selectedAccount.set(accounts.getFirst());
+                            }
                         } else {
-                            selectedAccount.set(accounts.getFirst());
+                            loadRoleHome();
                         }
-                    } else {
-                        loadRoleHome();
                     }
-                }
+                });
             });
+            Thread.startVirtualThread(task);
         });
     }
 
