@@ -153,3 +153,215 @@
 .home .refresh-btn:hover{
     -fx-background-color: -color-bg-default-90;
 }
+
+
+/* ==================== 角色面板（嵌入 Home 右侧） ==================== */
+
+.role-board {
+    -fx-spacing: 10.0;
+}
+
+/* 外层背景容器，包裹所有子内容 */
+.role-board .board-container {
+    -fx-background-color: -color-bg-default-90;
+    -fx-background-radius: 10px;
+    -fx-padding: 10px;
+    -fx-spacing: 10px;
+}
+
+.role-board .status-label {
+    -fx-text-fill: -color-danger-3;
+    -fx-font-size: 0.8571em;
+    -fx-wrap-text: true;
+}
+
+.role-board .empty-hint {
+    -fx-text-fill: -color-font-subtle;
+    -fx-font-size: 0.8571em;
+}
+
+/* ---- 顶部：个人标识区 ---- */
+
+.role-board .identity-section {
+    -fx-background-color: -color-bg-default-90;
+    -fx-background-radius: 10px;
+    -fx-padding: 10px 12px 10px 12px;
+    -fx-spacing: 8px;
+}
+
+.role-board .avatar-image {
+    -fx-fit-width: 40px;
+    -fx-fit-height: 40px;
+    -fx-clip: true;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.3), 3, 0.5, 0, 1);
+}
+
+.role-board .role-name {
+    -fx-text-fill: -color-font-muted;
+    -fx-font-size: 1.0em;
+    -fx-font-weight: bold;
+}
+
+.role-board .level-badge {
+    -fx-text-fill: -color-accent-fg;
+    -fx-font-size: 0.8571em;
+    -fx-font-weight: bold;
+}
+
+.role-board .uid-row {
+    -fx-spacing: 5px;
+}
+
+.role-board .uid-text {
+    -fx-text-fill: -color-font-subtle;
+    -fx-font-size: 0.8571em;
+}
+
+.role-board .copy-btn {
+    -fx-background-color: transparent;
+    -fx-cursor: hand;
+    -fx-padding: 2px 4px 2px 4px;
+}
+
+.role-board .copy-btn:hover {
+    -fx-background-color: -color-bg-default-50;
+    -fx-background-radius: 4px;
+}
+
+.role-board .copy-icon {
+    -fx-icon-size: 0.9286em;
+    -fx-icon-color: -color-font-subtle;
+}
+
+/* 切换按钮 */
+.role-board .switch-btn {
+    -fx-background-color: transparent;
+    -fx-cursor: hand;
+    -fx-padding: 2px 4px 2px 4px;
+}
+
+.role-board .switch-btn:hover {
+    -fx-background-color: -color-bg-default-50;
+    -fx-background-radius: 4px;
+}
+
+/* ---- 中部：核心数据网格 ---- */
+
+.role-board .core-data-grid {
+    -fx-padding: 4px 8px 4px 8px;
+    -fx-background-color: -color-bg-default-90;
+    -fx-background-radius: 10px;
+    -fx-hgap: 0;
+    -fx-vgap: 0;
+}
+
+.role-board .data-cell {
+    -fx-alignment: CENTER;
+    -fx-padding: 8px 4px 8px 4px;
+    -fx-spacing: 2px;
+}
+
+.role-board .data-cell .data-value {
+    -fx-text-fill: -color-font-muted;
+    -fx-font-size: 1.2857em;
+    -fx-font-weight: bold;
+}
+
+.role-board .data-cell .data-name {
+    -fx-text-fill: -color-font-subtle;
+    -fx-font-size: 0.7857em;
+}
+
+.role-board .data-cell .arrow {
+    -fx-icon-size: 0.7143em;
+    -fx-icon-color: -color-font-subtle;
+}
+
+.role-board .cell-separator {
+    -fx-background-color: -color-border-default;
+    -fx-min-width: 1px;
+    -fx-max-width: 1px;
+}
+
+.role-board .row-separator {
+    -fx-background-color: -color-border-default;
+    -fx-min-height: 1px;
+    -fx-max-height: 1px;
+}
+
+/* ---- 底部：实时动态卡片 ---- */
+
+.role-board .realtime-card {
+    -fx-background-color: -color-bg-default-90;
+    -fx-background-radius: 10px;
+    -fx-padding: 0 0 10px 0;
+    -fx-spacing: 8px;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.04), 8, 0, 0, 2);
+}
+
+.role-board .card-rod {
+    -fx-min-height: 4px;
+    -fx-max-height: 4px;
+    -fx-background-color: linear-gradient(from 0.0% 0.0% to 100.0% 0.0%,
+        #77767600 0.0%, #8f8e8e 50.0%, #77767600 100.0%);
+    -fx-background-radius: 10px 10px 0 0;
+}
+
+.role-board .realtime-title {
+    -fx-text-fill: -color-font-subtle;
+    -fx-font-size: 0.8571em;
+    -fx-font-weight: bold;
+    -fx-padding: 0 10px 0 10px;
+}
+
+.role-board .realtime-value {
+    -fx-text-fill: -color-font-muted;
+    -fx-font-size: 1.1em;
+    -fx-font-weight: bold;
+}
+
+.role-board .realtime-icon {
+    -fx-fit-width: 32px;
+    -fx-fit-height: 32px;
+}
+
+.role-board .realtime-label {
+    -fx-text-fill: -color-font-subtle;
+    -fx-font-size: 0.7857em;
+}
+
+/* 深色胶囊条 */
+
+.role-board .capsule {
+    -fx-background-color: rgba(0, 0, 0, 0.72);
+    -fx-background-radius: 20px;
+    -fx-padding: 6px 12px 6px 12px;
+    -fx-alignment: CENTER;
+}
+
+.role-board .capsule .capsule-value {
+    -fx-text-fill: derive(white, 0%);
+    -fx-font-size: 1.0714em;
+    -fx-font-weight: bold;
+}
+
+.role-board .capsule .capsule-label {
+    -fx-text-fill: derive(white, -40%);
+    -fx-font-size: 0.7857em;
+}
+
+/* 活跃度满值时数字变红 */
+.role-board .capsule.full .capsule-value {
+    -fx-text-fill: #ef5350;
+}
+
+/* ---- 刷新按钮 ---- */
+
+.role-board .refresh-btn {
+    -fx-background-color: transparent;
+    -fx-cursor: hand;
+}
+
+.role-board .refresh-btn:hover {
+    -fx-background-color: -color-bg-default-90;
+}

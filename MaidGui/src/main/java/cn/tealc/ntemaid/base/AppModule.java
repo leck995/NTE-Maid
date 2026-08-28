@@ -20,6 +20,7 @@ import cn.tealc.ntemaid.service.system.player.PlayingListService;
 import cn.tealc.ntemaid.service.system.player.PlaylistService;
 import cn.tealc.ntemaid.service.taygedo.TaygedoAccountService;
 import cn.tealc.ntemaid.service.taygedo.TaygedoLoginService;
+import cn.tealc.ntemaid.service.taygedo.TaygedoRoleService;
 import cn.tealc.ntemaid.service.taygedo.TaygedoSignInService;
 import cn.tealc.ntemaid.ui.tray.TrayIconManager;
 import cn.tealc.taygedo.TaygedoApi;
@@ -52,6 +53,7 @@ public class AppModule extends AbstractModule {
         bind(TaygedoSignInService.class).in(Singleton.class);
         bind(TaygedoAccountService.class).in(Singleton.class);
         bind(TaygedoLoginService.class).in(Singleton.class);
+        bind(TaygedoRoleService.class).in(Singleton.class);
         bind(LocalGachaDataService.class).in(Singleton.class);
         bind(LocalGachaAnalysisService.class).in(Singleton.class);
         bind(CommonGachaAnalysisService.class).in(Singleton.class);

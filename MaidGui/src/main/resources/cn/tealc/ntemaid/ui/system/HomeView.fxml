@@ -15,7 +15,7 @@
    <children>
       <BorderPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <right>
-            <VBox alignment="TOP_RIGHT" prefHeight="200.0" prefWidth="100.0" spacing="8.0" styleClass="right" BorderPane.alignment="CENTER" />
+            <VBox fx:id="rightPane" alignment="TOP_RIGHT" prefHeight="200.0" prefWidth="100.0" spacing="8.0" styleClass="right" BorderPane.alignment="CENTER" />
          </right>
          <bottom>
             <VBox BorderPane.alignment="CENTER">

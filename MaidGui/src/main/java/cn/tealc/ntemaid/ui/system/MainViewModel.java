@@ -140,6 +140,8 @@ public class MainViewModel implements ViewModel, SceneLifecycle {
                 );
             }
         }
+        // 通知首页角色面板刷新数据
+        NotificationManager.publish(NotificationKey.HOME_ROLE_DATA_REFRESH);
     }
 
     public void autoTaygedoSign() {

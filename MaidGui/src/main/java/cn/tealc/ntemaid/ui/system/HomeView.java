@@ -10,9 +10,11 @@ import cn.tealc.ntemaid.vision.MapRegionConfig;
 import cn.tealc.ntemaid.vision.RouteResult;
 import cn.tealc.teafx.utils.message.MessageInfo;
 import com.sun.jna.platform.win32.WinDef;
+import de.saxsys.mvvmfx.FluentViewLoader;
 import de.saxsys.mvvmfx.FxmlView;
 import de.saxsys.mvvmfx.InjectViewModel;
 import de.saxsys.mvvmfx.MvvmFX;
+import de.saxsys.mvvmfx.ViewTuple;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -20,6 +22,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Tooltip;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.VBox;
 
 import java.awt.*;
 import java.io.File;
@@ -39,6 +42,8 @@ public class HomeView implements Initializable, FxmlView<HomeViewModel> {
     @FXML
     private AnchorPane root;
     @FXML
+    private VBox rightPane;
+    @FXML
     private Button gameTimeBtn;
     @FXML
     private Button startGameBtn;
@@ -53,6 +58,16 @@ public class HomeView implements Initializable, FxmlView<HomeViewModel> {
         gameTimeBtn.textProperty().bind(viewModel.gameTimeTextProperty());
         setChangeBgEnable();
         viewModel.checkIsWeekEnd();
+        loadRoleBoard();
+    }
+
+    /**
+     * 在右侧区域加载塔吉多角色面板视图
+     */
+    private void loadRoleBoard() {
+        ViewTuple<RoleBoardByTaygedoView, RoleBoardByTaygedoViewModel> viewTuple =
+                FluentViewLoader.fxmlView(RoleBoardByTaygedoView.class).load();
+        rightPane.getChildren().add(viewTuple.getView());
     }
 
 
