@@ -60,38 +60,45 @@ public class GameBaseSettingViewModel implements ViewModel, SceneLifecycle {
 
 
 
-    public String getGameInstallPath() {
-        // 将命令拆分为数组，ProcessBuilder 会自动处理参数中的空格和转义
-        String[] command = {
-                "reg", "query",
-                "HKEY_LOCAL_MACHINE\\SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\YH",
-                "/v", "InstallLocation"
-        };
+    /** 各服务器对应的注册表卸载项名（CN官服 YH、B服 YHBL、国际服 NTEGlobal） */
+    private static final String[] UNINSTALL_KEYS = {"YH", "YHBL", "NTEGlobal"};
 
-        ProcessBuilder pb = new ProcessBuilder(command);
-        pb.redirectErrorStream(true);
-        try {
-            Process process = pb.start();
-            try (BufferedReader reader = new BufferedReader(
-                    new InputStreamReader(process.getInputStream(), Charset.forName("GBK")))) {
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    if (line.contains("REG_SZ")) {
-                        String[] parts = line.split("REG_SZ");
-                        if (parts.length > 1) {
-                            String path = parts[1].trim();
-                            System.out.println(path);
-                            if (path.endsWith("\\"))
-                                return path.substring(0, path.length()-1);
-                            else
-                                return path;
+    /**
+     * 从注册表自动探测游戏安装目录，逐个尝试各服务器的卸载项名。
+     * 不依赖 GameServerService，避免与服务器判断的循环依赖。
+     *
+     * @return 游戏安装路径，未找到返回 null
+     */
+    public String getGameInstallPath() {
+        String basePath = "HKEY_LOCAL_MACHINE\\SOFTWARE\\WOW6432Node\\Microsoft\\Windows\\CurrentVersion\\Uninstall\\";
+        for (String key : UNINSTALL_KEYS) {
+            String[] command = {"reg", "query", basePath + key, "/v", "InstallLocation"};
+
+            ProcessBuilder pb = new ProcessBuilder(command);
+            pb.redirectErrorStream(true);
+            try {
+                Process process = pb.start();
+                try (BufferedReader reader = new BufferedReader(
+                        new InputStreamReader(process.getInputStream(), Charset.forName("GBK")))) {
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        if (line.contains("REG_SZ")) {
+                            String[] parts = line.split("REG_SZ");
+                            if (parts.length > 1) {
+                                String path = parts[1].trim();
+                                System.out.println(path);
+                                if (path.endsWith("\\"))
+                                    return path.substring(0, path.length()-1);
+                                else
+                                    return path;
+                            }
                         }
                     }
                 }
+                process.waitFor();
+            } catch (Exception e) {
+                // 该注册表项不存在或查询失败，继续尝试下一个
             }
-            process.waitFor();
-        } catch (Exception e) {
-            e.printStackTrace();
         }
         return null;
     }
