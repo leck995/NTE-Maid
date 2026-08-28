@@ -7,8 +7,8 @@ package cn.tealc.taygedo;
 class TaygedoConstants {
     /** 塔吉多API基础地址 */
     static final String TAYGEDO_BASE_URL = "https://bbs-api.tajiduo.com";
-    /** 塔吉多App版本号，用于请求头 */
-    static final String TAYGEDO_APP_VER = "1.2.2";
+    /** 塔吉多App版本号，用于请求头与ds签名（与上游参考实现保持一致） */
+    static final String TAYGEDO_APP_VER = "1.2.5";
     /** DS签名密钥，用于生成Native请求的ds头 */
     static final String TAYGEDO_DS_SECRET = "pUds3dfMkl";
     /** H5请求的Origin和Referer地址 */
@@ -19,7 +19,7 @@ class TaygedoConstants {
     /** 老虎用户中心密钥，用于请求签名和AES加密 */
     static final String LAOHU_SECRET = "89155cc4e8634ec5b1b6364013b23e3e";
 
-    /** 模拟iOS原生App的User-Agent */
+    /** Native请求与用户中心接口的User-Agent（与上游参考实现一致） */
     static final String NATIVE_USER_AGENT = "Tajiduo/1.2.2 (iPhone; iOS 17.0; Scale/3.00)";
     /** 模拟H5内嵌WebView的User-Agent */
     static final String H5_USER_AGENT = "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 Tajiduo/1.2.2";

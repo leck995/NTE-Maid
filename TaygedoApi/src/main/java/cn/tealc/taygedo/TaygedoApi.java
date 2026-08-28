@@ -252,13 +252,19 @@ public class TaygedoApi {
      * @throws TaygedoException 刷新失败时抛出，HTTP 402表示令牌已失效需要重新登录
      */
     public RefreshTokenResult refreshToken(String refreshToken, String deviceId) {
-        // 请求头与 userCenterLogin 保持一致，使用 1.2.x 版本与原生 UA，
-        // 避免因版本割裂被服务端拒绝（旧 1.1.0 头会导致 code:22 invalid request）
+        // 服务端已收紧策略，refreshToken 接口同样要求 1.2.x 版本 + ds 签名，
+        // 旧的 1.1.0 头现在也会被拒绝并返回 code:22 invalid request。
+        // 请求头对齐 userCenterLogin 的 official 风格。
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(TAYGEDO_BASE_URL + "/usercenter/api/refreshToken"))
+                .header("Accept", "application/json, text/plain, */*")
                 .header("authorization", refreshToken)
-                .header("deviceid", deviceId)
                 .header("appversion", TAYGEDO_APP_VER)
+                .header("platform", "android")
+                .header("uid", "0")
+                .header("debug-uid", "3")
+                .header("deviceId", deviceId)
+                .header("ds", TaygedoCrypto.makeDs())
                 .header("Content-Type", "application/x-www-form-urlencoded")
                 .header("User-Agent", NATIVE_USER_AGENT)
                 .POST(HttpRequest.BodyPublishers.noBody())
