@@ -686,6 +686,184 @@ public class TaygedoApi {
         }
     }
 
+    // ==================== 角色详情面板 ====================
+
+    /**
+     * 获取异环角色综合面板（头像/等级/成就总览/区域总览/房产/载具/角色简版）
+     *
+     * @param accessToken 塔吉多访问令牌
+     * @param roleId      角色 ID
+     * @return 角色综合面板
+     * @throws TaygedoException 请求失败时抛出
+     */
+    public RoleHome getRoleHome(String accessToken, String roleId) {
+        String url = http.buildUrl("/apihub/awapi/yh/roleHome", Map.of("roleId", roleId));
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(url))
+                .header("Authorization", accessToken)
+                .GET()
+                .build();
+
+        JsonNode root = http.executeAndParse(request, "getRoleHome", null);
+        JsonNode data = root.get("data");
+        if (data == null || !data.isObject()) {
+            throw new TaygedoException("getRoleHome 返回数据为空");
+        }
+        try {
+            return MAPPER.treeToValue(data, RoleHome.class);
+        } catch (JsonProcessingException e) {
+            throw new TaygedoException("getRoleHome 解析响应失败: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * 获取角色详细列表（每个角色 15+ 属性 + 城市技能 + 副手弧盘/驱动盘套装）
+     *
+     * @param accessToken 塔吉多访问令牌
+     * @param roleId      角色 ID
+     * @return 角色详细列表
+     * @throws TaygedoException 请求失败时抛出
+     */
+    public List<CharacterDetail> getRoleCharacters(String accessToken, String roleId) {
+        String url = http.buildUrl("/apihub/awapi/yh/characters", Map.of("roleId", roleId));
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(url))
+                .header("Authorization", accessToken)
+                .GET()
+                .build();
+
+        JsonNode root = http.executeAndParse(request, "getRoleCharacters", null);
+        JsonNode data = root.get("data");
+        if (data == null || !data.isArray()) {
+            throw new TaygedoException("getRoleCharacters 返回数据为空");
+        }
+        try {
+            List<CharacterDetail> characters = new ArrayList<>();
+            for (JsonNode node : data) {
+                characters.add(MAPPER.treeToValue(node, CharacterDetail.class));
+            }
+            return characters;
+        } catch (JsonProcessingException e) {
+            throw new TaygedoException("getRoleCharacters 解析响应失败: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * 获取角色成就进度（已达成数/总数 + 金银铜牌数 + 分类明细）
+     *
+     * @param accessToken 塔吉多访问令牌
+     * @param roleId      角色 ID
+     * @return 成就进度
+     * @throws TaygedoException 请求失败时抛出
+     */
+    public AchievementProgress getAchievementProgress(String accessToken, String roleId) {
+        String url = http.buildUrl("/apihub/awapi/yh/achieveProgress", Map.of("roleId", roleId));
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(url))
+                .header("Authorization", accessToken)
+                .GET()
+                .build();
+
+        JsonNode root = http.executeAndParse(request, "getAchievementProgress", null);
+        JsonNode data = root.get("data");
+        if (data == null || !data.isObject()) {
+            throw new TaygedoException("getAchievementProgress 返回数据为空");
+        }
+        try {
+            return MAPPER.treeToValue(data, AchievementProgress.class);
+        } catch (JsonProcessingException e) {
+            throw new TaygedoException("getAchievementProgress 解析响应失败: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * 获取各区域探索进度（含子项明细）
+     *
+     * @param accessToken 塔吉多访问令牌
+     * @param roleId      角色 ID
+     * @return 区域进度列表
+     * @throws TaygedoException 请求失败时抛出
+     */
+    public List<AreaProgress> getAreaProgress(String accessToken, String roleId) {
+        String url = http.buildUrl("/apihub/awapi/yh/areaProgress", Map.of("roleId", roleId));
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(url))
+                .header("Authorization", accessToken)
+                .GET()
+                .build();
+
+        JsonNode root = http.executeAndParse(request, "getAreaProgress", null);
+        JsonNode data = root.get("data");
+        if (data == null || !data.isArray()) {
+            throw new TaygedoException("getAreaProgress 返回数据为空");
+        }
+        try {
+            List<AreaProgress> areas = new ArrayList<>();
+            for (JsonNode node : data) {
+                areas.add(MAPPER.treeToValue(node, AreaProgress.class));
+            }
+            return areas;
+        } catch (JsonProcessingException e) {
+            throw new TaygedoException("getAreaProgress 解析响应失败: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * 获取角色房产列表（含家具明细）
+     *
+     * @param accessToken 塔吉多访问令牌
+     * @param roleId      角色 ID
+     * @return 房产数据（含列表与汇总信息）
+     * @throws TaygedoException 请求失败时抛出
+     */
+    public RealEstateResult getRealestate(String accessToken, String roleId) {
+        String url = http.buildUrl("/apihub/awapi/yh/realestate", Map.of("roleId", roleId));
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(url))
+                .header("Authorization", accessToken)
+                .GET()
+                .build();
+
+        JsonNode root = http.executeAndParse(request, "getRealestate", null);
+        JsonNode data = root.get("data");
+        if (data == null || !data.isObject()) {
+            throw new TaygedoException("getRealestate 返回数据为空");
+        }
+        try {
+            return MAPPER.treeToValue(data, RealEstateResult.class);
+        } catch (JsonProcessingException e) {
+            throw new TaygedoException("getRealestate 解析响应失败: " + e.getMessage(), e);
+        }
+    }
+
+    /**
+     * 获取角色载具列表（含基础/进阶属性、涂装模型）
+     *
+     * @param accessToken 塔吉多访问令牌
+     * @param roleId      角色 ID
+     * @return 载具数据（含列表与汇总信息）
+     * @throws TaygedoException 请求失败时抛出
+     */
+    public VehicleList getVehicles(String accessToken, String roleId) {
+        String url = http.buildUrl("/apihub/awapi/yh/vehicles", Map.of("roleId", roleId));
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(url))
+                .header("Authorization", accessToken)
+                .GET()
+                .build();
+
+        JsonNode root = http.executeAndParse(request, "getVehicles", null);
+        JsonNode data = root.get("data");
+        if (data == null || !data.isObject()) {
+            throw new TaygedoException("getVehicles 返回数据为空");
+        }
+        try {
+            return MAPPER.treeToValue(data, VehicleList.class);
+        } catch (JsonProcessingException e) {
+            throw new TaygedoException("getVehicles 解析响应失败: " + e.getMessage(), e);
+        }
+    }
+
     // ==================== 私有工具方法 ====================
 
     /** 从老虎登录响应中提取token、userId、nickname等信息 */
