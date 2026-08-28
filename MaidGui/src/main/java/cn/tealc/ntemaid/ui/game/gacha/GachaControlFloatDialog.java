@@ -4,48 +4,40 @@ import atlantafx.base.controls.Spacer;
 import atlantafx.base.theme.Styles;
 import cn.tealc.ntemaid.base.notification.NotificationKey;
 import cn.tealc.ntemaid.base.notification.NotificationManager;
-import cn.tealc.ntemaid.jna.GameAppListener;
 import cn.tealc.ntemaid.thread.gacha.GachaTask;
+import cn.tealc.ntemaid.ui.component.dialog.NewDialog;
 import cn.tealc.teafx.utils.message.MessageInfo;
-import com.sun.jna.platform.win32.User32;
-import com.sun.jna.platform.win32.WinDef;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.concurrent.Worker;
 import javafx.animation.RotateTransition;
-import javafx.application.Platform;
-import javafx.scene.Scene;
+import javafx.concurrent.Worker;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.ToggleGroup;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
-import javafx.stage.Stage;
-import javafx.stage.StageStyle;
-import javafx.stage.WindowEvent;
+import javafx.stage.Modality;
 import javafx.util.Duration;
 import org.kordamp.ikonli.javafx.FontIcon;
 import org.kordamp.ikonli.material2.Material2AL;
 import org.kordamp.ikonli.material2.Material2MZ;
-import org.kordamp.ikonli.material2.Material2OutlinedAL;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.net.URL;
 
 /**
- * 异环抽卡记录抓取控制小窗：置顶、透明边框的独立 Stage，负责控制
- * {@link GachaTask} 抓取任务的开始与结束，并通过状态图标实时反映任务状态。
+ * 异环抽卡记录抓取控制对话框（标准窗口模式）。
  *
- * <p>本窗口由 {@link GachaToolDialog} 点击「确定」后创建，接替后者承担抓取控制职责。
- * UI 仅两行：第一行为标题 + 自动/手动模式选择 + 关闭按钮；第二行为状态图标、
- * 模式说明文本以及开始/结束按钮。
+ * <p>继承 {@link NewDialog}，使用应用统一的 shadcn 风格皮肤（自带 HeaderBar
+ * 标题与关闭按钮），owner 为主窗口，{@link Modality#NONE} 非模态显示，
+ * 保证在所有机器上均可正常显示。
+ *
+ * <p>功能与 {@link GachaControlDialog} 一致：控制 {@link GachaTask} 抓取任务
+ * 的开始与结束，并通过状态图标实时反映任务状态。区别在于本类以标准窗口
+ * 形态呈现（有标题栏、可拖动、可置前），而非透明无边框的悬浮窗，因此
+ * 不需要透明宿主窗口，规避了部分环境下悬浮窗不显示的问题。
  */
-public class GachaControlDialog extends Stage {
-    private static final Logger LOG = LoggerFactory.getLogger(GachaControlDialog.class);
+public class GachaControlFloatDialog extends NewDialog<Void> {
 
     private static final String CSS_PATH =
             "/cn/tealc/ntemaid/css/GachaTool.css";
@@ -55,19 +47,10 @@ public class GachaControlDialog extends Stage {
     private static final String STATUS_DONE = "gacha-control-status-done";
     private static final String STATUS_FAILED = "gacha-control-status-failed";
 
-    /** 对齐到游戏窗口时异步重试的最大次数 */
-    private static final int MAX_ALIGN_ATTEMPTS = 3;
-    /** 每次异步重试的间隔（毫秒） */
-    private static final long ALIGN_RETRY_INTERVAL_MS = 150L;
-
-    private static GachaControlDialog instance;
-
-    private final SimpleBooleanProperty isVisible = new SimpleBooleanProperty(false);
-
     private GameGachaCommonViewModel viewModel;
     private String playerId;
 
-    private final VBox root = new VBox();
+    private final VBox contentRoot = new VBox();
     private final FontIcon statusIcon = new FontIcon();
     private final Label modeText = new Label();
     private final RadioButton autoRadio = new RadioButton("自动");
@@ -75,7 +58,6 @@ public class GachaControlDialog extends Stage {
     private final ToggleGroup modeGroup = new ToggleGroup();
     private final Button startBtn = new Button("开始");
     private final Button stopBtn = new Button("结束");
-    private final Button closeBtn = new Button(null, new FontIcon(Material2OutlinedAL.CLOSE));
 
     private GachaTask currentTask;
     /** 运行中图标旋转动画 */
@@ -83,51 +65,54 @@ public class GachaControlDialog extends Stage {
     /** 标记本次抓取是否由用户手动停止 */
     private boolean manualStopped = false;
 
-    public static GachaControlDialog getInstance() {
-        if (instance == null) {
-            instance = new GachaControlDialog();
-        }
-        return instance;
-    }
+    public GachaControlFloatDialog() {
+        super();
 
-    private GachaControlDialog() {
-        // 隐藏任务栏图标的透明宿主窗口
-        Stage owner = new Stage();
-        owner.setWidth(1.0);
-        owner.setHeight(1.0);
-        owner.initStyle(StageStyle.UTILITY);
-        owner.setOpacity(0.0);
-        owner.show();
-        initOwner(owner);
-        initStyle(StageStyle.TRANSPARENT);
+        // 非模态：不阻塞主窗口，与 GachaControlDialog（独立 Stage）行为一致
+        initModality(Modality.NONE);
+        setTitle("异环抽卡记录抓取工具");
+        setWidth(420.0);
+
+        // 保留一个 CANCEL 类型按钮以满足 Dialog.close() 的关闭许可校验
+        // （DialogPane 无 ButtonType 时 close() 会被拦截，导致窗口无法关闭），
+        // 显示后立即将其隐藏，开始/结束按钮由 content 内自定义节点提供。
+        getDialogPane().getButtonTypes().setAll(ButtonType.CANCEL);
+        setResultConverter(buttonType -> null);
+        setOnShown(e -> {
+            Button cancelBtn = (Button) getDialogPane().lookupButton(ButtonType.CANCEL);
+            if (cancelBtn != null) {
+                cancelBtn.setVisible(false);
+                cancelBtn.setManaged(false);
+            }
+        });
 
         buildUI();
 
-        Scene scene = new Scene(root);
-        scene.setFill(Color.TRANSPARENT);
+        // 加载抓取控制窗样式表
         URL stylesheet = getClass().getResource(CSS_PATH);
-        if (stylesheet != null && !scene.getStylesheets().contains(stylesheet.toExternalForm())) {
-            scene.getStylesheets().add(stylesheet.toExternalForm());
+        if (stylesheet != null) {
+            String external = stylesheet.toExternalForm();
+            if (!getDialogPane().getStylesheets().contains(external)) {
+                getDialogPane().getStylesheets().add(external);
+            }
         }
-        setScene(scene);
-        setAlwaysOnTop(true);
 
-        // 跟踪可见性（show()/hide() 是 final，无法直接覆盖）
-        setOnShowing(e -> isVisible.set(true));
-        setOnHiding(e -> isVisible.set(false));
+        getDialogPane().setContent(contentRoot);
 
-        // 窗口首次显示后定位到游戏窗口右上角（窗口修饰器下方）
-        addEventHandler(WindowEvent.WINDOW_SHOWN, e -> alignToGameWindow());
+        // 窗口隐藏时清理：停止旋转动画与正在运行的任务
+        setOnHidden(e -> {
+            iconSpin.stop();
+            if (currentTask != null && currentTask.isRunning()) {
+                currentTask.stop();
+            }
+        });
     }
 
     private void buildUI() {
-        root.getStyleClass().add("gacha-control-root");
+        contentRoot.getStyleClass().add("gacha-control-content");
         setStatusClass(STATUS_READY);
 
-        // ---- 第1行：标题 + 模式选择 + 关闭 ----
-        Label title = new Label("异环抽卡记录抓取工具");
-        title.getStyleClass().add("gacha-control-title");
-
+        // ---- 第1行：模式选择 ----（标题与关闭按钮由 HeaderBar 提供）
         autoRadio.setToggleGroup(modeGroup);
         manualRadio.setToggleGroup(modeGroup);
         autoRadio.setSelected(true);
@@ -138,19 +123,8 @@ public class GachaControlDialog extends Stage {
             }
         });
 
-        closeBtn.getStyleClass().add("gacha-control-close");
-        closeBtn.setFocusTraversable(false);
-        closeBtn.setOnAction(e -> {
-            iconSpin.stop();
-            if (currentTask != null && currentTask.isRunning()) {
-                currentTask.stop();
-            }
-            hide();
-        });
-
-        HBox header = new HBox(8.0, title, new Spacer(), autoRadio, manualRadio, closeBtn);
+        HBox header = new HBox(8.0, new Spacer(), autoRadio, manualRadio);
         header.getStyleClass().add("gacha-control-header");
-        enableDrag(header);
 
         // ---- 第2行：状态图标 + 模式文本 + 开始/结束 ----
         statusIcon.getStyleClass().add("gacha-control-icon");
@@ -179,7 +153,7 @@ public class GachaControlDialog extends Stage {
         HBox row = new HBox(8.0, statusIcon, modeText, new Spacer(), startBtn, stopBtn);
         row.getStyleClass().add("gacha-control-row");
 
-        root.getChildren().addAll(header, row);
+        contentRoot.getChildren().addAll(header, row);
     }
 
     /**
@@ -195,55 +169,6 @@ public class GachaControlDialog extends Stage {
         resetToReady();
     }
 
-    /**
-     * 把本窗口定位到游戏窗口的右上角（与游戏窗口左上角对齐）。
-     * <p>游戏窗口的恢复与置前已由 {@link GachaToolDialog#restoreAndForegroundGameWindow()}
-     * 在最小化主窗口前完成，本方法只负责读取游戏窗口矩形并定位悬浮窗。
-     * 为避免阻塞 JavaFX Application Thread，采用异步重试方式等待游戏窗口重绘完成。
-     * 游戏未运行时回退到屏幕左上角。
-     */
-    private void alignToGameWindow() {
-        alignToGameWindow(0);
-    }
-
-    /**
-     * 异步重试读取游戏窗口矩形并定位悬浮窗。
-     * 游戏窗口刚从最小化恢复时矩形可能尚未更新，最多重试 {@code maxAttempts} 次，
-     * 每次间隔约 150ms，避免在 UI 线程上同步阻塞。
-     *
-     * @param attempt 当前重试次数（从 0 开始）
-     */
-    private void alignToGameWindow(int attempt) {
-        WinDef.HWND game = GameAppListener.getInstance().getGameHWND();
-        if (game != null && User32.INSTANCE.IsWindow(game)) {
-            WinDef.RECT rect = new WinDef.RECT();
-            if (User32.INSTANCE.GetWindowRect(game, rect)) {
-                double x = Math.max(0, rect.left);
-                double y = Math.max(0, rect.top);
-                setX(x);
-                setY(y);
-                LOG.debug("已定位至游戏窗口左上角: ({}, {})", x, y);
-                return;
-            }
-        }
-        // 游戏窗口矩形尚未就绪或游戏未运行，异步重试或回退
-        if (attempt < MAX_ALIGN_ATTEMPTS) {
-            Thread.startVirtualThread(() -> {
-                try {
-                    Thread.sleep(ALIGN_RETRY_INTERVAL_MS);
-                } catch (InterruptedException ie) {
-                    Thread.currentThread().interrupt();
-                }
-                Platform.runLater(() -> alignToGameWindow(attempt + 1));
-            });
-        } else {
-            setX(0.0);
-            setY(0.0);
-            LOG.debug("游戏窗口未检测到或矩形获取失败，回退至屏幕原点: ({}, {})", 0.0, 0.0);
-        }
-    }
-
-
     private void startCapture() {
         if (viewModel == null || playerId == null || playerId.isEmpty()) {
             return;
@@ -256,7 +181,7 @@ public class GachaControlDialog extends Stage {
         currentTask.setOnSucceeded(e -> {
             File capturedFile = currentTask.getValue();
             if (capturedFile != null && capturedFile.exists()) {
-                NotificationManager.publish(NotificationKey.GACHA_CAPTURE_FINISHED,playerId,capturedFile);
+                NotificationManager.publish(NotificationKey.GACHA_CAPTURE_FINISHED, playerId, capturedFile);
             } else {
                 NotificationManager.message(MessageInfo.error("抓取失败：未获取到抽卡数据"));
             }
@@ -311,38 +236,7 @@ public class GachaControlDialog extends Stage {
     }
 
     private void setStatusClass(String statusClass) {
-        root.getStyleClass().removeAll(STATUS_RUNNING, STATUS_READY, STATUS_DONE, STATUS_FAILED);
-        root.getStyleClass().add(statusClass);
-    }
-
-    /** 为无边框窗口的标题栏实现鼠标拖拽移动 */
-    private void enableDrag(HBox header) {
-        final Delta drag = new Delta();
-        header.setOnMousePressed((MouseEvent e) -> {
-            drag.x = e.getScreenX();
-            drag.y = e.getScreenY();
-        });
-        header.setOnMouseDragged((MouseEvent e) -> {
-            setX(getX() + e.getScreenX() - drag.x);
-            setY(getY() + e.getScreenY() - drag.y);
-            drag.x = e.getScreenX();
-            drag.y = e.getScreenY();
-        });
-    }
-
-    private static class Delta {
-        double x, y;
-    }
-
-    public boolean isVisible() {
-        return isVisible.get();
-    }
-
-    public SimpleBooleanProperty isVisibleProperty() {
-        return isVisible;
-    }
-
-    public void setVisible(boolean isVisible) {
-        this.isVisible.set(isVisible);
+        contentRoot.getStyleClass().removeAll(STATUS_RUNNING, STATUS_READY, STATUS_DONE, STATUS_FAILED);
+        contentRoot.getStyleClass().add(statusClass);
     }
 }

@@ -2,32 +2,47 @@ package cn.tealc.ntemaid.ui.game.gacha;
 
 import atlantafx.base.controls.Spacer;
 import atlantafx.base.theme.Styles;
+import cn.tealc.ntemaid.jna.GameAppListener;
 import cn.tealc.ntemaid.model.game.Player;
 import cn.tealc.ntemaid.thread.game.log.LoginPlayerGetTask;
 import cn.tealc.ntemaid.ui.component.dialog.NewDialog;
+import com.sun.jna.platform.win32.User32;
+import com.sun.jna.platform.win32.WinDef;
+import com.sun.jna.platform.win32.WinUser;
+import javafx.application.Platform;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
+import javafx.scene.control.RadioButton;
 import javafx.scene.control.Separator;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextFormatter;
+import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * 抽卡抓取配置对话框：仅负责玩家ID输入与使用说明展示。
- * 继承 {@link NewDialog}，采用 shadcn 风格皮肤。点击「确定」后
- * 由本对话框内部创建并显示 {@link GachaControlDialog}，
- * 由后者接管抓取控制（自动/手动模式选择与开始/结束）。
+ * 抽卡抓取配置对话框：负责玩家ID输入、抓取模式选择与使用说明展示。
+ * 继承 {@link NewDialog}，采用 shadcn 风格皮肤。点击「确定」后根据所选
+ * 模式分别创建 {@link GachaControlDialog}（悬浮窗模式）或
+ * {@link GachaControlFloatDialog}（标准窗口模式），由后者接管抓取控制。
  */
 public class GachaToolDialog extends NewDialog<Void> {
+
+    private static final Logger LOG = LoggerFactory.getLogger(GachaToolDialog.class);
 
     private final GameGachaCommonViewModel viewModel;
     private final TextField playerIdField;
     private final Label playerNameLabel;
+    /** 抓取模式选择：悬浮窗模式（兼容） / 标准窗口模式（稳定） */
+    private final ToggleGroup captureModeGroup = new ToggleGroup();
+    private final RadioButton floatModeRadio = new RadioButton("悬浮窗模式（兼容）");
+    private final RadioButton standardModeRadio = new RadioButton("标准窗口模式（稳定）");
 
     public GachaToolDialog(GameGachaCommonViewModel viewModel) {
         super();
@@ -59,6 +74,19 @@ public class GachaToolDialog extends NewDialog<Void> {
         tipLabel02.setPrefWidth(420);
         tipLabel02.setWrapText(true);
 
+        // 抓取模式选择
+        floatModeRadio.setToggleGroup(captureModeGroup);
+        standardModeRadio.setToggleGroup(captureModeGroup);
+        floatModeRadio.setSelected(true);
+
+        Label modeLabel = new Label("抓取模式");
+        modeLabel.setFont(Font.font(null, FontWeight.BOLD, 15));
+        HBox modeRow = new HBox(12.0, floatModeRadio, standardModeRadio);
+        Label modeTip = new Label("若悬浮窗模式无法显示控制窗口，请改用标准窗口模式，稳定性更高");
+        modeTip.getStyleClass().add(Styles.TEXT_SUBTLE);
+        modeTip.setPrefWidth(420);
+        modeTip.setWrapText(true);
+
 
         Label manualLabel = new Label("使用说明");
         manualLabel.setFont(Font.font(null, FontWeight.BOLD, 15));
@@ -86,6 +114,10 @@ public class GachaToolDialog extends NewDialog<Void> {
                 playerIdField,
                 tipLabel02,
                 new Separator(),
+                modeLabel,
+                modeRow,
+                modeTip,
+                new Separator(),
                 manualLabel,
                 tipLabel, principleLabel);
         getDialogPane().setContent(body);
@@ -98,16 +130,36 @@ public class GachaToolDialog extends NewDialog<Void> {
         okButton.getStyleClass().add(Styles.ACCENT);
         okButton.disableProperty().bind(playerIdField.textProperty().isEmpty());
 
-        // 确定 → 创建并显示抓取控制窗
+        // 确定 → 根据所选模式创建并显示抓取控制窗
         setResultConverter(buttonType -> {
             if (buttonType == ButtonType.OK) {
                 String pid = playerIdField.getText().trim();
                 if (!pid.isEmpty()) {
                     Stage owner = (Stage) getOwner();
-                    owner.setIconified(true);
-                    GachaControlDialog control = GachaControlDialog.getInstance();
-                    control.configure(viewModel, pid);
-                    control.show();
+                    if (standardModeRadio.isSelected()) {
+                        // 标准窗口模式：以主窗口为 owner，非模态，保证显示
+                        // 不最小化主窗口，否则子窗口（Dialog）会一并隐藏
+                        GachaControlFloatDialog dialog = new GachaControlFloatDialog();
+                        dialog.initOwner(owner);
+                        dialog.configure(viewModel, pid);
+                        dialog.show();
+                    } else {
+                        // 悬浮窗模式：先在后台线程恢复最小化的游戏窗口并置前（此时主窗口
+                        // 仍在前台，本程序拥有前台权限，SetForegroundWindow 才能成功），
+                        // 完成后再回到 UI 线程最小化主窗口、显示悬浮控制窗，避免阻塞 UI 线程
+                        final Stage ownerStage = owner;
+                        Thread.startVirtualThread(() -> {
+                            restoreAndForegroundGameWindow();
+                            Platform.runLater(() -> {
+                                ownerStage.setIconified(true);
+                                GachaControlDialog control = GachaControlDialog.getInstance();
+                                control.configure(viewModel, pid);
+                                control.show();
+                                // 确保悬浮窗渲染完成后出现在最前
+                                Platform.runLater(control::toFront);
+                            });
+                        });
+                    }
                 }
             }
             return null;
@@ -129,5 +181,35 @@ public class GachaToolDialog extends NewDialog<Void> {
             playerNameLabel.setText(String.format("已自动识别玩家：%s",value.getName()));
         });
         Thread.startVirtualThread(task);
+    }
+
+    /**
+     * 在最小化主窗口之前，先恢复并置前游戏窗口。
+     * <p>必须在主窗口仍处于前台时调用，此时本程序拥有前台权限，
+     * {@link User32#SetForegroundWindow} 才不会被系统拒绝。
+     * 否则主窗口最小化后本程序失去前台权限，后续无法把最小化的
+     * 游戏窗口拉回前台，导致悬浮控制窗无法对齐显示。
+     */
+    private void restoreAndForegroundGameWindow() {
+        try {
+            WinDef.HWND game = GameAppListener.getInstance().getGameHWND();
+            if (game == null || !User32.INSTANCE.IsWindow(game)) {
+                return;
+            }
+            // 检测游戏窗口是否处于最小化状态，若是则先恢复
+            WinUser.WINDOWPLACEMENT placement = new WinUser.WINDOWPLACEMENT();
+            if (User32.INSTANCE.GetWindowPlacement(game, placement).booleanValue()
+                    && placement.showCmd == WinUser.SW_SHOWMINIMIZED) {
+                User32.INSTANCE.ShowWindow(game, WinUser.SW_RESTORE);
+            }
+            User32.INSTANCE.SetForegroundWindow(game);
+            // 等待游戏窗口重绘完成，使后续读取的窗口矩形准确
+            Thread.sleep(300);
+            LOG.debug("游戏窗口已恢复并置前");
+        } catch (InterruptedException ie) {
+            Thread.currentThread().interrupt();
+        } catch (Exception e) {
+            LOG.warn("恢复并置前游戏窗口失败", e);
+        }
     }
 }
