@@ -14,6 +14,9 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
@@ -40,13 +43,30 @@ public class PremiumMonthlyPassEvent implements Consumer<String> {
         File externalFile = new File(EXTERNAL_PATH);
 
         if (externalFile.exists()) {
-            try {
-                return parseScreenMap(mapper.readTree(externalFile));
-            } catch (IOException e) {
-                log.error("读取外部坐标文件失败，将使用默认配置", e);
+            // 检查文件是否过期：最后修改时间是否早于 2026-08-30 00:00:00（系统默认时区），暂时存在，三个版本错误文件影响移除后，直接删除
+            long lastModified = externalFile.lastModified();
+            LocalDate thresholdDate = LocalDate.of(2026, 8, 30);
+            Instant threshold = thresholdDate.atStartOfDay(ZoneId.systemDefault()).toInstant();
+            boolean isExpired = Instant.ofEpochMilli(lastModified).isBefore(threshold);
+
+            if (isExpired) {
+                // 过期则删除文件
+                boolean deleted = externalFile.delete();
+                if (deleted) {
+                    log.info("外部坐标文件已过期（修改时间早于 2026-08-30），已删除，将重新生成默认配置");
+                } else {
+                    log.error("无法删除过期的外部坐标文件，将尝试覆盖写入");
+                }
+            } else {
+                // 未过期，尝试解析
+                try {
+                    return parseScreenMap(mapper.readTree(externalFile));
+                } catch (IOException e) {
+                    log.error("读取外部坐标文件失败，将使用默认配置并覆盖", e);
+                }
             }
         }
-
+        // 从资源加载默认配置并写入外部文件
         try (InputStream is = FXResourcesLoader.loadStream(RESOURCE_PATH)) {
             if (is != null) {
                 JsonNode node = mapper.readTree(is);
