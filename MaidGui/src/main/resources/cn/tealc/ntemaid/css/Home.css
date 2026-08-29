@@ -353,9 +353,15 @@
 }
 
 /* 数据来源说明 */
+.role-board .data-source {
+    -fx-background-color: -color-bg-default-90;
+    -fx-background-radius: 10px;
+    -fx-padding: 4px;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.04), 8, 0, 0, 2);
+}
 .role-board .data-source-hint {
     -fx-text-fill: -color-font-subtle;
-    -fx-font-size: 0.7143em;
+    -fx-font-size: 0.8em;
     -fx-alignment: CENTER;
     -fx-text-alignment: CENTER;
     -fx-wrap-text: true;
