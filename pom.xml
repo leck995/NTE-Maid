@@ -16,7 +16,7 @@
     </modules>
 
     <properties>
-        <revision>1.2.3</revision>
+        <revision>1.2.4</revision>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <junit.version>5.10.0</junit.version>
         <javafx.version>26.0.2</javafx.version>
