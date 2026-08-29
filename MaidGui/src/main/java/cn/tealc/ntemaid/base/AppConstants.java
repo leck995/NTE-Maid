@@ -2,7 +2,7 @@ package cn.tealc.ntemaid.base;
 
 public final class AppConstants {
     private AppConstants() {}
-    public static final String VERSION = "1.2.3";
+    public static final String VERSION = "1.2.4";
     public static final String APP_AUTHOR = "Leck";
     public static final String URL_APP_UPDATE = "https://cdn.999758.xyz/nte/release.json";
     public static final String URL_APP_UPDATE_DEV = "https://cdn.999758.xyz/nte/release-dev.json";
@@ -24,7 +24,7 @@ public final class AppConstants {
 
     /** 单实例 IPC：本地监听地址与端口，用于多开时唤起已运行实例 */
     public static final String IPC_HOST = "127.0.0.1";
-    public static final int IPC_PORT = 52871;
+    public static final int IPC_PORT = 52676;
 
 
 }
